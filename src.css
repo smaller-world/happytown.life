@@ -5,3 +5,17 @@
   --color-primary: #18c343;
   --color-secondary: oklch(66.6% 0.179 58.318);
 }
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-8 py-3 rounded-full text-lg font-bold hover:bg-primary/90 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply text-primary font-bold px-8 py-3 rounded-full border-2 border-primary hover:bg-primary/5 transition-all;
+  }
+
+  .gathering-card {
+    @apply bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-start;
+  }
+}
