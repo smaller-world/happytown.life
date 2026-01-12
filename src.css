@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Quicksand", sans-serif;
+  --color-primary: #18c343;
+  --color-secondary: oklch(66.6% 0.179 58.318);
+}
