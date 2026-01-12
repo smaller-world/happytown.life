@@ -35,26 +35,22 @@
   <main class="max-w-4xl mx-auto px-6 py-12 space-y-24">
 
     <!-- 1) Hero -->
-    <section class="text-center space-y-8 pt-12">
+    <section class="text-center space-y-8 pt-12 mb-12">
       <div class="flex flex-col items-center gap-y-4">
         <div class="flex justify-center">
           <img src="./logo.png" alt="happy town logo" class="w-50 md:w-60">
         </div>
-        <div class="flex gap-4 text-sm font-bold text-secondary">
+        <div class="flex gap-4 font-bold text-secondary">
           <a href="https://instagram.com/happytown.to" class="hover:underline w-20 text-end">instagram</a>
           <span class="text-gray-300">•</span>
           <a href="https://tiktok.com/@adamdriversbod" class="hover:underline w-20 text-start">tiktok</a>
         </div>
       </div>
-      <h1
-        class="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 leading-tight max-w-lg md:max-w-2xl mx-auto">
-        happy town is a home for third-space hosts and guests.
-      </h1>
-      <img src="./banner.png" alt="happy town banner" class="h-60 mx-auto rounded-3xl object-cover shadow-sm">
-      <p class="text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-        a new kind of “third space” movement in toronto—weekly walks, irl chat groups, and hobby tables for curious,
-        friendly people who like wandering conversations.
-      </p>
+    </section>
+
+    <!-- 6) Venue Reassurance -->
+    <section class="max-w-3xl mx-auto text-center space-y-8">
+      <h2 class="text-5xl font-bold max-w-2xl mx-auto leading-[1.1]">a new kind of third space movement in toronto.</h2>
       <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <a href="#gatherings"
           class="bg-primary text-white px-8 py-3 rounded-full text-lg font-bold hover:bg-opacity-90 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
@@ -65,40 +61,97 @@
           host with us &rarr;
         </a>
       </div>
+      <img src="./banner.png" alt="happy town banner" class="h-60 mx-auto rounded-3xl object-cover shadow-sm mt-4">
     </section>
 
-    <!-- 2) What we do -->
-    <section class="bg-primary/5 p-8 md:p-12 rounded-3xl border border-primary/10">
-      <p class="text-xl md:text-2xl leading-relaxed font-medium text-center max-w-3xl mx-auto">
-        big cities are full of people… and still weirdly lonely. happy town makes it easy to show up somewhere simple,
-        meet kind strangers, and have a low-pressure time—led by hosts who care about vibe, inclusion, and the gentle
-        art of not making it awkward.
-      </p>
-    </section>
-
-    <!-- 3) The “how it works” trio -->
-    <section>
-      <div class="grid md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
-        <div class="space-y-1">
-          <span class="text-5xl font-bold text-secondary/40">1.</span>
-          <h3 class="text-2xl font-bold text-secondary">choose a gathering</h3>
-          <p class="text-lg text-gray-600">pick a walk, a chat circle, or a hobby table—whatever matches your energy.
-          </p>
-        </div>
-        <div class="space-y-1">
-          <span class="text-5xl font-bold text-primary/40">2.</span>
-          <h3 class="text-2xl font-bold text-primary">show up as you are</h3>
-          <p class="text-lg text-gray-600">no networking, no “what do you do?” speedrun. just a friendly container and a
-            few soft prompts.</p>
-        </div>
-        <div class="space-y-1">
-          <span class="text-5xl font-bold text-secondary/40">3.</span>
-          <h3 class="text-2xl font-bold text-secondary">leave with a little more city in your heart</h3>
-          <p class="text-lg text-gray-600">new faces. new corners of toronto. maybe a new local spot you actually want
-            to return to.</p>
-        </div>
+    <!-- 5) Why this works -->
+    <section class="space-y-6">
+      <h2 class="text-3xl font-bold text-center">how this works</h2>
+      <div class="bg-secondary/5 p-8 md:p-12 rounded-3xl">
+        <p class="text-xl mb-8 font-medium">we host recurring events in low-traffic spaces where you can spend time with
+          others while enjoying yourself.</p>
+        <ul class="grid md:grid-cols-2 gap-x-6 gap-y-3">
+          <li class="flex gap-3">
+            <span class="text-secondary text-xl">✦</span>
+            <span><strong>low cost to free:</strong> accessible by default</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-secondary text-xl">✦</span>
+            <span><strong>light structure for hosts:</strong> guidance that helps you feel like &quot;you've got
+              this&quot;.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-secondary text-xl">✦</span>
+            <span><strong>a place to be yourself:</strong> no networking, please! just bring the &quot;5-9&quot; you
+              :)</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-secondary text-xl">✦</span>
+            <span><strong>a respectful relationship with spaces:</strong> we gather responsibly and encourage support
+              for local shops nearby</span>
+          </li>
+        </ul>
       </div>
     </section>
+
+    <!-- 7 & 8) Guests and Hosts Grid -->
+    <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+      <!-- Guests -->
+      <section class="space-y-6 p-8 rounded-3xl border-2 border-primary/10">
+        <h2 class="text-2xl font-bold text-primary">for guests <span
+            class="text-gray-400 font-normal text-lg align-baseline">(what you
+            can expect)</span></h2>
+
+        <div class="space-y-4">
+          <p class="font-bold">you’ll probably like happy town if you…</p>
+          <ul class="space-y-2 text-gray-600 pl-4 border-l-2 border-primary/20">
+            <li>want new friends but hate “networking energy”</li>
+            <li>like long walks and wandering conversations</li>
+            <li>miss the feeling of a friendly regular spot</li>
+            <li>enjoy gentle structure: prompts, activities, “you can join anytime” vibes</li>
+          </ul>
+        </div>
+
+        <div class="space-y-4">
+          <p class="font-bold">what you won’t have to do</p>
+          <ul class="space-y-2 text-gray-600 pl-4 border-l-2 border-red-100">
+            <li>pitch yourself</li>
+            <li>be extroverted on command</li>
+            <li>commit to a whole new identity</li>
+          </ul>
+        </div>
+
+        <div class="pt-4">
+          <a href="#gatherings"
+            class="inline-block bg-primary text-white px-6 py-2.5 rounded-full font-bold hover:bg-opacity-90">pick a
+            gathering this week</a>
+        </div>
+      </section>
+
+      <!-- Hosts -->
+      <section id="host" class="space-y-6 p-8 rounded-3xl border-2 border-secondary/10">
+        <h2 class="text-2xl font-bold text-secondary">host with us.</h2>
+        <p class="text-lg font-medium">build the third space you wish existed.</p>
+        <p class="text-gray-600">if you’ve ever thought “i could run something simple and sweet that helps people
+          connect”—we want you.</p>
+
+        <div class="space-y-2">
+          <p class="font-bold">we’re especially into hosts who love:</p>
+          <ul class="space-y-2 text-gray-600 list-disc list-inside">
+            <li>calm facilitation</li>
+            <li>playful prompts</li>
+            <li>hobby tables (crafts, writing, sketching, reading hours, language corners, etc.)</li>
+            <li>small rituals that make strangers feel safe together</li>
+          </ul>
+        </div>
+
+        <div class="pt-4 flex flex-col gap-y-1">
+          <a href="https://tally.so/r/81a9vr"
+            class="bg-secondary text-white px-6 py-2.5 rounded-full font-bold hover:bg-opacity-90 shadow-sm">host
+            with happy town &rarr;</a>
+        </div>
+      </section>
+    </div>
 
     <!-- 4) Featured gatherings -->
     <section id="gatherings" class="space-y-6 lg:space-y-8">
@@ -149,105 +202,8 @@
       </p>
     </section>
 
-    <!-- 5) Why this works -->
-    <section class="space-y-8">
-      <h2 class="text-3xl font-bold text-center">why this works <span class="text-gray-400 font-normal">(aka “our
-          vibe&nbsp;policy”)</span></h2>
-      <div class="bg-secondary/5 p-8 md:p-12 rounded-3xl">
-        <p class="text-xl mb-8 font-medium">we’re not a club. we’re not a course. we’re a container. happy town is built
-          for people who want connection without the overhead.</p>
-        <ul class="grid md:grid-cols-2 gap-x-6 gap-y-3">
-          <li class="flex gap-3">
-            <span class="text-secondary text-xl">✦</span>
-            <span><strong>low cost to free:</strong> accessible by default</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-secondary text-xl">✦</span>
-            <span><strong>light structure:</strong> enough guidance to feel safe, not boxed in</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-secondary text-xl">✦</span>
-            <span><strong>hosted, not chaotic:</strong> someone’s holding the room so you can relax</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-secondary text-xl">✦</span>
-            <span><strong>a respectful relationship with spaces:</strong> we gather responsibly and encourage support
-              for local shops nearby</span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- 6) Venue Reassurance -->
-    <section class="max-w-2xl mx-auto text-center space-y-4">
-      <h2 class="text-2xl font-bold">we play nice with the city.</h2>
-      <p class="text-lg text-gray-600">
-        happy town gatherings are designed to be low-impact and high-respect: small groups, clear norms, tidy exits.
-        when we’re near local businesses, we encourage people to grab a snack, a drink, or a little treat—because third
-        spaces thrive when the places around them thrive too.
-      </p>
-    </section>
-
-    <!-- 7 & 8) Guests and Hosts Grid -->
-    <div class="grid md:grid-cols-2 gap-8 md:gap-12">
-      <!-- Guests -->
-      <section class="space-y-6 p-8 rounded-3xl border-2 border-primary/10">
-        <h2 class="text-2xl font-bold text-primary">for guests <span class="text-gray-400 font-normal text-lg">(what you
-            can expect)</span></h2>
-
-        <div class="space-y-4">
-          <p class="font-bold">you’ll probably like happy town if you…</p>
-          <ul class="space-y-2 text-gray-600 pl-4 border-l-2 border-primary/20">
-            <li>want new friends but hate “networking energy”</li>
-            <li>like long walks and wandering conversations</li>
-            <li>miss the feeling of a friendly regular spot</li>
-            <li>enjoy gentle structure: prompts, activities, “you can join anytime” vibes</li>
-          </ul>
-        </div>
-
-        <div class="space-y-4">
-          <p class="font-bold">what you won’t have to do</p>
-          <ul class="space-y-2 text-gray-600 pl-4 border-l-2 border-red-100">
-            <li>pitch yourself</li>
-            <li>be extroverted on command</li>
-            <li>commit to a whole new identity</li>
-          </ul>
-        </div>
-
-        <div class="pt-4">
-          <a href="#gatherings"
-            class="inline-block bg-primary text-white px-6 py-2.5 rounded-full font-bold hover:bg-opacity-90">pick a
-            gathering this week</a>
-        </div>
-      </section>
-
-      <!-- Hosts -->
-      <section id="host" class="flex flex-col gap-y-6 p-8 rounded-3xl border-2 border-secondary/10">
-        <h2 class="text-2xl font-bold text-secondary">host with us.</h2>
-        <p class="text-lg font-medium">build the third space you wish existed.</p>
-        <p class="text-gray-600">if you’ve ever thought “i could run something simple and sweet that helps people
-          connect”—we want you.</p>
-
-        <div class="space-y-2">
-          <p class="font-bold">we’re especially into hosts who love:</p>
-          <ul class="space-y-2 text-gray-600 list-disc list-inside">
-            <li>calm facilitation</li>
-            <li>playful prompts</li>
-            <li>hobby tables (crafts, writing, sketching, reading hours, language corners, etc.)</li>
-            <li>small rituals that make strangers feel safe together</li>
-          </ul>
-        </div>
-
-        <div class="pt-4 self-center flex flex-col gap-y-1">
-          <a href="https://tally.so/r/81a9vr"
-            class="bg-secondary text-white px-6 py-2.5 rounded-full font-bold hover:bg-opacity-90 shadow-sm">host
-            with happy town &rarr;</a>
-        </div>
-      </section>
-    </div>
-
     <!-- 9) FAQ -->
-    <section class="max-w-3xl mx-auto space-y-8 pt-12">
+    <!-- <section class="max-w-3xl mx-auto space-y-8 pt-12">
       <h2 class="text-3xl font-bold text-center">faq</h2>
       <div class="grid gap-6">
 
@@ -268,12 +224,13 @@
 
         <div class="bg-white p-6 rounded-2xl border border-gray-100">
           <h3 class="font-bold text-lg mb-2 text-primary">are these free?</h3>
-          <p class="text-gray-600">many are free or low-cost. if there’s a paid element, it’s to cover materials or keep
+          <p class="text-gray-600">our events are free or low-cost. if there’s a paid element, it’s to cover materials
+            or keep
             things sustainable.</p>
         </div>
 
       </div>
-    </section>
+    </section> -->
 
     <!-- 10) Final CTA -->
     <section class="text-center space-y-8 py-16 bg-linear-to-b from-transparent to-primary/5 rounded-3xl">
@@ -296,7 +253,7 @@
     </section>
 
     <footer class="text-center text-gray-400 text-sm pb-8 space-y-4">
-      <div class="flex justify-center gap-6 text-secondary font-bold">
+      <div class="flex justify-center gap-6 text-secondary font-bold text-md">
         <a href="https://instagram.com/happytown.to" class="hover:underline">instagram</a>
         <a href="https://tiktok.com/@adamdriversbod" class="hover:underline">tiktok</a>
       </div>
