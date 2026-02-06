@@ -82,7 +82,7 @@ class Components::Field < Components::Base
     data = options.delete(:data) || {}
     data[:content] = block_given?
     div_with_slot("field-separator", data:, **options) do
-      render Components::Separator.new(class: "absolute inset-0 top-1/2")
+      Components::Separator(class: "absolute inset-0 top-1/2")
       if block_given?
         span(data: { slot: "field-separator-content" }, &block)
       end

@@ -13,11 +13,11 @@ class Views::Passwords::Edit < Views::Base
 
   sig { override.params(block: T.nilable(T.proc.void)).void }
   def view_template(&block)
-    render Components::Layout.new(title: "update password") do |layout|
+    Components::Layout(title: "update password") do |layout|
       layout.page_container(
         class: "flex flex-col items-center justify-center",
       ) do
-        render Components::Card.new(class: "w-full max-w-xs") do |card|
+        Components::Card(class: "w-full max-w-xs") do |card|
           card.header do
             card.title(class: "text-lg text-center") do
               "update your password"
@@ -25,13 +25,10 @@ class Views::Passwords::Edit < Views::Base
           end
           card.content do
             form_with(url: passwords_path(@token), method: :put) do |form|
-              render Components::FieldGroup do
-                render Components::Field.new(
-                  form:,
-                  field: :password,
-                ) do |field|
+              Components::FieldGroup() do
+                Components::Field(form:, field: :password) do |field|
                   field.label { "new password" }
-                  render Components::Input.new(
+                  Components::Input(
                     form:,
                     field: :password,
                     type: :password,
@@ -42,12 +39,9 @@ class Views::Passwords::Edit < Views::Base
                   field.error
                 end
 
-                render Components::Field.new(
-                  form:,
-                  field: :password,
-                ) do |field|
+                Components::Field(form:, field: :password) do |field|
                   field.label { "new password (again)" }
-                  render Components::Input.new(
+                  Components::Input(
                     form:,
                     field: :password_confirmation,
                     type: :password,
@@ -58,19 +52,14 @@ class Views::Passwords::Edit < Views::Base
                   field.error
                 end
 
-                render Components::Field do
-                  render Components::Button.new(
-                    type: :submit,
-                    size: :lg,
-                  ) do
+                Components::Field() do
+                  Components::Button(type: :submit, size: :lg) do
                     Icon(
                       "huge/arrow-right-02",
                       class: "size-6",
                       data: { icon: "inline-start" },
                     )
-                    span(class: "text-base") do
-                      "update password"
-                    end
+                    span(class: "text-base") { "update password" }
                   end
                 end
               end

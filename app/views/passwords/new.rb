@@ -12,11 +12,11 @@ class Views::Passwords::New < Views::Base
 
   sig { override.params(block: T.nilable(T.proc.void)).void }
   def view_template(&block)
-    render Components::Layout.new(title: "forgot your password?") do |layout|
+    Components::Layout(title: "forgot your password?") do |layout|
       layout.page_container(
         class: "flex flex-col items-center justify-center",
       ) do
-        render Components::Card.new(class: "w-full max-w-xs") do |card|
+        Components::Card(class: "w-full max-w-xs") do |card|
           card.header do
             card.title(class: "text-lg text-center") do
               "forgot your password?"
@@ -24,13 +24,10 @@ class Views::Passwords::New < Views::Base
           end
           card.content do
             form_with(url: passwords_path) do |form|
-              render Components::FieldGroup do
-                render Components::Field.new(
-                  form:,
-                  field: :email_address,
-                ) do |field|
+              Components::FieldGroup() do
+                Components::Field(form:, field: :email_address) do |field|
                   field.label { "email" }
-                  render Components::Input.new(
+                  Components::Input(
                     form:,
                     field: :email_address,
                     type: :email,
@@ -42,19 +39,14 @@ class Views::Passwords::New < Views::Base
                   field.error
                 end
 
-                render Components::Field do
-                  render Components::Button.new(
-                    type: :submit,
-                    size: :lg,
-                  ) do
+                Components::Field() do
+                  Components::Button(type: :submit, size: :lg) do
                     Icon(
                       "huge/arrow-right-02",
                       class: "size-6",
                       data: { icon: "inline-start" },
                     )
-                    span(class: "text-base") do
-                      "send password reset email"
-                    end
+                    span(class: "text-base") { "send password reset email" }
                   end
                 end
               end

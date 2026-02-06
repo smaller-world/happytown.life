@@ -81,7 +81,7 @@ class Components::Layout < Components::Base
   def render_flash(**options)
     message = flash[:notice] || flash[:alert] or return
     class_option = options.delete(:class)
-    render Components::Card.new(
+    Components::Card(
       size: :sm,
       class: class_names(
         "flash card",
@@ -99,7 +99,7 @@ class Components::Layout < Components::Base
   sig { void }
   def render_header
     header(class: "flex justify-center p-2 border-b border-border") do
-      render Components::Button.new(
+      Components::Button(
         component: "a",
         variant: :ghost,
         href: root_path,

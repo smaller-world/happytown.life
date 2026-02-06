@@ -30,9 +30,12 @@ Rails/DynamicFindBy:
 
 Style/ClassAndModuleChildren:
   Enabled: false
+Style/ClassMethodsDefinitions:
+  Enabled: false
 Style/MethodCallWithArgsParentheses:
   Enabled: true
   AllowedMethods:
     - render
     - raise
     - yield
+    - require
