@@ -13,7 +13,7 @@ gem:
     - rubocop-shopify
     - ruby-lsp
     - listen
-    - phlex-icons
+    - phlex-icons-huge
   # workers: 5
 
 dsl:

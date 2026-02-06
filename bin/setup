@@ -13,8 +13,6 @@ FileUtils.chdir APP_ROOT do
   # Add necessary setup steps to this file.
 
   puts "== Installing dependencies =="
-  # Install tooling
-  system!("mise install")
 
   # Install Gems
   system("mise x -- bundle check") || system!("mise x -- bundle install")
