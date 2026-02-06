@@ -15,10 +15,13 @@ FileUtils.chdir APP_ROOT do
   puts "== Installing dependencies =="
 
   # Install Gems
-  system("mise x -- bundle check") || system!("mise x -- bundle install")
+  system("bundle check") || system!("bundle install")
 
   # Install JavaScript dependencies
-  system!("mise x -- bun install")
+  system!("bun install")
+
+  puts "\n== Installing git hooks =="
+  system!("hk install")
 
   # puts "\n== Copying sample files =="
   # unless File.exist?("config/database.yml")
