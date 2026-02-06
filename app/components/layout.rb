@@ -103,6 +103,7 @@ class Components::Layout < Components::Base
         component: "a",
         variant: :ghost,
         href: root_path,
+        class: "gap-2",
       ) do
         image_tag(
           "icon.png",

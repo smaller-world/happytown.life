@@ -81,4 +81,7 @@ Rails.application.configure do
 
   # Improve Propshaft development performance
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # Hot-reload page when components change
+  config.hotwire.spark.html_paths << "app/components"
 end
