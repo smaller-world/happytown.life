@@ -4,4 +4,4 @@
 # Add your extra requires here (`bin/tapioca require` can be used to bootstrap
 # this list)
 
-# Don't generate types for every icon
+require "tapioca/dsl/helpers/active_record_constants_helper"

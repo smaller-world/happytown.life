@@ -10,6 +10,8 @@ require "rails/all"
 Bundler.require(*Rails.groups)
 
 module HappyTown
+  extend T::Sig
+
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults(8.1)
@@ -28,10 +30,6 @@ module HappyTown
     # config.eager_load_paths << Rails.root.join("extras")
   end
 
-  class << self
-    extend T::Sig
-
-    sig { returns(String) }
-    def site_name = "happy town"
-  end
+  sig { returns(String) }
+  def self.site_name = "happy town"
 end

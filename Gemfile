@@ -47,9 +47,21 @@ gem "image_processing", "~> 1.2"
 # Typecheck code at runtime
 gem "sorbet-runtime"
 
+# Perform full text search with Postgres
+gem "pg_search", "~> 2.3"
+
+# Inline CSS into email templates
+gem "premailer-rails"
+
 # Build views with Ruby
 gem "phlex-rails", "~> 2.4"
 gem "phlex-icons", "~> 2.55"
+
+# Declare enum attributes with Enumerize
+gem "enumerize", "~> 2.8"
+
+# Create human-friendly identifiers for models
+gem "friendly_id", "~> 5.6"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -64,8 +76,9 @@ group :development, :test do
   # Generate Sorbet types from Rails code
   gem "tapioca", require: false
 
-  # # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  # gem "rubocop-rails-omakase", require: false
+  # Auto-detect and warn about N+1 queries
+  gem "prosopite"
+  gem "pg_query"
 end
 
 group :development do
