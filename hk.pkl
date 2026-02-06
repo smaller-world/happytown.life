@@ -16,6 +16,7 @@ local linters = new Mapping<String, Step> {
     check = "bin/tsc --noEmit -p {{ workspace_indicator }}"
   }
   ["rubocop"] = (Builtins.rubocop) {
+    exclude = List("vendor/**/*")
     check = "bin/rubocop --force-exclusion {{ files }}"
     check_list_files = "bin/rubocop --force-exclusion --list-target-files {{ files }}"
     fix = "bin/rubocop --force-exclusion --autocorrect {{ files }}"
