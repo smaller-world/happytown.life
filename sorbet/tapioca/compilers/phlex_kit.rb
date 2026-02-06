@@ -62,8 +62,8 @@ module Tapioca
           )
         end
         def kit_component_constants(mod)
-          mod.constants(false).filter_map do |name|
-            const = mod.const_get(name)
+          mod.constants(false).filter_map do |name| # rubocop:disable Sorbet/ConstantsFromStrings
+            const = mod.const_get(name) # rubocop:disable Sorbet/ConstantsFromStrings
             next unless const.is_a?(Class) && const < ::Phlex::SGML
             next if T::AbstractUtils.abstract_module?(const)
 
