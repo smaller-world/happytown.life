@@ -9,7 +9,7 @@ class Components::Layout < Components::Base
   include Phlex::Rails::Helpers::Flash
 
   sig { params(title: T.nilable(String), site_name: String, options: T.untyped).void }
-  def initialize(title: nil, site_name: ItsKai.site_name, **options)
+  def initialize(title: nil, site_name: HappyTown.site_name, **options)
     super(**options)
     @title = title
     @site_name = site_name

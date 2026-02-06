@@ -9,7 +9,7 @@ class Views::Sessions::New < Views::Base
         class: "flex flex-col items-center justify-center",
       ) do
         render Components::Card.new(class: "w-full max-w-xs") do |card|
-          card.header(class: "flex flex-col items-center gap-y-2") do
+          card.header(class: "flex flex-col items-center gap-y-3") do
             div(class: "size-18 rounded-full overflow-hidden") do
               image_tag(
                 "logo-icon.png",
@@ -17,7 +17,8 @@ class Views::Sessions::New < Views::Base
               )
             end
             card.title(class: "text-lg text-center") do
-              "sign in to happy town"
+              plain("sign in to ")
+              span(class: "font-bold") { HappyTown.site_name }
             end
           end
           card.content do

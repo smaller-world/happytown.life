@@ -56,21 +56,12 @@ class Components::Field < Components::Base
     label_class = class_names("group/field-label peer/field-label", class_option)
     data = options.delete(:data) || {}
     data[:slot] = "field-label"
-    if (f = form) && (field = @field)
-      f.label(
-        field,
-        class: label_class,
-        data:,
-        **options,
-        &block
-      )
-    elsif block_given?
-      label(
-        class: label_class,
-        data:,
-        **options,
-        &block
-      )
+    options[:class] = label_class
+    options[:data] = data
+    if (form = @form) && (field = @field)
+      form.send(:label, field, **options, &block)
+    else
+      label(**options, &block)
     end
   end
 
@@ -121,23 +112,16 @@ class Components::Field < Components::Base
 
   # == Helpers ==
 
-  T::Sig::WithoutRuntime.sig do
-    returns(T.nilable(ActionView::Helpers::FormBuilder))
-  end
-  def form
-    T.unsafe(@form)
-  end
-
   sig { returns(T.nilable(String)) }
   def id
-    if (f = form) && (field = @field)
-      f.field_id(field)
+    if (form = @form) && (field = @field)
+      form.send(:field_id, field)
     end
   end
 
   sig { returns(T.nilable(T::Array[String])) }
   def error_messages
-    if (record = form&.object) && (field = @field)
+    if (record = @form&.send(:object)) && (field = @field)
       record.errors.messages_for(field)
     end
   end
