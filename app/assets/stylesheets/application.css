@@ -1,0 +1,17 @@
+@source not "../../../sorbet/";
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/figtree";
+
+@import "./theme.css";
+@import "./badges.css";
+@import "./buttons.css";
+@import "./cards.css";
+@import "./labels.css";
+@import "./separators.css";
+@import "./inputs.css";
+@import "./fields.css";
+@import "./forms.css";
+@import "./layouts.css";

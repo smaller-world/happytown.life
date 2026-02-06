@@ -1,0 +1,14 @@
+@layer components {
+  .flash[data-slot="card"] {
+    @apply w-full max-w-sm;
+    @apply bg-accent/5 ring-accent dark:bg-accent/10 dark:ring-accent/30;
+
+    &.flash-alert {
+      @apply bg-destructive/5 ring-destructive dark:bg-destructive/10 dark:ring-destructive/60;
+    }
+  }
+
+  .page_container {
+    @apply w-full max-w-xl flex-1 self-center p-4;
+  }
+}

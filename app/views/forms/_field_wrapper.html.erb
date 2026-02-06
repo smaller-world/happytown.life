@@ -1,0 +1,67 @@
+<%# == Options == %>
+
+<%- form = local_assigns.delete(:form) -%>
+<%- field = local_assigns.delete(:field) -%>
+<%- root_class = local_assigns.delete(:class) -%>
+<%- description = local_assigns.delete(:description) -%>
+<%- input_container_options = local_assigns.delete(:input_container) -%>
+<%- label = local_assigns.delete(:label) -%>
+<%- input_container_class = local_assigns.delete(:input_container_class) -%>
+<%- label_class = local_assigns.delete(:label_class) -%>
+<%- error_class = local_assigns.delete(:error_class) -%>
+
+<%# == Error == %>
+
+<%- if local_assigns.key?(:error) -%>
+  <%- error = local_assigns.delete(:error) -%>
+<%- elsif (object = form.object) -%>
+  <%- error = error_message_for(object, field) -%>
+<%- end -%>
+
+<%# == Input Container == %>
+
+<%- if (class_option = input_container_options&.delete(:class)) -%>
+  <%- input_container_class = class_names(input_container_class, class_option) -%>
+<%- end -%>
+
+<%# == Render == %>
+
+<%= tag.div(
+  class: class_names("field_wrapper", root_class),
+  **local_assigns,
+) do %>
+  <% if label || description %>
+    <div>
+      <% if label %>
+        <div class="flex justify-between gap-x-1">
+          <%= form.label(
+            field,
+            label:,
+            # label == true ? field.to_s.humanize(capitalize: false) : label,
+            class: class_names("field_label", label_class),
+          ) %>
+
+          <%= partial.content_for(:label_accessory) %>
+        </div>
+      <% end %>
+
+      <% if description %>
+        <p class="field_description"><%= description %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= tag.div(
+    yield,
+    class: class_names("field_input_container", input_container_class),
+    **input_container_options,
+  ) %>
+
+  <% if error %>
+    <%= tag.span(
+      error,
+      id: form.field_id(field, :error),
+      class: class_names("field_error", error_class),
+    ) %>
+  <% end %>
+<% end %>
