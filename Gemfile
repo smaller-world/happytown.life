@@ -51,7 +51,7 @@ gem "sorbet-runtime"
 gem "pg_search", "~> 2.3"
 
 # Inline CSS into email templates
-gem "premailer-rails"
+gem "roadie-rails"
 
 # Build views with Ruby
 gem "phlex-rails", "~> 2.4"
