@@ -70,7 +70,7 @@ class PasswordsController < ApplicationController
   sig { params(block: T.proc.params(user: User).void).void }
   def with_user_by_token(&block)
     user = User.find_by_password_reset_token!(params[:token])
-    yield(user)
+    yield user
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     redirect_to(new_password_path, alert: "Password reset link is invalid or has expired.")
   end

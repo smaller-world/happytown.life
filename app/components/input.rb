@@ -9,7 +9,7 @@ class Components::Input < Components::Base
       options: T.untyped,
     ).void
   end
-  def initialize(form: nil, field: nil, **options)
+  def initialize(form:, field: nil, **options)
     super(**options)
     @form = form
     @field = field
@@ -19,9 +19,9 @@ class Components::Input < Components::Base
 
   sig { override.params(block: T.nilable(T.proc.bind(T.self_type).void)).void }
   def view_template(&block)
-    if (f = form) && (field = @field)
-      id = f.field_id(field)
-      name = f.field_name(field)
+    if (form = @form) && (field = @field)
+      id = form.send(:field_id, field)
+      name = form.send(:field_name, field)
     end
     root_component(
       :input,
@@ -30,16 +30,5 @@ class Components::Input < Components::Base
       data: { slot: "input" },
       &block
     )
-  end
-
-  private
-
-  # == Helpers ==
-
-  T::Sig::WithoutRuntime.sig do
-    returns(T.nilable(ActionView::Helpers::FormBuilder))
-  end
-  def form
-    T.unsafe(@form)
   end
 end

@@ -35,3 +35,4 @@ Style/MethodCallWithArgsParentheses:
   AllowedMethods:
     - render
     - raise
+    - yield
