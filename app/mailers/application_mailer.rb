@@ -2,6 +2,10 @@
 # frozen_string_literal: true
 
 class ApplicationMailer < ActionMailer::Base
-  default from: "from@example.com"
+  include Roadie::Rails::Automatic
+
+  # == Configuration ==
+
+  default from: "robot@happytown.life"
   layout "mailer"
 end
