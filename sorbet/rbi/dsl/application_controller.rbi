@@ -28,7 +28,7 @@ class ApplicationController
     include ::FormsHelper
     include ::HomesHelper
 
-    sig { returns(T.untyped) }
+    sig { returns(T::Boolean) }
     def authenticated?; end
   end
 
