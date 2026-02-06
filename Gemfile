@@ -55,7 +55,7 @@ gem "roadie-rails"
 
 # Build views with Ruby
 gem "phlex-rails", "~> 2.4"
-gem "phlex-icons", "~> 2.55"
+gem "phlex-icons-huge"
 
 # Declare enum attributes with Enumerize
 gem "enumerize", "~> 2.8"
