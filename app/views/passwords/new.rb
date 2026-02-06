@@ -12,7 +12,7 @@ class Views::Passwords::New < Views::Base
 
   sig { override.params(block: T.nilable(T.proc.void)).void }
   def view_template(&block)
-    render Components::Layout.new(title: "sign in to happy town") do |layout|
+    render Components::Layout.new(title: "forgot your password?") do |layout|
       layout.page_container(
         class: "flex flex-col items-center justify-center",
       ) do
