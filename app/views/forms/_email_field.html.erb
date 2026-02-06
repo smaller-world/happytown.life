@@ -1,0 +1,36 @@
+<%# == Options == %>
+
+<%- form = local_assigns.delete(:form) -%>
+<%- field = local_assigns.delete(:field) -%>
+<%- error = field_error_in(local_assigns) -%>
+<%- wrapper_class = local_assigns.delete(:wrapper_class) -%>
+<%- wrapper_options = delete_field_wrapper_options_from(local_assigns) -%>
+<%- input_data = local_assigns.delete(:data) -%>
+<%- input_aria = local_assigns.delete(:aria) -%>
+<%- input_class = local_assigns.delete(:input_class) -%>
+
+<%# == Render == %>
+
+<%= render(
+  "forms/field_wrapper",
+  class: class_names("text_field", wrapper_class),
+  form:,
+  field:,
+  **wrapper_options,
+) do |fwp| %>
+  <% fwp.content_from partial, :label_accessory %>
+
+  <%= form.email_field(
+    field,
+    class: class_names("form_input", input_class),
+    data: {
+      invalid: error.present? ,
+      **input_data,
+    }.compact_blank,
+    aria: {
+      describedby: (form.field_id(field, "error") if error.present?),
+      **input_aria,
+    }.compact_blank,
+    **local_assigns,
+  ) %>
+<% end %>

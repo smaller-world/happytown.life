@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "marcoroth.herb-lsp",
+    "shopify.ruby-lsp",
+    "sorbet.sorbet-vscode-extension",
+    "rubocop.vscode-rubocop",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "pkl.pkl-vscode"
+  ]
+}

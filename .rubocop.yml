@@ -1,0 +1,37 @@
+plugins:
+  - rubocop-capybara
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-sorbet
+
+# Inherit Shopify's Rubocop configuration
+inherit_gem:
+  rubocop-shopify: rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 4.0
+  NewCops: enable
+  Exclude:
+    - db/schema*.rb
+    - storage/**/*
+    - node_modules/**/*
+  CacheRootDirectory: tmp/cache/rubocop
+
+# Overwrite or add rules to create your own house style
+#
+# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
+# Layout/SpaceInsideArrayLiteralBrackets:
+#   Enabled: false
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+Rails/DynamicFindBy:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  AllowedMethods:
+    - render
+    - raise
