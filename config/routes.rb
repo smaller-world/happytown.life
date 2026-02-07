@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     root action: :landing
   end
 
-  resource :wasenderapi, only: [] do
+  resource :wasenderapi, controller: :wasenderapi, only: [] do
     post :webhook
   end
 
