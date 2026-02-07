@@ -5,6 +5,8 @@
     "rubocop.vscode-rubocop",
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
-    "pkl.pkl-vscode"
+    "pkl.pkl-vscode",
+    "bungcip.better-toml",
+    "tamasfe.even-better-toml"
   ]
 }

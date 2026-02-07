@@ -26,6 +26,9 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -43,9 +46,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[erb]": {
-    "editor.defaultFormatter": "marcoroth.herb-lsp"
   },
   "[ruby]": {
     "editor.defaultFormatter": "rubocop.vscode-rubocop"

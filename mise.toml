@@ -10,14 +10,13 @@
 
 [tasks]
   setup = { run = "bin/setup" }
-  start = { run = "bin/rails server" }
-  annotate = { run = "bin/annotaterb models" }
   dev = { run = "bin/dev" }
   attach = { run = "bin/attach" }
   restart = { run = "bin/overmind restart" }
   test = { run = "bin/rails test" }
   fix = { run = "hk fix" }
   check = { run = "hk check" }
+  annotate = { run = "bin/annotaterb models" }
   # ci = { run = "bin/ci" }
 
 [hooks]
