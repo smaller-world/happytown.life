@@ -51,18 +51,27 @@ class Components::Header < Components::Base
     ul(class: "header_navigation") do
       if instagram_url || tiktok_url
         li do
-          ul(class: [
-            "flex items-center gap-x-1",
-            "text-secondary dark:text-muted-foreground",
-          ]) do
-            li do
+          ul(class:  "flex items-center gap-x-1") do
+            li(data: {
+              controller: "tooltip",
+              tooltip_content_value: "follow us on instagram",
+            }) do
               a(href: instagram_url, target: "_blank") do
-                Icon("huge/instagram", class: "size-5.5")
+                Icon(
+                  "huge/instagram",
+                  class: "size-5.5 text-secondary dark:text-secondary-foreground",
+                )
               end
             end
-            li do
+            li(data: {
+              controller: "tooltip",
+              tooltip_content_value: "follow us on tiktok",
+            }) do
               a(href: tiktok_url, target: "_blank") do
-                Icon("huge/tiktok", class: "size-5.5")
+                Icon(
+                  "huge/tiktok",
+                  class: "size-5.5 text-secondary dark:text-secondary-foreground",
+                )
               end
             end
           end
@@ -85,6 +94,10 @@ class Components::Header < Components::Base
               "bg-accent-foreground border-accent text-accent",
               "dark:bg-accent/10",
             ],
+            data: {
+              controller: "tooltip",
+              tooltip_content_value: "view upcoming events",
+            },
           ) do
             Icon(
               "huge/calendar-03",

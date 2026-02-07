@@ -4,15 +4,15 @@
 
 @layer components {
   .tippy-box {
-    @apply bg-shade-900 dark:bg-shade-100 rounded-xl;
+    @apply rounded-xl bg-foreground;
   }
 
   .tippy-arrow {
-    @apply text-shade-900 dark:text-shade-100;
+    @apply text-foreground;
   }
 
   .tippy-svg-arrow {
-    @apply fill-shade-900 dark:fill-shade-100;
+    @apply fill-foreground;
   }
 
   .tippy-arrow,
@@ -35,6 +35,6 @@
   }
 
   .tippy-content {
-    @apply text-shade-100 dark:text-shade-900 text-base;
+    @apply text-sm text-background;
   }
 }

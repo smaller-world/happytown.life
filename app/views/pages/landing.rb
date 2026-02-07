@@ -4,11 +4,7 @@
 class Views::Pages::Landing < Views::Base
   sig { override.params(content: T.nilable(T.proc.void)).void }
   def view_template(&content)
-    Components::Layout(
-      class: "no-dark",
-      site_title:,
-      body_class: "bg-[#fdfdfd]",
-    ) do
+    Components::Layout(site_title:, body_class: "no-dark bg-[#fdfdfd]") do
       main(class: [
         "max-w-4xl mx-auto px-6 py-12 space-y-24",
         "antialiased text-gray-800",

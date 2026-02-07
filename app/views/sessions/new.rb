@@ -72,7 +72,7 @@ class Views::Sessions::New < Views::Base
                       class: "size-6",
                       data: { icon: "inline-start" },
                     )
-                    span(class: "text-base") { "sign in" }
+                    span(class: "text-base font-semibold") { "sign in" }
                   end
                 end
               end

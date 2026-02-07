@@ -87,11 +87,12 @@ module Components
     params(
       site_title: T.nilable(::String),
       page_title: T.nilable(::String),
+      body_class: T.nilable(::String),
       attributes: T.untyped,
       block: T.nilable(T.proc.params(instance: Components::Layout).void)
     ).void
   end
-  def Layout(site_title: T.unsafe(nil), page_title: T.unsafe(nil), **attributes, &block); end
+  def Layout(site_title: T.unsafe(nil), page_title: T.unsafe(nil), body_class: T.unsafe(nil), **attributes, &block); end
 
   sig do
     params(
@@ -185,11 +186,12 @@ module Components
       params(
         site_title: T.nilable(::String),
         page_title: T.nilable(::String),
+        body_class: T.nilable(::String),
         attributes: T.untyped,
         block: T.nilable(T.proc.params(instance: Components::Layout).void)
       ).void
     end
-    def Layout(site_title: T.unsafe(nil), page_title: T.unsafe(nil), **attributes, &block); end
+    def Layout(site_title: T.unsafe(nil), page_title: T.unsafe(nil), body_class: T.unsafe(nil), **attributes, &block); end
 
     sig do
       params(

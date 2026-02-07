@@ -19,6 +19,10 @@ Rails.application.routes.draw do
     root action: :landing
   end
 
+  namespace :whatsapp do
+    post :webhook, to: "webhooks#receive"
+  end
+
   resource :session
   resources :passwords, param: :token
   resource :home, only: :show

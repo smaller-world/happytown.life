@@ -6,7 +6,7 @@
 #
 # Table name: sessions
 #
-#  id         :bigint           not null, primary key
+#  id         :uuid             not null, primary key
 #  ip_address :string
 #  user_agent :string
 #  created_at :datetime         not null
@@ -23,5 +23,7 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class Session < ApplicationRecord
+  # == Associations ==
+
   belongs_to :user
 end

@@ -5,6 +5,8 @@
 @import "shadcn/tailwind.css";
 /* @import "@fontsource-variable/figtree"; */
 
+@import "./tippy.css";
+
 @import "./theme.css";
 @import "./badges.css";
 @import "./buttons.css";

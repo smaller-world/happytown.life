@@ -63,6 +63,9 @@ gem "enumerize", "~> 2.8"
 # Create human-friendly identifiers for models
 gem "friendly_id", "~> 5.6"
 
+# Makes http fun again!
+gem "httparty", "~> 0.24.2"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :windows], require: "debug/prelude"
@@ -105,6 +108,9 @@ group :development do
 
   # Annotate models and routes
   gem "annotaterb", require: false
+
+  # Generate a standard Rails Dockerfile
+  gem "dockerfile-rails"
 end
 
 group :test do
@@ -112,5 +118,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "dockerfile-rails", ">= 1.7", group: :development
