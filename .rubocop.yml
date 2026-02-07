@@ -39,3 +39,4 @@ Style/MethodCallWithArgsParentheses:
     - raise
     - yield
     - require
+    - puts
