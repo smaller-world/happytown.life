@@ -136,5 +136,5 @@ module GeneratedPathHelpersModule
   def update_rails_disk_service_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def whatsapp_webhook_path(*args); end
+  def webhook_wasenderapi_path(*args); end
 end

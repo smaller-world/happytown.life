@@ -260,6 +260,9 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.2.4)
+    rack-canonical-host (1.3.0)
+      addressable (> 0, < 3)
+      rack (>= 1.6, < 4)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -477,7 +480,7 @@ DEPENDENCIES
   capybara
   cssbundling-rails
   debug
-  dockerfile-rails (>= 1.7)
+  dockerfile-rails
   enumerize (~> 2.8)
   friendly_id (~> 5.6)
   hotwire-spark (~> 0.1.13)
@@ -494,6 +497,7 @@ DEPENDENCIES
   propshaft
   prosopite
   puma (~> 7.1)
+  rack-canonical-host (~> 1.3)
   rails (~> 8.1.2)
   roadie-rails
   rubocop
@@ -622,6 +626,7 @@ CHECKSUMS
   raabro (1.4.0) sha256=d4fa9ff5172391edb92b242eed8be802d1934b1464061ae5e70d80962c5da882
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
   rack (3.2.4) sha256=5d74b6f75082a643f43c1e76b419c40f0e5527fcfee1e669ac1e6b73c0ccb6f6
+  rack-canonical-host (1.3.0) sha256=496a470cfce8a49e617fea98a53f34fe01a4461083ecef92b727599c1825c590
   rack-session (2.1.1) sha256=0b6dc07dea7e4b583f58a48e8b806d4c9f1c6c9214ebc202ec94562cbea2e4e9
   rack-test (2.2.0) sha256=005a36692c306ac0b4a9350355ee080fd09ddef1148a5f8b2ac636c720f5c463
   rackup (2.3.1) sha256=6c79c26753778e90983761d677a48937ee3192b3ffef6bc963c0950f94688868

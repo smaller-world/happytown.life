@@ -19,8 +19,8 @@ Rails.application.routes.draw do
     root action: :landing
   end
 
-  namespace :whatsapp do
-    post :webhook, to: "webhooks#receive"
+  resource :wasenderapi, only: [] do
+    post :webhook
   end
 
   resource :session

@@ -11,7 +11,7 @@ console_command = "./bin/rails console"
   release_command = "./bin/rails db:prepare"
 
 [env]
-  PORT = "3000"
+  CANONICAL_HOST = "happytown.life"
 
 [processes]
   app = "./bin/rails server"

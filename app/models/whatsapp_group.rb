@@ -31,7 +31,7 @@ class WhatsappGroup < ApplicationRecord
       "https://www.wasenderapi.com/api/send-message",
       body: { to: jid, text: text },
       headers: {
-        "Authorization" => "Bearer #{wa_sender_api_key}",
+        "Authorization" => "Bearer #{wasenderapi_key}",
         "Content-Type" => "application/json",
       },
     )
@@ -57,8 +57,8 @@ class WhatsappGroup < ApplicationRecord
   end
 
   sig { returns(String) }
-  def wa_sender_api_key
-    Rails.application.credentials.dig(:wa_sender_api, :api_key) or
+  def wasenderapi_key
+    Rails.application.credentials.dig(:wasenderapi, :api_key) or
       raise "Missing WASenderAPI key"
   end
 end
