@@ -118,5 +118,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "rack-canonical-host", "~> 1.3"
