@@ -25,10 +25,10 @@ class Components::Field < Components::Base
     @invalid = invalid
   end
 
-  # == Templates ==
+  # == Component ==
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
     data = {
       slot: "field",
       orientation: @orientation,
@@ -36,62 +36,68 @@ class Components::Field < Components::Base
     if invalid?
       data[:invalid] = true
     end
-    root_component(:div, role: "group", class: "group/field", data:, &block)
+    root_element(:div, role: "group", class: "group/field", data:, &content)
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def content(**options, &block)
-    class_option = options.delete(:class)
+  # == Interface ==
+
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def content(**attributes, &content)
     div_with_slot(
       "field-content",
-      class: class_names("group/field-content", class_option),
-      **options,
-      &block
+      **mix({ class: "group/field-content" }, **attributes),
+      &content
     )
   end
 
-  sig { params(options: T.untyped, block: T.nilable(T.proc.bind(T.self_type).void)).void }
-  def label(**options, &block)
-    class_option = options.delete(:class)
-    label_class = class_names("group/field-label peer/field-label", class_option)
-    data = options.delete(:data) || {}
-    data[:slot] = "field-label"
-    options[:class] = label_class
-    options[:data] = data
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def label(**attributes, &content)
+    attributes = mix(
+      {
+        class: "group/field-label peer/field-label",
+        data: { slot: "field-label" },
+      },
+      **attributes,
+    )
     if (form = @form) && (field = @field)
-      form.send(:label, field, **options, &block)
+      form.send(:label, field, **attributes, &content)
     else
-      label(**options, &block)
+      label(**attributes, &content)
     end
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def title(**options, &block)
-    div_with_slot("field-title", **options, &block)
+  sig { params(options: T.untyped, content: T.nilable(T.proc.void)).void }
+  def title(**options, &content)
+    div_with_slot("field-title", **options, &content)
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def description(**options, &block)
-    data = options.delete(:data) || {}
-    data[:slot] = "field-description"
-    p(data:, **options, &block)
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def description(**attributes, &content)
+    p(**mix({ data: { slot: "field-description" } }, **attributes), &content)
   end
 
-  sig { params(options: T.untyped, block: T.nilable(T.proc.bind(T.self_type).void)).void }
-  def separator(**options, &block)
-    data = options.delete(:data) || {}
-    data[:content] = block_given?
-    div_with_slot("field-separator", data:, **options) do
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def separator(**attributes, &content)
+    div_with_slot(
+      "field-separator",
+      **mix({ data: { content: block_given? } }, **attributes),
+    ) do
       Components::Separator(class: "absolute inset-0 top-1/2")
       if block_given?
-        span(data: { slot: "field-separator-content" }, &block)
+        span(data: { slot: "field-separator-content" }, &content)
       end
     end
   end
 
-  sig { params(errors: T.nilable(T::Array[String]), options: T.untyped, block: T.nilable(T.proc.bind(T.self_type).void)).void }
-  def error(errors: error_messages, **options, &block)
-    return if block.nil? && errors.blank?
+  sig do
+    params(
+      errors: T.nilable(T::Array[String]),
+      options: T.untyped,
+      content: T.nilable(T.proc.void),
+    ).void
+  end
+  def error(errors: error_messages, **options, &content)
+    return if content.nil? && errors.blank?
 
     div(role: "alert", data: { slot: "field-error" }, **options) do
       if block_given?
@@ -110,13 +116,26 @@ class Components::Field < Components::Base
     end
   end
 
-  # == Helpers ==
-
   sig { returns(T.nilable(String)) }
   def id
     if (form = @form) && (field = @field)
       form.send(:field_id, field)
     end
+  end
+
+  private
+
+  # == Helpers ==
+
+  sig do
+    params(
+      slot: String,
+      attributes: T.untyped,
+      content: T.nilable(T.proc.void),
+    ).void
+  end
+  def div_with_slot(slot, **attributes, &content)
+    div(**mix({ data: { slot: } }, **attributes), &content)
   end
 
   sig { returns(T.nilable(T::Array[String])) }
@@ -129,15 +148,5 @@ class Components::Field < Components::Base
   sig { returns(T::Boolean) }
   def invalid?
     @invalid || error_messages.present?
-  end
-
-  private
-
-  # == Helpers ==
-
-  def div_with_slot(slot, **options, &block)
-    data = options.delete(:data) || {}
-    data[:slot] = slot
-    div(data:, **options, &block)
   end
 end

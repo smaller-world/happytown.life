@@ -18,13 +18,14 @@ class Components::Base < Phlex::HTML
 
   # == Initializer ==
 
-  sig { params(options: T.untyped).void }
-  def initialize(**options)
+  sig { params(element: T.nilable(Symbol), attributes: T.untyped).void }
+  def initialize(element: nil, **attributes)
     super()
-    @options = options
+    @element = element
+    @attributes = attributes
   end
 
-  # == Templates ==
+  # == Component ==
 
   if Rails.env.development?
     def before_template
@@ -34,9 +35,9 @@ class Components::Base < Phlex::HTML
   end
 
   sig do
-    abstract.params(block: T.nilable(T.proc.bind(T.self_type).void)).void
+    abstract.params(content: T.nilable(T.proc.void)).void
   end
-  def view_template(&block); end
+  def view_template(&content); end
 
   private
 
@@ -44,36 +45,12 @@ class Components::Base < Phlex::HTML
 
   sig do
     params(
-      default: Symbol,
-      options: T.untyped,
-      block: T.nilable(T.proc.bind(T.self_type).void),
+      default_element: Symbol,
+      attributes: T.untyped,
+      content: T.nilable(T.proc.void),
     ).void
   end
-  def root_component(default, **options, &block)
-    component = @options.delete(:component) || default
-    class_override = @options.delete(:class)
-    class_option = options.delete(:class)
-
-    data = options.delete(:data) || {}
-    if (data_override = @options.delete(:data))
-      data.merge!(data_override)
-    end
-    data.compact!
-
-    aria = options.delete(:aria) || {}
-    if (aria_override = @options.delete(:aria))
-      aria.merge!(aria_override)
-    end
-    aria.compact!
-
-    send(
-      component,
-      class: class_names(class_option, class_override),
-      data:,
-      aria:,
-      **options,
-      **@options,
-      &block
-    )
+  def root_element(default_element, **attributes, &content)
+    send(@element || default_element, **mix(attributes, @attributes), &content)
   end
 end

@@ -4,7 +4,8 @@
 
 import { application } from "./application";
 import HelloController from "./hello_controller";
-import LoremPicsumController from "./lorem_picsum_controller";
+import TooltipController from "./tooltip_controller";
+// import LoremPicsumController from "./lorem_picsum_controller";
 
 application.register("hello", HelloController);
-application.register("lorem-picsum", LoremPicsumController);
+application.register("tooltip", TooltipController);

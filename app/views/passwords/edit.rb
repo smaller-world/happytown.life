@@ -9,10 +9,10 @@ class Views::Passwords::Edit < Views::Base
     @token = token
   end
 
-  # == Templates ==
+  # == Component ==
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
     Components::Layout(title: "update password") do |layout|
       layout.page_container(
         class: "flex flex-col items-center justify-center",

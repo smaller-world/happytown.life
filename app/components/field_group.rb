@@ -2,15 +2,15 @@
 # frozen_string_literal: true
 
 class Components::FieldGroup < Components::Base
-  # == Templates ==
+  # == Component ==
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
-    root_component(
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
+    root_element(
       :div,
       class: "group/field-group",
       data: { slot: "field-group" },
-      &block
+      &content
     )
   end
 end

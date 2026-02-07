@@ -11,4 +11,12 @@
   .page_container {
     @apply w-full max-w-xl flex-1 self-center p-4;
   }
+
+  .header_navigation {
+    @apply flex items-center gap-x-2.5;
+
+    a {
+      @apply hover:opacity-50;
+    }
+  }
 }

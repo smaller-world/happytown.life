@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class Views::Sessions::New < Views::Base
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
     Components::Layout(title: "sign in to happy town") do |layout|
       layout.page_container(
         class: "flex flex-col items-center justify-center",
@@ -17,8 +17,12 @@ class Views::Sessions::New < Views::Base
               )
             end
             card.title(class: "text-lg text-center") do
-              plain("sign in to ")
-              span(class: "font-bold") { HappyTown.site_name }
+              if (name = Rails.configuration.x.site_name)
+                plain("sign in to ")
+                span(class: "font-bold") { name }
+              else
+                plain("sign in")
+              end
             end
           end
           card.content do

@@ -46,11 +46,32 @@ module Components
   end
   def Field(form: T.unsafe(nil), field: T.unsafe(nil), orientation: T.unsafe(nil), invalid: T.unsafe(nil), **options, &block); end
 
-  sig { params(options: T.untyped, block: T.nilable(T.proc.params(instance: Components::FieldGroup).void)).void }
-  def FieldGroup(**options, &block); end
+  sig do
+    params(
+      element: T.nilable(::Symbol),
+      attributes: T.untyped,
+      block: T.nilable(T.proc.params(instance: Components::FieldGroup).void)
+    ).void
+  end
+  def FieldGroup(element: T.unsafe(nil), **attributes, &block); end
 
-  sig { params(options: T.untyped, block: T.nilable(T.proc.params(instance: Components::FieldSet).void)).void }
-  def FieldSet(**options, &block); end
+  sig do
+    params(
+      element: T.nilable(::Symbol),
+      attributes: T.untyped,
+      block: T.nilable(T.proc.params(instance: Components::FieldSet).void)
+    ).void
+  end
+  def FieldSet(element: T.unsafe(nil), **attributes, &block); end
+
+  sig do
+    params(
+      element: T.nilable(::Symbol),
+      attributes: T.untyped,
+      block: T.nilable(T.proc.params(instance: Components::Header).void)
+    ).void
+  end
+  def Header(element: T.unsafe(nil), **attributes, &block); end
 
   sig do
     params(
@@ -64,13 +85,13 @@ module Components
 
   sig do
     params(
-      title: T.nilable(::String),
-      site_name: ::String,
-      options: T.untyped,
+      site_title: T.nilable(::String),
+      page_title: T.nilable(::String),
+      attributes: T.untyped,
       block: T.nilable(T.proc.params(instance: Components::Layout).void)
     ).void
   end
-  def Layout(title: T.unsafe(nil), site_name: T.unsafe(nil), **options, &block); end
+  def Layout(site_title: T.unsafe(nil), page_title: T.unsafe(nil), **attributes, &block); end
 
   sig do
     params(
@@ -123,11 +144,32 @@ module Components
     end
     def Field(form: T.unsafe(nil), field: T.unsafe(nil), orientation: T.unsafe(nil), invalid: T.unsafe(nil), **options, &block); end
 
-    sig { params(options: T.untyped, block: T.nilable(T.proc.params(instance: Components::FieldGroup).void)).void }
-    def FieldGroup(**options, &block); end
+    sig do
+      params(
+        element: T.nilable(::Symbol),
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(instance: Components::FieldGroup).void)
+      ).void
+    end
+    def FieldGroup(element: T.unsafe(nil), **attributes, &block); end
 
-    sig { params(options: T.untyped, block: T.nilable(T.proc.params(instance: Components::FieldSet).void)).void }
-    def FieldSet(**options, &block); end
+    sig do
+      params(
+        element: T.nilable(::Symbol),
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(instance: Components::FieldSet).void)
+      ).void
+    end
+    def FieldSet(element: T.unsafe(nil), **attributes, &block); end
+
+    sig do
+      params(
+        element: T.nilable(::Symbol),
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(instance: Components::Header).void)
+      ).void
+    end
+    def Header(element: T.unsafe(nil), **attributes, &block); end
 
     sig do
       params(
@@ -141,13 +183,13 @@ module Components
 
     sig do
       params(
-        title: T.nilable(::String),
-        site_name: ::String,
-        options: T.untyped,
+        site_title: T.nilable(::String),
+        page_title: T.nilable(::String),
+        attributes: T.untyped,
         block: T.nilable(T.proc.params(instance: Components::Layout).void)
       ).void
     end
-    def Layout(title: T.unsafe(nil), site_name: T.unsafe(nil), **options, &block); end
+    def Layout(site_title: T.unsafe(nil), page_title: T.unsafe(nil), **attributes, &block); end
 
     sig do
       params(

@@ -9,9 +9,9 @@ class Components::Button < Components::Base
     @size = size
   end
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
-    root_component(
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
+    root_element(
       :button,
       class: "group/button",
       data: {
@@ -19,7 +19,7 @@ class Components::Button < Components::Base
         variant: @variant,
         size: @size,
       },
-      &block
+      &content
     )
   end
 end

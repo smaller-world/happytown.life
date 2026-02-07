@@ -8,63 +8,62 @@ class Components::Card < Components::Base
     @size = size
   end
 
-  # == Templates ==
+  # == Component ==
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
-    root_component(
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
+    root_element(
       :div,
       class: "group/card",
       data: {
         slot: "card",
         size: @size,
       },
-      &block
+      &content
     )
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def header(**options, &block)
-    class_option = options.delete(:class)
-    div_with_slot(
-      "card-header",
-      class: class_names("group/card-header", class_option),
-      **options,
-      &block
-    )
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def header(**attributes, &content)
+    div_with_slot("card-header", **attributes, &content)
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def title(**options, &block)
-    div_with_slot("card-title", **options, &block)
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def title(**attributes, &content)
+    div_with_slot("card-title", **attributes, &content)
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def description(**options, &block)
-    div_with_slot("card-description", **options, &block)
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def description(**attributes, &content)
+    div_with_slot("card-description", **attributes, &content)
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def action(**options, &block)
-    div_with_slot("card-action", **options, &block)
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def action(**attributes, &content)
+    div_with_slot("card-action", **attributes, &content)
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def content(**options, &block)
-    div_with_slot("card-content", **options, &block)
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def content(**attributes, &content)
+    div_with_slot("card-content", **attributes, &content)
   end
 
-  sig { params(options: T.untyped, block: T.proc.bind(T.self_type).void).void }
-  def footer(**options, &block)
-    div_with_slot("card-footer", **options, &block)
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def footer(**attributes, &content)
+    div_with_slot("card-footer", **attributes, &content)
   end
 
   private
 
   # == Helpers ==
-  def div_with_slot(slot, **options, &block)
-    data = options.delete(:data) || {}
-    data[:slot] = slot
-    div(data:, **options, &block)
+  sig do
+    params(
+      slot: String,
+      attributes: T.untyped,
+      content: T.nilable(T.proc.void),
+    ).void
+  end
+  def div_with_slot(slot, **attributes, &content)
+    div(**mix({ data: { slot: } }, **attributes), &content)
   end
 end

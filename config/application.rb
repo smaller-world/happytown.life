@@ -16,6 +16,16 @@ module HappyTown
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults(8.1)
 
+    config.x.site_name = "happy town"
+    config.x.site_tagline = "a home for third-space hosts and guests"
+    config.x.site_description =
+      "a new kind of third space in toronto. weekly walks, irl chat groups, " \
+        "and hobby tables for curious, friendly people who like wandering " \
+        "conversations."
+    config.x.luma_url = "https://luma.com/happytown"
+    config.x.instagram_url = "https://instagram.com/happytown.to"
+    config.x.tiktok_url = "https://tiktok.com/@adamdriversbod"
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
@@ -29,7 +39,4 @@ module HappyTown
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
   end
-
-  sig { returns(String) }
-  def self.site_name = "happy town"
 end

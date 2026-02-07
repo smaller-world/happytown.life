@@ -3,7 +3,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/figtree";
+/* @import "@fontsource-variable/figtree"; */
 
 @import "./theme.css";
 @import "./badges.css";
@@ -15,3 +15,5 @@
 @import "./fields.css";
 @import "./forms.css";
 @import "./layouts.css";
+
+@import "./landing.css";

@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 class Components::Layout < Components::Base
@@ -7,25 +7,48 @@ class Components::Layout < Components::Base
   include Phlex::Rails::Helpers::StyleSheetLinkTag
   include Phlex::Rails::Helpers::JavaScriptIncludeTag
   include Phlex::Rails::Helpers::Flash
+  include Phlex::Rails::Helpers::AssetPath
 
-  sig { params(title: T.nilable(String), site_name: String, options: T.untyped).void }
-  def initialize(title: nil, site_name: HappyTown.site_name, **options)
-    super(**options)
-    @title = title
-    @site_name = site_name
+  sig do
+    params(
+      site_title: T.nilable(String),
+      page_title: T.nilable(String),
+      body_class: T.nilable(String),
+      attributes: T.untyped,
+    ).void
+  end
+  def initialize(
+    site_title: nil,
+    page_title: nil,
+    body_class: nil,
+    **attributes
+  )
+    super(**attributes)
+    @site_title = site_title
+    @page_title = page_title
+    @body_class = body_class
   end
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
+  # == Component ==
+
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
+    body = capture(&content)
+
     doctype
 
-    html do
+    root_element(:html) do
       head do
-        title { computed_title }
+        if (text = title_text)
+          title { text }
+        end
 
+        meta(charset: "UTF-8")
         meta(name: "viewport", content: "width=device-width,initial-scale=1")
         meta(name: "apple-mobile-web-app-capable", content: "yes")
-        meta(name: "application-name", content: @site_name)
+        if (name = Rails.configuration.x.site_name)
+          meta(name: "application-name", content: name)
+        end
         meta(name: "mobile-web-app-capable", content: "yes")
 
         csrf_meta_tags
@@ -41,79 +64,97 @@ class Components::Layout < Components::Base
         # == Fonts
         link(rel: "preconnect", href: "https://fonts.googleapis.com")
         link(rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: true)
-        link(rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap")
+        link(href: "https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap", rel: "stylesheet")
+        # link(rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap")
 
         # == Assets
         stylesheet_link_tag("application", "data-turbo-track": "reload")
         javascript_include_tag("application", "data-turbo-track": "reload", type: "module")
+
+        # == OpenGraph
+        if (description = Rails.configuration.x.site_description)
+          meta(name: "description", content: description)
+        end
+        render_og_tags
+        render_twitter_tags
+
+        # == Head
+        @head&.call
       end
 
-      body(class: "flex min-h-dvh flex-col") do
-        render_header
+      body(class: ["flex min-h-dvh flex-col", @body_class]) do
+        Components::Header()
         render_flash(class: "m-4 self-center")
-        yield if block_given?
+        raw(body) # rubocop:disable Rails/OutputSafety
       end
     end
   end
 
-  # == Methods ==
+  # == Interface ==
 
-  sig { params(options: T.untyped, block: T.proc.void).void }
-  def page_container(**options, &block)
-    other_class = options.delete(:class)
-    div(
-      class: class_names("page_container", other_class),
-      **options,
-      &block
-    )
+  sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
+  def page_container(**attributes, &content)
+    div(**mix({ class: "page_container" }, **attributes), &content)
+  end
+
+  sig { params(content: T.proc.void).void }
+  def with_head(&content)
+    @head = T.let(content, T.nilable(T.proc.void))
   end
 
   private
 
   # == Helpers ==
 
-  sig { returns(String) }
-  def computed_title
-    [@title, @site_name].compact.join(" | ")
+  sig { returns(T.nilable(String)) }
+  def title_text
+    @site_title ||
+      [@page_title, Rails.configuration.x.site_name]
+        .compact.join(" | ").presence
   end
 
-  sig { params(options: T.untyped).void }
-  def render_flash(**options)
-    message = flash[:notice] || flash[:alert] or return
-    class_option = options.delete(:class)
-    Components::Card(
-      size: :sm,
-      class: class_names(
-        "flash card",
-        { "flash-alert": flash.key?(:alert) },
-        class_option,
-      ),
-      **options,
-    ) do |card|
-      card.content(class: "font-medium") do
-        message
-      end
-    end
+  sig { returns(T.nilable(String)) }
+  def root_domain
+    url_options[:host]
   end
 
   sig { void }
-  def render_header
-    header(class: "flex justify-center p-2 border-b border-border") do
-      Components::Button(
-        component: "a",
-        variant: :ghost,
-        href: root_path,
-        class: "gap-2",
-      ) do
-        image_tag(
-          "icon.png",
-          alt: "#{@site_name} logo",
-          class: "size-5 dark:size-5.5 dark:p-[2px] dark:rounded-full dark:bg-accent-foreground",
-          data: { icon: "inline-start" },
-        )
-        span(class: "font-bold text-lg") do
-          @site_name
-        end
+  def render_og_tags
+    meta(property: "og:type", content: "website")
+    meta(property: "og:url", content: root_url)
+    meta(property: "og:title", content: title_text)
+    if (description = Rails.configuration.x.site_description)
+      meta(property: "og:description", content: description)
+    end
+    meta(property: "og:image", content: asset_path("/banner.png"))
+  end
+
+  sig { void }
+  def render_twitter_tags
+    meta(name: "twitter:card", content: "summary_large_image")
+    if (domain = root_domain)
+      meta(property: "twitter:domain", content: domain)
+    end
+    meta(property: "twitter:url", content: root_url)
+    meta(name: "twitter:title", content: title_text)
+    if (description = Rails.configuration.x.site_description)
+      meta(name: "twitter:description", content: description)
+    end
+    meta(name: "twitter:image", content: "/banner.png")
+  end
+
+  sig { params(attributes: T.untyped).void }
+  def render_flash(**attributes)
+    message = flash[:notice] || flash[:alert] or return
+    Components::Card(
+      size: :sm,
+      **mix(
+        { class: ["flash card", { "flash-alert": flash.key?(:alert) }] },
+        **attributes,
+      ),
+    ) do |card|
+      card.content(class: "font-medium") do
+        message
       end
     end
   end

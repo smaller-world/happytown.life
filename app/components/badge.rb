@@ -8,16 +8,15 @@ class Components::Badge < Components::Base
     @variant = variant
   end
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
-    root_component(
-      :span,
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
+    span(
       class: "group/badge",
       data: {
         slot: "badge",
         variant: @variant,
       },
-      &block
+      &content
     )
   end
 end

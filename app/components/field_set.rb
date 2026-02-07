@@ -2,28 +2,24 @@
 # frozen_string_literal: true
 
 class Components::FieldSet < Components::Base
-  # == Templates ==
+  # == Component ==
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
-    root_component(
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
+    root_element(
       :div,
       data: { slot: "field-set" },
-      &block
+      &content
     )
   end
 
   sig do
-    params(
-      variant: Symbol,
-      options: T.untyped,
-      block: T.proc.bind(T.self_type).void,
-    ).void
+    params(variant: Symbol, attributes: T.untyped, content: T.proc.void).void
   end
-  def legend(variant: :legend, **options, &block)
-    data = options.delete(:data) || {}
-    data[:slot] = "field-legend"
-    data[:variant] = :legend
-    legend(data:, **options, &block)
+  def legend(variant: :legend, **attributes, &content)
+    legend(
+      **mix({ data: { slot: "field-legend", variant: } }, **attributes),
+      &content
+    )
   end
 end
