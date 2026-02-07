@@ -2,6 +2,7 @@
 .ruby-lsp/
 .bundle/
 bin/
+config/database.yml
 dist/
 db/
 log/

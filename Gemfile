@@ -66,6 +66,9 @@ gem "friendly_id", "~> 5.6"
 # Makes http fun again!
 gem "httparty", "~> 0.24.2"
 
+# Enforce a canonical host
+gem "rack-canonical-host", "~> 1.3"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :windows], require: "debug/prelude"

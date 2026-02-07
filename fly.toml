@@ -10,6 +10,9 @@ console_command = "./bin/rails console"
 [deploy]
   release_command = "./bin/rails db:prepare"
 
+[env]
+  CANONICAL_HOST = "happytown.life"
+
 [processes]
   app = "./bin/thrust ./bin/rails server"
 
