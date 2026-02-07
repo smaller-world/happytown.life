@@ -14,7 +14,7 @@ console_command = "./bin/rails console"
   CANONICAL_HOST = "happytown.life"
 
 [processes]
-  app = "./bin/thrust ./bin/rails server -b 0.0.0.0"
+  app = "./bin/thrust ./bin/rails server"
 
 [http_service]
   internal_port = 3000
