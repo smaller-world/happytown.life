@@ -12,12 +12,14 @@ console_command = "./bin/rails console"
   release_command = "./bin/rails db:prepare"
 
 [env]
-  RAILS_LOG_LEVEL = "debug"
+  CANONICAL_HOST = "happytown.life"
   HTTP_PORT = "8080"
   HTTPS_PORT = "8443"
-  CANONICAL_HOST = "happytown.life"
+  RAILS_LOG_LEVEL = "debug"
+  SOLID_QUEUE_IN_PUMA = "true"
 
 [processes]
+  # jobs = "./bin/jobs"
   # app = "./bin/thrust ./bin/rails server"
 
 [http_service]
