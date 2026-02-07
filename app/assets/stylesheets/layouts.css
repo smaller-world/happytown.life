@@ -16,7 +16,7 @@
     @apply flex items-center gap-x-2.5;
 
     a {
-      @apply hover:opacity-50;
+      @apply hover:opacity-80;
     }
   }
 }
