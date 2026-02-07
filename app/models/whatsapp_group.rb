@@ -44,7 +44,9 @@ class WhatsappGroup < ApplicationRecord
     params(text: String).returns(T.any(WhatsappGroupSendMessageJob, FalseClass))
   end
   def send_message_later(text)
-    WhatsappGroupSendMessageJob.perform_later(self, text)
+    WhatsappGroupSendMessageJob
+      .set(wait: 5.seconds) # don't get banned
+      .perform_later(self, text)
   end
 
   private
