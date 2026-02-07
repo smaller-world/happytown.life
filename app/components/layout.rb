@@ -149,7 +149,12 @@ class Components::Layout < Components::Base
     Components::Card(
       size: :sm,
       **mix(
-        { class: ["flash card", { "flash-alert": flash.key?(:alert) }] },
+        {
+          class: class_names(
+            "flash card",
+            { "flash-alert": flash.key?(:alert) },
+          ),
+        },
         **attributes,
       ),
     ) do |card|

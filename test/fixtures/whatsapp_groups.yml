@@ -17,12 +17,10 @@
 #  index_whatsapp_groups_on_jid  (jid) UNIQUE
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
-one:
-  jid: MyString
-  subject: MyString
-  description: MyText
+ur_mom:
+  jid: urmom@g.us
+  subject: ur mom
 
-two:
-  jid: MyString
-  subject: MyString
-  description: MyText
+our_moms:
+  jid: ourmoms@g.us
+  subject: our moms
