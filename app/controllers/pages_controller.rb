@@ -1,11 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-class PagesController < ApplicationController
-  # == Filters ==
-
-  allow_unauthenticated_access
-
+class PagesController < PublicController
   # == Actions ==
 
   # GET /
