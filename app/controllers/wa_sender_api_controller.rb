@@ -27,9 +27,8 @@ class WaSenderApiController < ApplicationController
     jid = T.let(messages.fetch("remoteJid"), String)
     group = WhatsappGroup.find_or_create_by!(jid:)
 
-    if !group.previously_new_record? &&
-        mentioned_jids(messages:).include?(Rails.configuration.x.whatsapp_jid)
-      response = generate_mention_response(messages:)
+    if should_reply?(messages:)
+      response = generate_response(messages:)
       group.send_message_later(response)
     end
 
@@ -40,26 +39,39 @@ class WaSenderApiController < ApplicationController
 
   # == Helpers ==
 
-  sig { params(messages: T::Hash[String, T.untyped]).returns(T::Array[String]) }
-  def mentioned_jids(messages:)
-    jids = messages.dig(
+  def should_reply?(messages:)
+    context_info = messages.dig(
       "message",
       "extendedTextMessage",
       "contextInfo",
-      "mentionedJid",
-    ) or return []
-    jids.is_a?(Array) ? jids : []
+    ) or return false
+    if (jids = context_info["mentionedJid"])
+      jids.include?(whatsapp_jid)
+    else
+      context_info["participant"] == whatsapp_jid
+    end
   end
 
   sig { params(messages: T::Hash[String, T.untyped]).returns(String) }
-  def generate_mention_response(messages:)
+  def generate_response(messages:)
     message = messages.fetch("messageBody")
     sender_name = messages.fetch("pushName")
-    system_message =
+    context_message = if (conversation = messages.dig(
+      "message",
+      "extendedTextMessage",
+      "contextInfo",
+      "quotedMessage",
+      "conversation",
+    ))
+      "'#{sender_name}' replied to your whatsapp message:\n\n" \
+        "\"\"\"#{conversation}\"\"\""
+    else
       "'#{sender_name}' mentioned you in a whatsapp message (your whatsapp " \
-        "JID is: #{whatsapp_jid}).\n\n" \
-        "there is no more context available, yolo a response. please respond " \
-        "in all lowercase!!! (except for confusable terms like JID)"
+        "JID is: #{whatsapp_jid})."
+    end
+    system_message = "#{context_message}\n\n" \
+      "there is no more context available, yolo a response. please respond " \
+      "in all lowercase!!! (except for confusable terms like 'JID')"
     HappyTown.application.open_router.complete_chat([
       { role: "system", content: system_message },
       { role: "user", content: message },
