@@ -2,7 +2,8 @@
   <div class="navbar-menu is-active mb-4">
     <div class="navbar-start">
       <% if defined?(main_app.admin_dashboard_path) %>
-        <%= link_to "back to admin dashboard", main_app.admin_dashboard_path %>
+        <%= link_to "back to admin dashboard",
+                    main_app.admin_dashboard_path(server_id: nil) %>
       <% end %>
     </div>
 

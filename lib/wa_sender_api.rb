@@ -26,4 +26,14 @@ class WaSenderApi
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
     end
   end
+
+  sig { params(jid: String).returns(T::Hash[String, T.untyped]) }
+  def get_group_metadata(jid:)
+    response = self.class.get("/groups/#{jid}/metadata")
+    unless response.success?
+      raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
+    end
+
+    response.parsed_response.fetch("data")
+  end
 end

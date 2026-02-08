@@ -12,7 +12,7 @@ class Components::Layout < Components::Base
   sig do
     params(
       site_title: T.nilable(String),
-      page_title: T.nilable(String),
+      page_title: T.nilable(T.any(String, T::Array[String])),
       body_class: T.nilable(String),
       attributes: T.untyped,
     ).void
@@ -25,7 +25,14 @@ class Components::Layout < Components::Base
   )
     super(**attributes)
     @site_title = site_title
-    @page_title = page_title
+    @page_title = T.let(
+      if page_title.is_a?(Array)
+        page_title.reverse.join(" | ")
+      else
+        page_title.to_s
+      end,
+      T.nilable(String),
+    )
     @body_class = body_class
   end
 

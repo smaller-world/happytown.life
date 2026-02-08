@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require "test_helper"
+
 # rubocop:disable Layout/LineLength, Lint/RedundantCopDisableDirective
 # == Schema Information
 #
@@ -17,8 +19,6 @@
 #  index_users_on_email_address  (email_address) UNIQUE
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
-require "test_helper"
-
 class UserTest < ActiveSupport::TestCase
   test "downcases and strips email_address" do
     user = User.new(email_address: " DOWNCASED@EXAMPLE.COM ")
