@@ -21,7 +21,7 @@
 class WhatsappGroup < ApplicationRecord
   # == Hooks ==
 
-  after_create_commit :send_welcome_message_later
+  # after_create_commit :send_welcome_message_later
 
   # == Messaging ==
 
@@ -44,6 +44,11 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def send_welcome_message_later
-    send_message_later("welcome to happy town :) [jid=#{jid}]", wait: 4.seconds)
+    send_message_later(welcome_message, wait: 4.seconds)
+  end
+
+  sig { returns(String) }
+  def welcome_message
+    raise NotImplementedError
   end
 end

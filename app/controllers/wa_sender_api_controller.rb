@@ -56,9 +56,10 @@ class WaSenderApiController < ApplicationController
     message = messages.fetch("messageBody")
     sender_name = messages.fetch("pushName")
     system_message =
-      "'#{sender_name}' mentioned you in a WhatsApp message (your WhatsApp " \
+      "'#{sender_name}' mentioned you in a whatsapp message (your whatsapp " \
         "JID is: #{whatsapp_jid}).\n\n" \
-        "There is no more context available, YOLO a response."
+        "there is no more context available, yolo a response. please respond " \
+        "in all lowercase!!! (except for confusable terms like JID)"
     HappyTown.application.open_router.complete_chat([
       { role: "system", content: system_message },
       { role: "user", content: message },
