@@ -10,13 +10,16 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def admin_dashboard_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def admin_webhook_messages_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_session_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def mission_control_jobs_url(*args); end

@@ -42,6 +42,9 @@ module HappyTown
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Disable HTTP basic auth for the jobs dashboard
+    config.mission_control.jobs.http_basic_auth_enabled = false
+
     sig { returns(WaSenderApi) }
     def wa_sender_api
       return @wa_sender_api if defined?(@wa_sender_api)

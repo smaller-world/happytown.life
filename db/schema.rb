@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_08_045329) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_08_155958) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -161,6 +161,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_08_045329) do
     t.string "password_digest", null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+  end
+
+  create_table "webhook_messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.timestamptz "created_at", null: false
+    t.jsonb "data", null: false
+    t.string "messages_id", null: false
+    t.timestamptz "timestamp", null: false
+    t.index ["messages_id"], name: "index_webhook_messages_on_messages_id", unique: true
+    t.index ["timestamp"], name: "index_webhook_messages_on_timestamp"
   end
 
   create_table "whatsapp_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

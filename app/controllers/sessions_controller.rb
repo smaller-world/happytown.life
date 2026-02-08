@@ -15,7 +15,14 @@ class SessionsController < ApplicationController
   def new
     respond_to do |format|
       format.html do
-        render Views::Sessions::New
+        if authenticated?
+          redirect_to(
+            after_authentication_url,
+            notice: "you are already signed in!",
+          )
+        else
+          render Views::Sessions::New
+        end
       end
     end
   end

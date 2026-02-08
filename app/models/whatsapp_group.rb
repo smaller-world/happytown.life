@@ -32,10 +32,10 @@ class WhatsappGroup < ApplicationRecord
 
   sig do
     params(text: String, wait: T.nilable(ActiveSupport::Duration))
-      .returns(T.any(WhatsappGroupSendMessageJob, FalseClass))
+      .returns(T.any(SendWhatsappGroupMessageJob, FalseClass))
   end
   def send_message_later(text, wait: nil)
-    WhatsappGroupSendMessageJob.set(wait:).perform_later(self, text)
+    SendWhatsappGroupMessageJob.set(wait:).perform_later(self, text)
   end
 
   private

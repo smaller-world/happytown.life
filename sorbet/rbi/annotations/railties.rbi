@@ -1,4 +1,5 @@
 # typed: true
+# frozen_string_literal: true
 
 # DO NOT EDIT MANUALLY
 # This file was pulled from a central RBI files repository.
@@ -32,7 +33,7 @@ module Rails
   end
 end
 
-class Rails::Application < ::Rails::Engine
+class Rails::Application < Rails::Engine
   class << self
     sig { params(block: T.proc.bind(Rails::Application).void).void }
     def configure(&block); end
@@ -45,7 +46,7 @@ class Rails::Application < ::Rails::Engine
   def config; end
 end
 
-class Rails::Engine < ::Rails::Railtie
+class Rails::Engine < Rails::Railtie
   sig { params(block: T.untyped).returns(ActionDispatch::Routing::RouteSet) }
   def routes(&block); end
 end

@@ -20,16 +20,12 @@ class WaSenderApiController < ApplicationController
       head(:ok) and return
     end
 
-    messages = T.let(
-      payload.dig("data", "messages"),
-      T::Hash[String, T.untyped],
-    )
-    jid = T.let(messages.fetch("remoteJid"), String)
-    group = WhatsappGroup.find_or_create_by!(jid:)
+    save_webhook_message(payload)
+    whatsapp_group = create_whatsapp_group(payload)
 
-    if should_reply?(messages:)
-      response = generate_response(messages:)
-      group.send_message_later(response)
+    if should_reply?(payload)
+      response = generate_response(payload)
+      whatsapp_group.send_message_later(response)
     end
 
     head(:ok)
@@ -39,8 +35,11 @@ class WaSenderApiController < ApplicationController
 
   # == Helpers ==
 
-  def should_reply?(messages:)
-    context_info = messages.dig(
+  sig { params(payload: T::Hash[String, T.untyped]).returns(T::Boolean) }
+  def should_reply?(payload)
+    context_info = payload.dig(
+      "data",
+      "messages",
       "message",
       "extendedTextMessage",
       "contextInfo",
@@ -52,10 +51,26 @@ class WaSenderApiController < ApplicationController
     end
   end
 
-  sig { params(messages: T::Hash[String, T.untyped]).returns(String) }
-  def generate_response(messages:)
-    message = messages.fetch("messageBody")
-    sender_name = messages.fetch("pushName")
+  sig { params(payload: T::Hash[String, T.untyped]).void }
+  def save_webhook_message(payload)
+    data = payload.fetch("data")
+    messages_id = data.dig("messages", "id")
+    WebhookMessage.find_or_create_by!(messages_id:) do |message|
+      message.timestamp = Time.zone.at(payload.fetch("timestamp") / 1000.0)
+      message.data = data
+    end
+  end
+
+  sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappGroup) }
+  def create_whatsapp_group(payload)
+    jid = payload.dig("data", "messages", "remoteJid")
+    WhatsappGroup.find_or_create_by!(jid:)
+  end
+
+  sig { params(payload: T::Hash[String, T.untyped]).returns(String) }
+  def generate_response(payload)
+    messages = payload.dig("data", "messages")
+    message, sender_name = messages.values_at("messageBody", "pushName")
     context_message = if (conversation = messages.dig(
       "message",
       "extendedTextMessage",

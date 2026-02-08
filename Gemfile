@@ -75,6 +75,9 @@ gem "mission_control-jobs"
 # OpenAI API client
 gem "openai", "~> 0.45.0"
 
+# Paginate with Pagy
+gem "pagy", "~> 43.2"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :windows], require: "debug/prelude"

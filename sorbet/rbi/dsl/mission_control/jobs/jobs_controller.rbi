@@ -23,8 +23,6 @@ class MissionControl::Jobs::JobsController
     include ::Importmap::ImportmapTagsHelper
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
-    include ::FormsHelper
-    include ::HomesHelper
     include ::ApplicationController::HelperMethods
     include ::MissionControl::Jobs::InterfaceHelper
     include ::MissionControl::Jobs::NavigationHelper

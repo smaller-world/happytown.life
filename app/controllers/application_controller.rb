@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
 
   abstract!
 
+  include Pagy::Method
   include Authentication
 
   # == Configuration ==

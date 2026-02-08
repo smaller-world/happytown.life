@@ -25,7 +25,19 @@ Rails.application.routes.draw do
 
   resource :session
   resources :passwords, param: :token
-  resource :home, only: :show
 
-  mount MissionControl::Jobs::Engine, at: "/jobs"
+  # == Home ==
+  scope path: "/home", controller: :home do
+    get "/", action: :show
+  end
+
+  # == Admin ==
+
+  namespace :admin do
+    scope controller: :dashboard, as: :dashboard do
+      get "/", action: :show
+    end
+    resources :webhook_messages, path: "webhook_logs", only: :index
+  end
+  mount MissionControl::Jobs::Engine, at: "/admin/jobs"
 end

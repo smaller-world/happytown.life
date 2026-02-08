@@ -10,13 +10,16 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def admin_dashboard_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def admin_webhook_messages_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_password_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_session_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def mission_control_jobs_path(*args); end

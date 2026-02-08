@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class WhatsappGroupSendMessageJob < ApplicationJob
+class SendWhatsappGroupMessageJob < ApplicationJob
   # == Configuration ==
 
   queue_as :default

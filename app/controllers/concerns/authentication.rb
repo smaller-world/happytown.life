@@ -55,7 +55,12 @@ module Authentication
   sig { void }
   def request_authentication
     session[:return_to_after_authenticating] = request.url
-    redirect_to(new_session_path)
+    redirect_path = if respond_to?(:main_app)
+      public_send(:main_app).new_session_path
+    else
+      new_session_path
+    end
+    redirect_to(redirect_path)
   end
 
   sig { returns(String) }
