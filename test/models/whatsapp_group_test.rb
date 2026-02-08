@@ -12,6 +12,7 @@ require "test_helper"
 #  description          :text
 #  jid                  :string           not null
 #  metadata_imported_at :timestamptz
+#  profile_picture_url  :string
 #  subject              :string
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null

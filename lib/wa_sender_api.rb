@@ -28,8 +28,23 @@ class WaSenderApi
   end
 
   sig { params(jid: String).returns(T::Hash[String, T.untyped]) }
-  def get_group_metadata(jid:)
+  def group_metadata(jid)
     response = self.class.get("/groups/#{jid}/metadata")
+    response_data!(response)
+  end
+
+  sig { params(jid: String).returns(String) }
+  def group_profile_picture(jid)
+    response = self.class.get("/groups/#{jid}/picture")
+    response_data!(response).fetch("imgUrl")
+  end
+
+  private
+
+  # == Helpers ==
+
+  sig { params(response: HTTParty::Response).returns(T::Hash[String, T.untyped]) }
+  def response_data!(response)
     unless response.success?
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
     end

@@ -10,6 +10,7 @@
 #  description          :text
 #  jid                  :string           not null
 #  metadata_imported_at :timestamptz
+#  profile_picture_url  :string
 #  subject              :string
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
@@ -30,10 +31,13 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def import_metadata
-    data = HappyTown.application.wa_sender_api.get_group_metadata(jid:)
+    api = HappyTown.application.wa_sender_api
+    data = api.group_metadata(jid)
+    profile_picture_url = api.group_profile_picture(jid)
     update!(
       subject: data["subject"],
       description: data["desc"],
+      profile_picture_url:,
       metadata_imported_at: Time.current,
     )
   end
