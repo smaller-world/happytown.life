@@ -13,6 +13,8 @@ module HappyTown
   extend T::Sig
 
   class Application < Rails::Application
+    extend T::Sig
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults(8.1)
 
@@ -25,6 +27,7 @@ module HappyTown
     config.x.luma_url = "https://luma.com/happytown"
     config.x.instagram_url = "https://instagram.com/happytown.to"
     config.x.tiktok_url = "https://tiktok.com/@adamdriversbod"
+    config.x.whatsapp_jid = "189971403149563@lid"
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -38,12 +41,28 @@ module HappyTown
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    sig { returns(WaSenderApi) }
+    def wa_sender_api
+      return @wa_sender_api if defined?(@wa_sender_api)
+
+      api_key = credentials.dig(:wa_sender_api, :api_key) or
+        raise "Missing WA Sender API key"
+      @wa_sender_api = WaSenderApi.new(api_key:)
+    end
+
+    sig { returns(OpenRouter) }
+    def open_router
+      return @open_router if defined?(@open_router)
+
+      api_key = credentials.dig(:open_router, :api_key) or
+        raise "Missing OpenRouter API key"
+      @open_router = OpenRouter.new(api_key:)
+    end
   end
 
-  sig { returns(Wasenderapi) }
-  def self.wasenderapi
-    api_key = Rails.application.credentials.dig(:wasenderapi, :api_key) or
-      raise "Missing WASenderAPI key"
-    @wasenderapi ||= Wasenderapi.new(api_key:)
+  sig { returns(HappyTown::Application) }
+  def self.application
+    T.cast(Rails.application, HappyTown::Application)
   end
 end

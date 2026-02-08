@@ -1154,29 +1154,38 @@ end
 module Phlex::SGML::Attributes
   extend ::Phlex::SGML::Attributes
 
-  # source://phlex//lib/phlex/sgml/attributes.rb#9
+  # source://phlex//lib/phlex/sgml/attributes.rb#171
+  def decode_html_character_references(value); end
+
+  # source://phlex//lib/phlex/sgml/attributes.rb#15
   def generate_attributes(attributes, buffer = T.unsafe(nil)); end
 
   # Provides the nested-attributes case for serializing out attributes.
   # This allows us to skip many of the checks the `__attributes__` method must perform.
   #
-  # source://phlex//lib/phlex/sgml/attributes.rb#110
+  # source://phlex//lib/phlex/sgml/attributes.rb#118
   def generate_nested_attributes(attributes, base_name, buffer = T.unsafe(nil)); end
 
-  # source://phlex//lib/phlex/sgml/attributes.rb#163
+  # source://phlex//lib/phlex/sgml/attributes.rb#192
   def generate_nested_tokens(tokens, sep = T.unsafe(nil), gsub_from = T.unsafe(nil), gsub_to = T.unsafe(nil)); end
 
   # The result is unsafe so should be escaped.
   #
-  # source://phlex//lib/phlex/sgml/attributes.rb#222
+  # source://phlex//lib/phlex/sgml/attributes.rb#251
   def generate_styles(styles); end
 end
+
+# source://phlex//lib/phlex/sgml/attributes.rb#8
+Phlex::SGML::Attributes::NAMED_CHARACTER_REFERENCES = T.let(T.unsafe(nil), Hash)
 
 # source://phlex//lib/phlex/sgml/attributes.rb#7
 Phlex::SGML::Attributes::REF_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 
 # source://phlex//lib/phlex/sgml/attributes.rb#6
 Phlex::SGML::Attributes::UNSAFE_ATTRIBUTES = T.let(T.unsafe(nil), Set)
+
+# source://phlex//lib/phlex/sgml/attributes.rb#13
+Phlex::SGML::Attributes::UNSAFE_ATTRIBUTE_NAME_CHARS = T.let(T.unsafe(nil), Regexp)
 
 # source://phlex//lib/phlex/sgml/elements.rb#3
 module Phlex::SGML::Elements

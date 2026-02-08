@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Wasenderapi
+class WaSenderApi
   extend T::Sig
   include HTTParty
 

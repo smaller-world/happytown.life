@@ -27,14 +27,15 @@ class WhatsappGroup < ApplicationRecord
 
   sig { params(text: String).void }
   def send_message(text)
-    HappyTown.wasenderapi.send_message(to: jid, text:)
+    HappyTown.application.wa_sender_api.send_message(to: jid, text:)
   end
 
   sig do
-    params(text: String).returns(T.any(WhatsappGroupSendMessageJob, FalseClass))
+    params(text: String, wait: T.nilable(ActiveSupport::Duration))
+      .returns(T.any(WhatsappGroupSendMessageJob, FalseClass))
   end
-  def send_message_later(text)
-    WhatsappGroupSendMessageJob.perform_later(self, text)
+  def send_message_later(text, wait: nil)
+    WhatsappGroupSendMessageJob.set(wait:).perform_later(self, text)
   end
 
   private
@@ -43,6 +44,6 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def send_welcome_message_later
-    send_message_later("welcome to happy town :) [jid=#{jid}]")
+    send_message_later("welcome to happy town :) [jid=#{jid}]", wait: 4.seconds)
   end
 end

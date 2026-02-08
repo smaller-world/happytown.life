@@ -87,4 +87,6 @@ Rails.application.configure do
 
   # Disable HTTP basic auth for the jobs dashboard
   config.mission_control.jobs.http_basic_auth_enabled = false
+
+  config.hosts << /.+\.ngrok-free\.app/
 end
