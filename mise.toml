@@ -9,16 +9,21 @@
   #   PATH = "${config_root}/node_modules/.bin:${PATH}"
 
 [tasks]
+  # Development flow
   setup = { run = "bin/setup" }
   dev = { run = "bin/dev" }
   attach = { run = "bin/attach" }
   restart = { run = "bin/overmind restart" }
   test = { run = "bin/rails test" }
+
+  # Tools
   fix = { run = "hk fix" }
   check = { run = "hk check" }
   annotate = { run = "bin/annotaterb models" }
+
+  # Connect to production server
   ssh = { run = "fly ssh console" }
-  # ci = { run = "bin/ci" }
+  console = { run = "fly ssh console --pty -C 'bin/rails console'" }
 
 [hooks]
   postinstall = 'if [ -z "$CI" ]; then bin/setup --skip-server; fi'

@@ -7,6 +7,8 @@ rescue LoadError
   return
 end
 
+require "extensions/pg_search/track_scope_names"
+
 module Tapioca
   module Dsl
     module Compilers

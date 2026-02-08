@@ -1,8 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
+require "pg_search"
+
 module PgSearch::Model::ClassMethods
-  # NOTE: Track scope names in order to generate RBI typings for them.
+  # Tracks scope names in order to generate RBI typings for them.
   module TrackScopeNames
     extend T::Sig
 

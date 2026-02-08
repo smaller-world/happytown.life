@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "pg_search"
+
 module PgSearch::Features
   class TSearch
     module Websearch
