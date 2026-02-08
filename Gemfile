@@ -69,6 +69,9 @@ gem "httparty", "~> 0.24.2"
 # Enforce a canonical host
 gem "rack-canonical-host", "~> 1.3"
 
+# Active Job dashboard
+gem "mission_control-jobs"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :windows], require: "debug/prelude"
