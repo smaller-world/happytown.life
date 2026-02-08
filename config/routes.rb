@@ -26,4 +26,6 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resource :home, only: :show
+
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 end

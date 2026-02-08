@@ -19,6 +19,9 @@ module GeneratedUrlHelpersModule
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def mission_control_jobs_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

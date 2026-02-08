@@ -84,4 +84,7 @@ Rails.application.configure do
 
   # Hot-reload page when components change
   config.hotwire.spark.html_paths << "app/components"
+
+  # Disable HTTP basic auth for the jobs dashboard
+  config.mission_control.jobs.http_basic_auth_enabled = false
 end
