@@ -10,4 +10,9 @@ class ApplicationRecord < ActiveRecord::Base
   # == Configuration ==
 
   primary_abstract_class
+
+  # == Scopes ==
+
+  scope :chronological, -> { order(:created_at) }
+  scope :reverse_chronological, -> { order(created_at: :desc) }
 end

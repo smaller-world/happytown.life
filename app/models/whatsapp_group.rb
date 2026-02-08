@@ -27,17 +27,7 @@ class WhatsappGroup < ApplicationRecord
 
   sig { params(text: String).void }
   def send_message(text)
-    response = HTTParty.post(
-      "https://www.wasenderapi.com/api/send-message",
-      body: { to: jid, text: text },
-      headers: {
-        "Authorization" => "Bearer #{wasenderapi_key}",
-        "Content-Type" => "application/json",
-      },
-    )
-    unless response.success?
-      raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
-    end
+    HappyTown.wasenderapi.send_message(to: jid, text:)
   end
 
   sig do
@@ -53,13 +43,6 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def send_welcome_message_later
-    # send_message_later("welcome to happy town :) [jid=#{jid}]")
-    send_message("welcome to happy town :) [jid=#{jid}]")
-  end
-
-  sig { returns(String) }
-  def wasenderapi_key
-    Rails.application.credentials.dig(:wasenderapi, :api_key) or
-      raise "Missing WASenderAPI key"
+    send_message_later("welcome to happy town :) [jid=#{jid}]")
   end
 end

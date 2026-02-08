@@ -29,7 +29,7 @@ module HappyTown
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    # config.autoload_lib(ignore: ["assets", "tasks"])
+    config.autoload_lib(ignore: ["assets", "tasks"])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -38,5 +38,12 @@ module HappyTown
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+  end
+
+  sig { returns(Wasenderapi) }
+  def self.wasenderapi
+    api_key = Rails.application.credentials.dig(:wasenderapi, :api_key) or
+      raise "Missing WASenderAPI key"
+    @wasenderapi ||= Wasenderapi.new(api_key:)
   end
 end

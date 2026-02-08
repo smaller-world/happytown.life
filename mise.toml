@@ -17,6 +17,7 @@
   fix = { run = "hk fix" }
   check = { run = "hk check" }
   annotate = { run = "bin/annotaterb models" }
+  ssh = { run = "fly ssh console" }
   # ci = { run = "bin/ci" }
 
 [hooks]
