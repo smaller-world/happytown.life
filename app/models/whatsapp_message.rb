@@ -39,7 +39,7 @@ class WhatsappMessage < ApplicationRecord
   # == Associations ==
 
   belongs_to :sender, class_name: "WhatsappUser"
-  belongs_to :group, class_name: "WhatsappGroup"
+  belongs_to :group, class_name: "WhatsappGroup", inverse_of: :messages
 
   has_one :quoted_message, class_name: "WhatsappMessage", dependent: :nullify
   has_one :quoted_user, class_name: "WhatsappUser", dependent: :nullify

@@ -1,37 +1,31 @@
-you received the following message from
-<%= whatsapp_user_identity(@message.sender) %>:
----
-MESSAGE ID: <%= @message.message_id %>
-MESSAGE TIMESTAMP: <%= l @message.timestamp %>
-MESSAGE BODY:
-"""
-<%= @message.body %>
-"""
----
-
-
-<%- if (conversation = @message.quoted_conversation) %>
-<%- if @message.quoted_participant_jid == application_jid -%>
-this message (<%= @message.message_id %>) is a reply to a message you sent:
-<%- elsif (message = @message.quoted_message) -%>
-this message (<%= @message.message_id %>) is a reply to a message from
-<%= whatsapp_user_identity(message.sender) %>:
-<%- else -%>
-this message (<%= @message.message_id %>) is a reply to a message from an
-unknown whatsapp user:
-<%- end -%>
-"""
-<%= conversation %>
-"""
+<received-message>
+<%- if (conversation = @message.quoted_conversation) -%>
+> PREVIOUSLY, <%= quoted_participant_identity(@message) %> SENT:
+>
+> """
+> <%= conversation %>
+> """
 <%- end -%>
 
+IN RESPONSE, <%= whatsapp_user_identity(@message.sender) %> SENT AT <%= l @message.timestamp %>:
+"""
+<%= message_body_with_inlined_mentions(@message) %>
+"""
+</received-message>
 
-<%- if (mentioned_users = @message.mentioned_users.presence) %>
-this message mentions the following users:
-<%- mentioned_users.each do |user| -%>
-  - <%= whatsapp_user_identity(user) %>
-<%- end %>
+
+<recent-message-history>
+<%- recent_messages_before(@message).each do |message| -%>
+> <%= whatsapp_user_identity(message.sender) %> SENT AT <%= l message.timestamp %>:
+> """
+> <%= message_body_with_inlined_mentions(message) %>
+> """
+
+
 <%- end -%>
+</recent-message-history>
 
 
-please respond to the received message.
+<command>
+respond to the received message.
+</command>

@@ -40,14 +40,10 @@ class WhatsappGroupAgent < ApplicationAgent
 
   SEND_REPLY_TOOL = {
     name: "send_reply",
-    description: "send a reply to a specific message.",
+    description: "send a reply to the received message.",
     parameters: {
       type: "object",
       properties: {
-        reply_to: {
-          type: "string",
-          description: "the message ID to reply to.",
-        },
         message: {
           type: "string",
         },
@@ -65,7 +61,7 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { void }
   def reply
     @message = message!
-    prompt(tools: [SEND_MESSAGE_TOOL, SEND_REPLY_TOOL])
+    prompt(tools: [SEND_REPLY_TOOL])
   end
 
   # == Tools ==
@@ -83,9 +79,9 @@ class WhatsappGroupAgent < ApplicationAgent
     group!.send_message(message)
   end
 
-  sig { params(message: String, reply_to: String).void }
-  def send_reply(message:, reply_to:)
-    group!.send_message(message, reply_to:)
+  sig { params(message: String).void }
+  def send_reply(message:)
+    group!.send_message(message, reply_to: message!.message_id)
   end
 
   private

@@ -6,6 +6,7 @@
 
 
 class WhatsappGroup
+  include GeneratedAssociationMethods
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
@@ -412,6 +413,22 @@ class WhatsappGroup
 
     sig { returns(::WhatsappGroup) }
     def third_to_last!; end
+  end
+
+  module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def message_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def message_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `WhatsappGroup` class because it declared `has_many :messages`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::WhatsappMessage::PrivateCollectionProxy) }
+    def messages; end
+
+    sig { params(value: T::Enumerable[::WhatsappMessage]).void }
+    def messages=(value); end
   end
 
   module GeneratedAssociationRelationMethods

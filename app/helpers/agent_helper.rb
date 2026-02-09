@@ -11,10 +11,43 @@ module AgentHelper
 
   sig { params(user: WhatsappUser).returns(String) }
   def whatsapp_user_identity(user)
-    if (name = user.display_name)
-      "#{name} <JID: #{user.lid})>"
+    if user.lid == application_jid
+      "YOU"
+    elsif (name = user.display_name)
+      "#{name} <#{user.lid}>"
     else
-      "unknown whatsapp user <JID: #{user.lid}>"
+      "(UNKNOWN USER) <#{user.lid}>"
     end
+  end
+
+  sig { params(message: WhatsappMessage).returns(String) }
+  def quoted_participant_identity(message)
+    if message.quoted_participant_jid == application_jid
+      "YOU"
+    elsif (user = message.quoted_user)
+      whatsapp_user_identity(user)
+    elsif (jid = message.quoted_participant_jid)
+      "(UNKNOWN USER) <#{jid}>"
+    else
+      "(UNKNOWN USER)"
+    end
+  end
+
+  sig { params(message: WhatsappMessage).returns(String) }
+  def message_body_with_inlined_mentions(message)
+    body = message.body
+    message.mentioned_users.each do |user|
+      lid = user.lid.delete_suffix("@lid")
+      body.gsub!("@#{lid}", "@#{whatsapp_user_identity(user)}")
+    end
+    body
+  end
+
+  sig { params(message: WhatsappMessage).returns(T::Enumerable[WhatsappMessage]) }
+  def recent_messages_before(message)
+    message.group!.messages
+      .where(timestamp: ...message.timestamp)
+      .order(timestamp: :desc)
+      .limit(7)
   end
 end

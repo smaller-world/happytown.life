@@ -23,6 +23,14 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappGroup < ApplicationRecord
+  # == Associations ==
+
+  has_many :messages,
+           class_name: "WhatsappMessage",
+           dependent: :destroy,
+           inverse_of: :group,
+           foreign_key: :group_id
+
   # == Hooks ==
 
   after_create_commit :introduce_yourself

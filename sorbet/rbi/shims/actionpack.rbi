@@ -15,3 +15,12 @@
 #   end
 #   def rate_limit(to:, within:, by: T.unsafe(nil), with: T.unsafe(nil), store: T.unsafe(nil), name: T.unsafe(nil), scope: T.unsafe(nil), **options); end
 # end
+
+class ActionDispatch::IntegrationTest
+  include ActionMailer::TestHelper
+  include SessionTestHelper
+
+  sig { params(block: T.proc.bind(T.attached_class).void).void }
+  def self.test(&block)
+  end
+end

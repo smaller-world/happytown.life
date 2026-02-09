@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 canonical_host = ENV["CANONICAL_HOST"] or return
