@@ -22,6 +22,9 @@ module GeneratedPathHelpersModule
   def edit_session_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def message_history_whatsapp_group_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def mission_control_jobs_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

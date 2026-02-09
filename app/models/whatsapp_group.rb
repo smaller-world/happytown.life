@@ -48,8 +48,8 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def import_metadata
-    metadata = wa_sender_api.group_metadata(id)
-    profile_picture_url = if (data = wa_sender_api.group_profile_picture(id))
+    metadata = wa_sender_api.group_metadata(jid)
+    profile_picture_url = if (data = wa_sender_api.group_profile_picture(jid))
       data.fetch("imgUrl")
     end
     update!(
@@ -133,5 +133,33 @@ class WhatsappGroup < ApplicationRecord
   sig { returns(WaSenderApi) }
   def wa_sender_api
     HappyTown.application.wa_sender_api
+  end
+end
+
+class WhatsappGroup
+  extend FriendlyId
+
+  module FinderMethods
+    include FriendlyId::FinderMethods
+
+    private
+
+    def parse_friendly_id(value)
+      value.split("-").last
+    end
+  end
+
+  friendly_id do |config|
+    config.base = :id
+    config.finder_methods = FinderMethods
+  end
+
+  sig { returns(String) }
+  def friendly_id
+    if (subject = self[:subject])
+      "#{subject[..32].strip.parameterize}-#{id.delete("-")}"
+    else
+      id
+    end
   end
 end

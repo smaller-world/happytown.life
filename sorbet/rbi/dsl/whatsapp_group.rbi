@@ -482,6 +482,9 @@ class WhatsappGroup
     sig { params(association: Symbol).returns(T::Array[T.untyped]) }
     def extract_associated(association); end
 
+    sig { returns(PrivateAssociationRelation) }
+    def friendly; end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def from(*args, &blk); end
 
@@ -1261,6 +1264,9 @@ class WhatsappGroup
 
     sig { params(association: Symbol).returns(T::Array[T.untyped]) }
     def extract_associated(association); end
+
+    sig { returns(PrivateRelation) }
+    def friendly; end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def from(*args, &blk); end

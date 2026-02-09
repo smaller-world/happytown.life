@@ -1,0 +1,24 @@
+# typed: true
+# frozen_string_literal: true
+
+class WhatsappGroupsController < ApplicationController
+  def message_history
+    respond_to do |format|
+      format.html do
+        group = find_group
+        messages_scope = group.messages.order(created_at: :desc)
+        pagy, messages = pagy(:countish, messages_scope)
+        render Views::WhatsappGroups::MessageHistory.new(
+          group:,
+          messages:,
+          pagy:,
+        )
+      end
+    end
+  end
+
+  sig { returns(WhatsappGroup) }
+  def find_group
+    WhatsappGroup.friendly.find(params.fetch(:id))
+  end
+end

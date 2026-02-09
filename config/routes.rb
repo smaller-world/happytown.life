@@ -19,16 +19,25 @@ Rails.application.routes.draw do
     root action: :landing
   end
 
-  scope path: "/wasenderapi", controller: :wa_sender_api do
-    post :webhook
-  end
-
+  # == Authentication ==
   resource :session
   resources :passwords, param: :token
 
   # == Home ==
   scope path: "/home", controller: :home do
     get "/", action: :show
+  end
+
+  # == WASenderAPI ==
+  scope path: "/wasenderapi", controller: :wa_sender_api do
+    post :webhook
+  end
+
+  # == Whatsapp Groups ==
+  resources :whatsapp_groups, only: [] do
+    member do
+      get :message_history
+    end
   end
 
   # == Admin ==

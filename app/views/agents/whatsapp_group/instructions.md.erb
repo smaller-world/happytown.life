@@ -21,6 +21,6 @@ your conversational style:
 NAME: <%= @group.subject %>
 <%- if (description = @group.description) -%>
 DESCRIPTION: <%= description %>
-SETTINGS: <%= JSON.pretty_generate(@group_settings) %>
 <%- end -%>
+SETTINGS: <%= JSON.pretty_generate(@group_settings) %>
 </whatsapp-group-details>
