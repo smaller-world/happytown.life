@@ -19,10 +19,10 @@
 #  index_whatsapp_users_on_phone_number  (phone_number) UNIQUE
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
-one:
-  display_name: MyString
-  jid: MyString
+# one:
+#   display_name: MyString
+#   jid: MyString
 
-two:
-  display_name: MyString
-  jid: MyString
+# two:
+#   display_name: MyString
+#   jid: MyString

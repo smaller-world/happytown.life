@@ -21,10 +21,10 @@
 #  index_whatsapp_groups_on_metadata_imported_at  (metadata_imported_at)
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
-ur_mom:
-  jid: urmom@g.us
-  subject: ur mom
+# ur_mom:
+#   jid: urmom@g.us
+#   subject: ur mom
 
-our_moms:
-  jid: ourmoms@g.us
-  subject: our moms
+# our_moms:
+#   jid: ourmoms@g.us
+#   subject: our moms

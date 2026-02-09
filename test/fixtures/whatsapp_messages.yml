@@ -34,12 +34,12 @@
 #  fk_rails_...  (sender_id => whatsapp_users.id)
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
-one:
-  sender: one
-  body: MyText
-  group: one
+# one:
+#   sender: one
+#   body: MyText
+#   group: one
 
-two:
-  sender: two
-  body: MyText
-  group: two
+# two:
+#   sender: two
+#   body: MyText
+#   group: two

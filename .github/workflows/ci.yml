@@ -76,6 +76,11 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://supabase_admin:postgres@localhost:5432/postgres
+
     services:
       postgres:
         image: postgres
@@ -107,10 +112,8 @@ jobs:
         run: mise x -- bun install
       - name: Prepare database
         run: bin/rails db:test:prepare
-      - name: Run tests
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: postgres://supabase_admin:postgres@localhost:5432
+      - name:
+          Run tests
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: mise test
