@@ -26,6 +26,15 @@ class WaSenderApi
     end
   end
 
+  sig { params(jid: String, type: String, delay_ms: T.nilable(Integer)).void }
+  def update_presence(jid:, type:, delay_ms: nil)
+    body = { jid:, type:, "delayMs" => delay_ms }.compact
+    response = self.class.post("/send-presence-update", body:)
+    unless response.success?
+      raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
+    end
+  end
+
   sig { params(jid: String).returns(T::Hash[String, T.untyped]) }
   def group_metadata(jid)
     response = self.class.get("/groups/#{jid}/metadata")
@@ -40,32 +49,6 @@ class WaSenderApi
     else
       response_data!(response).fetch("imgUrl")
     end
-  end
-
-  # == Helpers ==
-
-  sig { params(payload: T::Hash[String, T.untyped]).returns(T::Array[String]) }
-  def self.mentioned_jids(payload)
-    payload.dig(
-      "data",
-      "messages",
-      "message",
-      "extendedTextMessage",
-      "contextInfo",
-      "mentionedJid",
-    ) || []
-  end
-
-  sig { params(payload: T::Hash[String, T.untyped]).returns(String) }
-  def self.participant(payload)
-    payload.dig(
-      "data",
-      "messages",
-      "message",
-      "extendedTextMessage",
-      "contextInfo",
-      "participant",
-    )
   end
 
   private

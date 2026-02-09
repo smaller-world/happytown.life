@@ -5,6 +5,7 @@ class WhatsappGroupAgent < ApplicationAgent
   # == Hooks ==
 
   before_action :set_instructions_context
+  around_generation :indicate_typing_while
 
   # == Tool Definitions ==
 
@@ -55,13 +56,13 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { void }
   def introduce_yourself
-    prompt
+    prompt(tools: [SEND_MESSAGE_TOOL])
   end
 
   sig { void }
   def reply
     @message = message!
-    prompt(tools: [SEND_REPLY_TOOL])
+    prompt(tools: [SEND_REPLY_TOOL, UPDATE_SETTINGS_TOOL])
   end
 
   # == Tools ==
@@ -72,16 +73,25 @@ class WhatsappGroupAgent < ApplicationAgent
       record_full_message_history_since:
         record_full_message_history ? Time.current : nil,
     )
+    render_text("Settings updated successfully.")
+  rescue => error
+    render_text("Failed to update settings: #{error.message}")
   end
 
   sig { params(message: String).void }
   def send_message(message:)
     group!.send_message(message)
+    render_text("Message sent successfully.")
+  rescue => error
+    render_text("Failed to send message: #{error.message}")
   end
 
   sig { params(message: String).void }
   def send_reply(message:)
     group!.send_message(message, reply_to: message!.message_id)
+    render_text("Reply sent successfully.")
+  rescue => error
+    render_text("Failed to send reply: #{error.message}")
   end
 
   private
@@ -105,5 +115,17 @@ class WhatsappGroupAgent < ApplicationAgent
       record_full_message_history:
         @group.record_full_message_history_since.present?,
     }
+  end
+
+  sig { params(block: T.proc.void).void }
+  def indicate_typing_while(&block)
+    group!.indicate_typing_while(&block)
+  end
+
+  sig { params(text: String).void }
+  def render_text(text)
+    prompt(content_type: "text/plain") do |format|
+      format.text { render plain: text }
+    end
   end
 end

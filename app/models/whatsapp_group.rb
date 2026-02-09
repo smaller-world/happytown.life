@@ -76,6 +76,14 @@ class WhatsappGroup < ApplicationRecord
       .perform_later(self, text, reply_to:)
   end
 
+  sig { params(block: T.proc.void).void }
+  def indicate_typing_while(&block)
+    HappyTown.application.wa_sender_api.update_presence(jid:, type: "composing")
+    yield
+  ensure
+    HappyTown.application.wa_sender_api.update_presence(jid:, type: "available")
+  end
+
   sig { returns(ActiveAgent::Generation) }
   def introduce_yourself_prompt
     WhatsappGroupAgent.with(group: self).introduce_yourself
@@ -85,19 +93,4 @@ class WhatsappGroup < ApplicationRecord
   def introduce_yourself
     introduce_yourself_prompt.generate_now
   end
-
-  # == Helpers ==
-
-  # sig do
-  #   params(payload: T::Hash[String, T.untyped])
-  #     .returns(T.nilable(WhatsappGroup))
-  # end
-  # def self.from_webhook_payload(payload)
-  #   event = payload.fetch("event")
-  #   case event
-  #   when "messages-group.received"
-  #     jid = payload.dig("data", "messages", "remoteJid")
-  #     WhatsappGroup.find_or_initialize_by(jid:)
-  #   end
-  # end
 end

@@ -32,12 +32,6 @@ class WaSenderApiController < ApplicationController
 
   # == Helpers ==
 
-  sig { params(payload: T::Hash[String, T.untyped]).returns(T::Boolean) }
-  def should_reply?(payload)
-    WaSenderApi.participant(payload) == whatsapp_jid ||
-      WaSenderApi.mentioned_jids(payload).include?(whatsapp_jid)
-  end
-
   sig { params(payload: T::Hash[String, T.untyped]).void }
   def save_webhook_message(payload)
     event = payload.fetch("event")
