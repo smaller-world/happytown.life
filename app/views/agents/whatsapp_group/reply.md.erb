@@ -1,29 +1,17 @@
-<received-message>
-<%- if (conversation = @message.quoted_conversation) -%>
-> PREVIOUSLY, <%= quoted_participant_identity(@message) %> SENT:
->
-> """
-> <%= conversation %>
-> """
-<%- end -%>
-
-IN RESPONSE, <%= whatsapp_user_identity(@message.sender) %> SENT AT <%= l @message.timestamp %>:
-"""
-<%= message_body_with_inlined_mentions(@message) %>
-"""
-</received-message>
-
-
 <recent-message-history>
-<%- recent_messages_before(@message).each do |message| -%>
-> <%= whatsapp_user_identity(message.sender) %> SENT AT <%= l message.timestamp %>:
-> """
-> <%= message_body_with_inlined_mentions(message) %>
-> """
+<%- recent_messages_before(@message).each_with_index do |message, index| -%>
+<% if index > 0 %>
 
 
+<% end %>
+<%= render "agents/whatsapp_group/whatsapp_message", message:, thread_index: index -%>
 <%- end -%>
 </recent-message-history>
+
+
+<incoming-message>
+<%= render "agents/whatsapp_group/whatsapp_message", message: @message -%>
+</received-message>
 
 
 <command>

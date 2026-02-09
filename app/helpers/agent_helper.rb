@@ -43,11 +43,12 @@ module AgentHelper
     body
   end
 
-  sig { params(message: WhatsappMessage).returns(T::Enumerable[WhatsappMessage]) }
+  sig { params(message: WhatsappMessage).returns(T::Array[WhatsappMessage]) }
   def recent_messages_before(message)
     message.group!.messages
       .where(timestamp: ...message.timestamp)
       .order(timestamp: :desc)
       .limit(7)
+      .reverse
   end
 end
