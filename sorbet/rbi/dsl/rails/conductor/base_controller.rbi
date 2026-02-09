@@ -25,7 +25,9 @@ class Rails::Conductor::BaseController
     include ::ActionText::TagHelper
     include ::Importmap::ImportmapTagsHelper
     include ::ActionController::Base::HelperMethods
+    include ::AgentHelper
     include ::ApplicationHelper
+    include ::LocalTimeHelper
   end
 
   class HelperProxy < ::ActionView::Base

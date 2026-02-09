@@ -1,4 +1,6 @@
-// Entry point for the build script in your package.json
-import "@hotwired/turbo-rails";
+// == Polyfills
+import "requestidlecallback-polyfill";
 
+// == Application
+import "./initializers";
 import "./controllers";

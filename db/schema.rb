@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_161753) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_214150) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -167,22 +167,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_161753) do
     t.timestamptz "created_at", null: false
     t.jsonb "data", null: false
     t.string "event", null: false
-    t.string "event_id", null: false
     t.timestamptz "timestamp", null: false
-    t.index ["event", "event_id"], name: "index_webhook_messages_uniqueness", unique: true
     t.index ["timestamp"], name: "index_webhook_messages_on_timestamp"
+  end
+
+  create_table "whatsapp_group_memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "admin"
+    t.datetime "created_at", null: false
+    t.uuid "group_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["group_id"], name: "index_whatsapp_group_memberships_on_group_id"
+    t.index ["user_id"], name: "index_whatsapp_group_memberships_on_user_id"
   end
 
   create_table "whatsapp_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "jid", null: false
+    t.timestamptz "memberships_imported_at"
     t.timestamptz "metadata_imported_at"
     t.string "profile_picture_url"
     t.timestamptz "record_full_message_history_since"
     t.string "subject"
     t.datetime "updated_at", null: false
     t.index ["jid"], name: "index_whatsapp_groups_on_jid", unique: true
+    t.index ["memberships_imported_at"], name: "index_whatsapp_groups_on_memberships_imported_at"
     t.index ["metadata_imported_at"], name: "index_whatsapp_groups_on_metadata_imported_at"
   end
 
@@ -233,6 +243,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_161753) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "whatsapp_group_memberships", "whatsapp_groups", column: "group_id"
+  add_foreign_key "whatsapp_group_memberships", "whatsapp_users", column: "user_id"
   add_foreign_key "whatsapp_message_mentions", "whatsapp_messages", column: "message_id"
   add_foreign_key "whatsapp_message_mentions", "whatsapp_users", column: "mentioned_user_id"
   add_foreign_key "whatsapp_messages", "whatsapp_groups", column: "group_id"

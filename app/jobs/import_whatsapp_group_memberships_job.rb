@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class ImportWhatsappGroupMetadataJob < ApplicationJob
+class ImportWhatsappGroupMembershipsJob < ApplicationJob
   # == Configuration ==
 
   queue_as :default
@@ -10,6 +10,6 @@ class ImportWhatsappGroupMetadataJob < ApplicationJob
 
   sig { params(group: WhatsappGroup).void }
   def perform(group)
-    group.import_metadata
+    group.import_memberships
   end
 end

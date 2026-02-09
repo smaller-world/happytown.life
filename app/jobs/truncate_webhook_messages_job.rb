@@ -7,6 +7,7 @@ class TruncateWebhookMessagesJob < ApplicationJob
   queue_as :default
 
   # == Job ==
+
   sig { void }
   def perform
     cutoff = WebhookMessage.order(timestamp: :desc).offset(500).pick(:timestamp)

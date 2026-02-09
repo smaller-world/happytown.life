@@ -26,6 +26,8 @@ class ApplicationController
     include ::Importmap::ImportmapTagsHelper
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
+    include ::AgentHelper
+    include ::LocalTimeHelper
 
     sig { returns(T::Boolean) }
     def authenticated?; end

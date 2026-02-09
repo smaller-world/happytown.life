@@ -14,6 +14,8 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.23",
     "@tailwindcss/cli": "^4.1.18",
+    "local-time": "^3.0.3",
+    "requestidlecallback-polyfill": "^1.0.2",
     "shadcn": "^3.8.4",
     "tailwindcss": "^4.1.18",
     "tippy.js": "^6.3.7",

@@ -16,6 +16,8 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::FormWith
   include PhlexIcons
 
+  register_output_helper :local_time
+
   # == Configuration ==
 
   sig { params(element: T.nilable(Symbol), attributes: T.untyped).void }

@@ -15,7 +15,6 @@ AllCops:
     - db/schema*.rb
     - storage/**/*
     - node_modules/**/*
-  CacheRootDirectory: tmp/cache/rubocop
 
 # Overwrite or add rules to create your own house style
 #

@@ -41,13 +41,19 @@ class WaSenderApi
     response_data!(response)
   end
 
-  sig { params(jid: String).returns(T.nilable(String)) }
-  def group_profile_picture_url(jid)
+  sig { params(jid: String).returns(T::Array[T::Hash[String, T.untyped]]) }
+  def group_participants(jid)
+    response = self.class.get("/groups/#{jid}/participants")
+    response_data!(response)
+  end
+
+  sig { params(jid: String).returns(T.nilable(T::Hash[String, T.untyped])) }
+  def group_profile_picture(jid)
     response = self.class.get("/groups/#{jid}/picture")
     if response.code == 422
       nil
     else
-      response_data!(response).fetch("imgUrl")
+      response_data!(response)
     end
   end
 
@@ -55,7 +61,7 @@ class WaSenderApi
 
   # == Helpers ==
 
-  sig { params(response: HTTParty::Response).returns(T::Hash[String, T.untyped]) }
+  sig { params(response: HTTParty::Response).returns(T.untyped) }
   def response_data!(response)
     unless response.success?
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"

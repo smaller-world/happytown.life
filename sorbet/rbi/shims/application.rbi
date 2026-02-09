@@ -17,3 +17,7 @@ class User
   sig { params(token: String).returns(User) }
   def self.find_by_password_reset_token!(token: String); end
 end
+
+class Components::Base
+  include LocalTimeHelper
+end

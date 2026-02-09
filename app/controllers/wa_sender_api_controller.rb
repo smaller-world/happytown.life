@@ -17,13 +17,22 @@ class WaSenderApiController < ApplicationController
   def webhook
     payload = JSON.parse(request.raw_post)
     event = payload.fetch("event")
+
+    # Log webhook message
+    webhook_message = WebhookMessage.from_webhook_payload(payload)
+    webhook_message.save!
+
+    # Handle event
     case event
-    when "messages-group.received"
-      save_webhook_message(payload)
+    when "message.upsert"
       if (message = WhatsappMessage.from_webhook_payload(payload))
         message.save!
       end
-    when "message.sent"
+    when "group-participants.update"
+      data = payload.fetch("data")
+      if (group = WhatsappGroup.find_by(jid: data.fetch("jid")))
+        group.import_memberships_later
+      end
     end
     head(:ok)
   end
@@ -31,17 +40,6 @@ class WaSenderApiController < ApplicationController
   private
 
   # == Helpers ==
-
-  sig { params(payload: T::Hash[String, T.untyped]).void }
-  def save_webhook_message(payload)
-    event = payload.fetch("event")
-    data = payload.fetch("data")
-    event_id = data.dig("messages", "key", "id")
-    WebhookMessage.find_or_create_by!(event:, event_id:) do |message|
-      message.timestamp = Time.zone.at(payload.fetch("timestamp") / 1000.0)
-      message.data = data
-    end
-  end
 
   sig { void }
   def verify_webhook_signature!

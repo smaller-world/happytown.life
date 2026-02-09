@@ -38,8 +38,8 @@
 class WhatsappMessage < ApplicationRecord
   # == Associations ==
 
-  belongs_to :sender, class_name: "WhatsappUser"
   belongs_to :group, class_name: "WhatsappGroup", inverse_of: :messages
+  belongs_to :sender, class_name: "WhatsappUser"
 
   has_one :quoted_message, class_name: "WhatsappMessage", dependent: :nullify
   has_one :quoted_user, class_name: "WhatsappUser", dependent: :nullify
@@ -64,21 +64,25 @@ class WhatsappMessage < ApplicationRecord
 
   scope :requires_handling, -> {
     application_jid = Rails.configuration.x.whatsapp_jid
-    where(handled_at: nil).and(
-      where(quoted_participant_jid: application_jid).or(
-        where("? = ANY(mentioned_jids)", application_jid),
-      ),
-    )
+    sender_id = WhatsappUser.where(lid: application_jid).select(:id)
+    where(handled_at: nil).where.not(sender_id:)
+      .and(
+        where(quoted_participant_jid: application_jid).or(
+          where("? = ANY(mentioned_jids)", application_jid),
+        ),
+      )
   }
 
   sig { returns(T::Boolean) }
-  def handled? = handled_at.present?
+  def handled? = handled_at?
 
   sig { returns(T::Boolean) }
   def requires_handling?
     application_jid = Rails.configuration.x.whatsapp_jid
-    quoted_participant_jid == application_jid ||
-      mentioned_jids.include?(application_jid)
+    !from_application? && (
+      quoted_participant_jid == application_jid ||
+        mentioned_jids.include?(application_jid)
+    )
   end
 
   sig { void }
@@ -99,6 +103,18 @@ class WhatsappMessage < ApplicationRecord
     update!(handled_at: Time.current)
   end
 
+  # == Methods
+
+  sig { returns(String) }
+  def application_jid
+    Rails.configuration.x.whatsapp_jid
+  end
+
+  sig { returns(T::Boolean) }
+  def from_application?
+    sender&.lid == application_jid
+  end
+
   # == Helpers ==
 
   sig do
@@ -108,7 +124,7 @@ class WhatsappMessage < ApplicationRecord
   def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     case event
-    when "messages-group.received"
+    when "message.upsert"
       messages = payload.dig("data", "messages") or return
       return if messages.dig("message", "reactionMessage").present?
       return if messages.dig("messageBody").nil?

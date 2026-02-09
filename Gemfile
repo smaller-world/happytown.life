@@ -84,6 +84,9 @@ gem "activeagent", "~> 1.0"
 # Parse and format phone numbers with phonelib
 gem "phonelib", "~> 0.10.16"
 
+# Cache-friendly, client-side local time
+gem "local_time"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :windows], require: "debug/prelude"

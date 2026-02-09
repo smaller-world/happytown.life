@@ -61,6 +61,8 @@ class Components::Layout < Components::Base
         csrf_meta_tags
         csp_meta_tag
 
+        meta(name: "env", content: Rails.env)
+
         # == Favicons
         link(rel: "shortcut icon", href: "/favicon.ico")
         link(rel: "icon", href: "/favicon-96x96.png", type: "image/png", sizes: "96x96")

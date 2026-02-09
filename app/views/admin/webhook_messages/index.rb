@@ -35,14 +35,11 @@ class Views::Admin::WebhookMessages::Index < Views::Base
                       class: "font-semibold flex gap-x-2 justify-between",
                     ) do
                       Components::Badge() { message.event }
-                      div(class: [
-                        "px-1 inline-block",
-                        "text-sm bg-foreground text-background",
-                      ]) do
-                        code do
-                          message.event_id
-                        end
-                      end
+                      local_time(
+                        message.timestamp,
+                        format: :short,
+                        class: "text-xs text-muted-foreground lowercase",
+                      )
                     end
                   end
                   card.content(class: "overflow-x-auto") do
