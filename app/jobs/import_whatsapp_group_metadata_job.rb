@@ -5,6 +5,7 @@ class ImportWhatsappGroupMetadataJob < ApplicationJob
   # == Configuration ==
 
   queue_as :default
+  limits_concurrency  key: ->(group) { group }, on_conflict: :discard
 
   # == Job ==
 
