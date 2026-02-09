@@ -42,7 +42,7 @@ class WhatsappGroup < ApplicationRecord
   def import_metadata
     api = HappyTown.application.wa_sender_api
     data = api.group_metadata(jid)
-    profile_picture_url = api.group_profile_picture(jid)
+    profile_picture_url = api.group_profile_picture_url(jid)
     update!(
       subject: data["subject"],
       description: data["desc"],

@@ -32,10 +32,14 @@ class WaSenderApi
     response_data!(response)
   end
 
-  sig { params(jid: String).returns(String) }
-  def group_profile_picture(jid)
+  sig { params(jid: String).returns(T.nilable(String)) }
+  def group_profile_picture_url(jid)
     response = self.class.get("/groups/#{jid}/picture")
-    response_data!(response).fetch("imgUrl")
+    if response.code == 422
+      nil
+    else
+      response_data!(response).fetch("imgUrl")
+    end
   end
 
   # == Helpers ==
