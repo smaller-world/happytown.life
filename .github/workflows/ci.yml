@@ -76,6 +76,11 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://supabase_admin:postgres@localhost:5432/happytown_test
+      # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      # REDIS_URL: redis://localhost:6379/0
     services:
       postgres:
         image: postgres
@@ -108,11 +113,6 @@ jobs:
       - name: Prepare database
         run: bin/rails db:test:prepare
       - name: Run tests
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: postgres://supabase_admin:postgres@localhost:5432
-          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          # REDIS_URL: redis://localhost:6379/0
         run: mise test
 
   # system-test:
