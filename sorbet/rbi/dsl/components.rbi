@@ -86,7 +86,7 @@ module Components
   sig do
     params(
       site_title: T.nilable(::String),
-      page_title: T.nilable(::String),
+      page_title: T.nilable(T.any(::String, T::Array[::String])),
       body_class: T.nilable(::String),
       attributes: T.untyped,
       block: T.nilable(T.proc.params(instance: Components::Layout).void)
@@ -185,7 +185,7 @@ module Components
     sig do
       params(
         site_title: T.nilable(::String),
-        page_title: T.nilable(::String),
+        page_title: T.nilable(T.any(::String, T::Array[::String])),
         body_class: T.nilable(::String),
         attributes: T.untyped,
         block: T.nilable(T.proc.params(instance: Components::Layout).void)

@@ -85,5 +85,5 @@ Rails.application.configure do
   # Hot-reload page when components change
   config.hotwire.spark.html_paths << "app/components"
 
-  config.hosts << /.+\.ngrok-free\.app/
+  config.hosts += [/.+\.ngrok-free\.app/, "kaibook.itskai.me"]
 end

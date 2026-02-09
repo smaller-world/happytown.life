@@ -8,18 +8,18 @@ class Views::Admin::Dashboard::Show < Views::Base
       layout.page_container(class: "flex flex-col gap-y-4") do
         div do
           h1(class: "text-2xl font-bold") { "admin dashboard" }
-          blockquote(class: "italic") do
-            "“so ya wanna run for happy town major, is that right?”"
+          blockquote(class: "italic text-muted-foreground") do
+            "“so ya wanna run for happy town mayor, is that right?”"
           end
         end
         div(class: "flex flex-col gap-y-1") do
           h2(class: "text-xl font-semibold") { "quick links" }
-          ul(class: "list-disc ml-6 space-y-0.5 [&_a]:hover:underline") do
+          ul(class: "list-disc ml-6 space-y-0.5") do
             li do
-              link_to("webhook logs", [:admin, :webhook_messages])
+              link_to("webhook logs", [:admin, :webhook_messages], class: "link")
             end
             li do
-              link_to("mission control", [:mission_control, :jobs])
+              link_to("mission control", [:mission_control, :jobs], class: "link")
             end
           end
         end

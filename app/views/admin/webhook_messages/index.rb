@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Views::Admin::WebhookMessages::Index < Views::Base
-  # == Initializer ==
+  # == Configuration ==
 
   sig { params(messages: T::Enumerable[WebhookMessage], pagy: Pagy::Offset).void }
   def initialize(messages:, pagy:)
@@ -22,7 +22,7 @@ class Views::Admin::WebhookMessages::Index < Views::Base
           link_to(
             "back to admin dashboard",
             [:admin, :dashboard],
-            class: "link text-muted-foreground",
+            class: "link",
           )
         end
         if @messages.any?
@@ -31,11 +31,16 @@ class Views::Admin::WebhookMessages::Index < Views::Base
               li do
                 Components::Card() do |card|
                   card.header do
-                    card.title(class: "font-semibold") do
-                      plain("message ")
-                      div(class: "bg-foreground text-background px-1 inline-block") do
+                    card.title(
+                      class: "font-semibold flex gap-x-2 justify-between",
+                    ) do
+                      Components::Badge() { message.event }
+                      div(class: [
+                        "px-1 inline-block",
+                        "text-sm bg-foreground text-background",
+                      ]) do
                         code do
-                          message.messages_id
+                          message.event_id
                         end
                       end
                     end

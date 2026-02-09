@@ -1,0 +1,37 @@
+you received the following message from
+<%= whatsapp_user_identity(@message.sender) %>:
+---
+MESSAGE ID: <%= @message.message_id %>
+MESSAGE TIMESTAMP: <%= l @message.timestamp %>
+MESSAGE BODY:
+"""
+<%= @message.body %>
+"""
+---
+
+
+<%- if (conversation = @message.quoted_conversation) %>
+<%- if @message.quoted_participant_jid == application_jid -%>
+this message (<%= @message.message_id %>) is a reply to a message you sent:
+<%- elsif (message = @message.quoted_message) -%>
+this message (<%= @message.message_id %>) is a reply to a message from
+<%= whatsapp_user_identity(message.sender) %>:
+<%- else -%>
+this message (<%= @message.message_id %>) is a reply to a message from an
+unknown whatsapp user:
+<%- end -%>
+"""
+<%= conversation %>
+"""
+<%- end -%>
+
+
+<%- if (mentioned_users = @message.mentioned_users.presence) %>
+this message mentions the following users:
+<%- mentioned_users.each do |user| -%>
+  - <%= whatsapp_user_identity(user) %>
+<%- end %>
+<%- end -%>
+
+
+please respond to the received message.

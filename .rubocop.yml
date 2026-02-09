@@ -28,6 +28,8 @@ Rails/I18nLocaleTexts:
 Rails/DynamicFindBy:
   Enabled: false
 
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_first_argument
 Style/ClassAndModuleChildren:
   Enabled: false
 Style/ClassMethodsDefinitions:
@@ -40,3 +42,8 @@ Style/MethodCallWithArgsParentheses:
     - yield
     - require
     - puts
+
+Sorbet/FalseSigil:
+  Enabled: false
+Sorbet/TrueSigil:
+  Enabled: true

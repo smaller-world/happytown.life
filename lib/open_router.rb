@@ -6,9 +6,11 @@ require "openai"
 class OpenRouter
   extend T::Sig
 
+  # == Typechecking ==
+
   Message = T.type_alias { { role: String, content: String } }
 
-  # == Initializer ==
+  # == Configuration ==
 
   sig { params(api_key: String).void }
   def initialize(api_key:)

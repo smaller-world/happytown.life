@@ -10,8 +10,6 @@ class WaSenderApi
   base_uri "https://www.wasenderapi.com/api"
   format :json
 
-  # == Initializer ==
-
   sig { params(api_key: String).void }
   def initialize(api_key:)
     self.class.headers("Authorization" => "Bearer #{api_key}")
@@ -19,9 +17,10 @@ class WaSenderApi
 
   # == Methods ==
 
-  sig { params(to: String, text: String).void }
-  def send_message(to:, text:)
-    response = self.class.post("/send-message", body: { to:, text: })
+  sig { params(to: String, text: String, reply_to: T.nilable(String)).void }
+  def send_message(to:, text:, reply_to: nil)
+    body = { to:, text:, reply_to: }.compact
+    response = self.class.post("/send-message", body:)
     unless response.success?
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
     end
@@ -37,6 +36,32 @@ class WaSenderApi
   def group_profile_picture(jid)
     response = self.class.get("/groups/#{jid}/picture")
     response_data!(response).fetch("imgUrl")
+  end
+
+  # == Helpers ==
+
+  sig { params(payload: T::Hash[String, T.untyped]).returns(T::Array[String]) }
+  def self.mentioned_jids(payload)
+    payload.dig(
+      "data",
+      "messages",
+      "message",
+      "extendedTextMessage",
+      "contextInfo",
+      "mentionedJid",
+    ) || []
+  end
+
+  sig { params(payload: T::Hash[String, T.untyped]).returns(String) }
+  def self.participant(payload)
+    payload.dig(
+      "data",
+      "messages",
+      "message",
+      "extendedTextMessage",
+      "contextInfo",
+      "participant",
+    )
   end
 
   private

@@ -16,18 +16,15 @@ class WaSenderApiController < ApplicationController
   sig { void }
   def webhook
     payload = JSON.parse(request.raw_post)
-    unless payload["event"] == "messages-group.received"
-      head(:ok) and return
+    event = payload.fetch("event")
+    case event
+    when "messages-group.received"
+      save_webhook_message(payload)
+      if (message = WhatsappMessage.from_webhook_payload(payload))
+        message.save!
+      end
+    when "message.sent"
     end
-
-    save_webhook_message(payload)
-    whatsapp_group = create_whatsapp_group(payload)
-
-    if should_reply?(payload)
-      response = generate_response(payload)
-      whatsapp_group.send_message_later(response)
-    end
-
     head(:ok)
   end
 
@@ -37,60 +34,19 @@ class WaSenderApiController < ApplicationController
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(T::Boolean) }
   def should_reply?(payload)
-    context_info = payload.dig(
-      "data",
-      "messages",
-      "message",
-      "extendedTextMessage",
-      "contextInfo",
-    ) or return false
-    if (jids = context_info["mentionedJid"])
-      jids.include?(whatsapp_jid)
-    else
-      context_info["participant"] == whatsapp_jid
-    end
+    WaSenderApi.participant(payload) == whatsapp_jid ||
+      WaSenderApi.mentioned_jids(payload).include?(whatsapp_jid)
   end
 
   sig { params(payload: T::Hash[String, T.untyped]).void }
   def save_webhook_message(payload)
+    event = payload.fetch("event")
     data = payload.fetch("data")
-    messages_id = data.dig("messages", "id")
-    WebhookMessage.find_or_create_by!(messages_id:) do |message|
+    event_id = data.dig("messages", "key", "id")
+    WebhookMessage.find_or_create_by!(event:, event_id:) do |message|
       message.timestamp = Time.zone.at(payload.fetch("timestamp") / 1000.0)
       message.data = data
     end
-  end
-
-  sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappGroup) }
-  def create_whatsapp_group(payload)
-    jid = payload.dig("data", "messages", "remoteJid")
-    WhatsappGroup.find_or_create_by!(jid:)
-  end
-
-  sig { params(payload: T::Hash[String, T.untyped]).returns(String) }
-  def generate_response(payload)
-    messages = payload.dig("data", "messages")
-    message, sender_name = messages.values_at("messageBody", "pushName")
-    context_message = if (conversation = messages.dig(
-      "message",
-      "extendedTextMessage",
-      "contextInfo",
-      "quotedMessage",
-      "conversation",
-    ))
-      "'#{sender_name}' replied to your whatsapp message:\n\n" \
-        "\"\"\"#{conversation}\"\"\""
-    else
-      "'#{sender_name}' mentioned you in a whatsapp message (your whatsapp " \
-        "JID is: #{whatsapp_jid})."
-    end
-    system_message = "#{context_message}\n\n" \
-      "there is no more context available, yolo a response. please respond " \
-      "in all lowercase!!! (except for confusable terms like 'JID')"
-    HappyTown.application.open_router.complete_chat([
-      { role: "system", content: system_message },
-      { role: "user", content: message },
-    ])
   end
 
   sig { void }

@@ -1,7 +1,4 @@
 inherit_from: ../../.rubocop.yml
 
-Sorbet/FalseSigil:
-  Enabled: false
-
 Style/MethodCallWithArgsParentheses:
   Enabled: false

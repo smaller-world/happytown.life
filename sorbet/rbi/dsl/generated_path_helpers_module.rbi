@@ -43,6 +43,9 @@ module GeneratedPathHelpersModule
   def passwords_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def rails_agents_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def rails_blob_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

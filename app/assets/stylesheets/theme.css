@@ -148,7 +148,7 @@
 
 @layer components {
   .link {
-    @apply underline-offset-4 hover:underline;
+    @apply text-accent underline-offset-4 hover:underline;
   }
 }
 

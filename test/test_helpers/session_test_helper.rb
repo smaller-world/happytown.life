@@ -1,7 +1,13 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module SessionTestHelper
+  extend T::Sig
+  extend T::Helpers
+
+  requires_ancestor { ActionDispatch::IntegrationTest }
+
+  sig { params(user: User).void }
   def sign_in_as(user)
     Current.session = user.sessions.create!
 
@@ -11,6 +17,7 @@ module SessionTestHelper
     end
   end
 
+  sig { void }
   def sign_out
     Current.session&.destroy!
     cookies.delete("session_id")

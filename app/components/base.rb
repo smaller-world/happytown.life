@@ -16,7 +16,7 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::FormWith
   include PhlexIcons
 
-  # == Initializer ==
+  # == Configuration ==
 
   sig { params(element: T.nilable(Symbol), attributes: T.untyped).void }
   def initialize(element: nil, **attributes)

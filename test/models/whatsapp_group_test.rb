@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "test_helper"
@@ -8,14 +8,15 @@ require "test_helper"
 #
 # Table name: whatsapp_groups
 #
-#  id                   :uuid             not null, primary key
-#  description          :text
-#  jid                  :string           not null
-#  metadata_imported_at :timestamptz
-#  profile_picture_url  :string
-#  subject              :string
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
+#  id                                :uuid             not null, primary key
+#  description                       :text
+#  jid                               :string           not null
+#  metadata_imported_at              :timestamptz
+#  profile_picture_url               :string
+#  record_full_message_history_since :timestamptz
+#  subject                           :string
+#  created_at                        :datetime         not null
+#  updated_at                        :datetime         not null
 #
 # Indexes
 #

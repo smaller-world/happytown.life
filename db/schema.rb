@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_08_184124) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_161753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -166,9 +166,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_08_184124) do
   create_table "webhook_messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.timestamptz "created_at", null: false
     t.jsonb "data", null: false
-    t.string "messages_id", null: false
+    t.string "event", null: false
+    t.string "event_id", null: false
     t.timestamptz "timestamp", null: false
-    t.index ["messages_id"], name: "index_webhook_messages_on_messages_id", unique: true
+    t.index ["event", "event_id"], name: "index_webhook_messages_uniqueness", unique: true
     t.index ["timestamp"], name: "index_webhook_messages_on_timestamp"
   end
 
@@ -178,10 +179,51 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_08_184124) do
     t.string "jid", null: false
     t.timestamptz "metadata_imported_at"
     t.string "profile_picture_url"
+    t.timestamptz "record_full_message_history_since"
     t.string "subject"
     t.datetime "updated_at", null: false
     t.index ["jid"], name: "index_whatsapp_groups_on_jid", unique: true
     t.index ["metadata_imported_at"], name: "index_whatsapp_groups_on_metadata_imported_at"
+  end
+
+  create_table "whatsapp_message_mentions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "mentioned_user_id", null: false
+    t.uuid "message_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mentioned_user_id"], name: "index_whatsapp_message_mentions_on_mentioned_user_id"
+    t.index ["message_id"], name: "index_whatsapp_message_mentions_on_message_id"
+  end
+
+  create_table "whatsapp_messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.uuid "group_id", null: false
+    t.timestamptz "handled_at"
+    t.string "mentioned_jids", default: [], null: false, array: true
+    t.string "message_id", null: false
+    t.text "quoted_conversation"
+    t.uuid "quoted_message_id"
+    t.string "quoted_participant_jid"
+    t.uuid "sender_id", null: false
+    t.timestamptz "timestamp", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_whatsapp_messages_on_group_id"
+    t.index ["handled_at"], name: "index_whatsapp_messages_on_handled_at"
+    t.index ["quoted_message_id"], name: "index_whatsapp_messages_on_quoted_message_id"
+    t.index ["sender_id"], name: "index_whatsapp_messages_on_sender_id"
+    t.index ["timestamp"], name: "index_whatsapp_messages_on_timestamp"
+  end
+
+  create_table "whatsapp_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "display_name"
+    t.string "lid", null: false
+    t.string "phone_number"
+    t.string "phone_number_jid"
+    t.datetime "updated_at", null: false
+    t.index ["lid"], name: "index_whatsapp_users_on_lid", unique: true
+    t.index ["phone_number"], name: "index_whatsapp_users_on_phone_number", unique: true
   end
 
   add_foreign_key "sessions", "users"
@@ -191,4 +233,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_08_184124) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "whatsapp_message_mentions", "whatsapp_messages", column: "message_id"
+  add_foreign_key "whatsapp_message_mentions", "whatsapp_users", column: "mentioned_user_id"
+  add_foreign_key "whatsapp_messages", "whatsapp_groups", column: "group_id"
+  add_foreign_key "whatsapp_messages", "whatsapp_messages", column: "quoted_message_id"
+  add_foreign_key "whatsapp_messages", "whatsapp_users", column: "sender_id"
 end

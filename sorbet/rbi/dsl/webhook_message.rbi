@@ -661,6 +661,96 @@ class WebhookMessage
     def data_will_change!; end
 
     sig { returns(::String) }
+    def event; end
+
+    sig { params(value: ::String).returns(::String) }
+    def event=(value); end
+
+    sig { returns(T::Boolean) }
+    def event?; end
+
+    sig { returns(T.nilable(::String)) }
+    def event_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def event_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def event_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def event_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def event_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def event_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(::String) }
+    def event_id; end
+
+    sig { params(value: ::String).returns(::String) }
+    def event_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def event_id?; end
+
+    sig { returns(T.nilable(::String)) }
+    def event_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def event_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def event_id_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def event_id_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def event_id_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def event_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def event_id_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def event_id_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def event_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def event_id_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def event_id_was; end
+
+    sig { void }
+    def event_id_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def event_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def event_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def event_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def event_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def event_was; end
+
+    sig { void }
+    def event_will_change!; end
+
+    sig { returns(::String) }
     def id; end
 
     sig { params(value: ::String).returns(::String) }
@@ -750,51 +840,6 @@ class WebhookMessage
     sig { void }
     def id_will_change!; end
 
-    sig { returns(::String) }
-    def messages_id; end
-
-    sig { params(value: ::String).returns(::String) }
-    def messages_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def messages_id?; end
-
-    sig { returns(T.nilable(::String)) }
-    def messages_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def messages_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def messages_id_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def messages_id_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def messages_id_change_to_be_saved; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def messages_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def messages_id_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def messages_id_previous_change; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def messages_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def messages_id_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def messages_id_was; end
-
-    sig { void }
-    def messages_id_will_change!; end
-
     sig { void }
     def restore_created_at!; end
 
@@ -802,13 +847,16 @@ class WebhookMessage
     def restore_data!; end
 
     sig { void }
+    def restore_event!; end
+
+    sig { void }
+    def restore_event_id!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
     def restore_id_value!; end
-
-    sig { void }
-    def restore_messages_id!; end
 
     sig { void }
     def restore_timestamp!; end
@@ -826,6 +874,18 @@ class WebhookMessage
     def saved_change_to_data?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_event; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_event?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_event_id; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_event_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_id; end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
@@ -836,12 +896,6 @@ class WebhookMessage
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def saved_change_to_id_value?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_messages_id; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def saved_change_to_messages_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_timestamp; end
@@ -901,13 +955,16 @@ class WebhookMessage
     def will_save_change_to_data?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_event?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_event_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_id_value?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def will_save_change_to_messages_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_timestamp?(from: T.unsafe(nil), to: T.unsafe(nil)); end

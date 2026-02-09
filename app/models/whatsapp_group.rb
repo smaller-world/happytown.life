@@ -6,14 +6,15 @@
 #
 # Table name: whatsapp_groups
 #
-#  id                   :uuid             not null, primary key
-#  description          :text
-#  jid                  :string           not null
-#  metadata_imported_at :timestamptz
-#  profile_picture_url  :string
-#  subject              :string
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
+#  id                                :uuid             not null, primary key
+#  description                       :text
+#  jid                               :string           not null
+#  metadata_imported_at              :timestamptz
+#  profile_picture_url               :string
+#  record_full_message_history_since :timestamptz
+#  subject                           :string
+#  created_at                        :datetime         not null
+#  updated_at                        :datetime         not null
 #
 # Indexes
 #
@@ -24,7 +25,7 @@
 class WhatsappGroup < ApplicationRecord
   # == Hooks ==
 
-  # after_create_commit :send_welcome_message_later
+  after_create_commit :introduce_yourself
   after_create_commit :import_metadata_later
 
   # == Metadata ==
@@ -52,30 +53,43 @@ class WhatsappGroup < ApplicationRecord
 
   # == Messaging ==
 
-  sig { params(text: String).void }
-  def send_message(text)
-    HappyTown.application.wa_sender_api.send_message(to: jid, text:)
+  sig { params(text: String, reply_to: T.nilable(String)).void }
+  def send_message(text, reply_to: nil)
+    HappyTown.application.wa_sender_api.send_message(to: jid, text:, reply_to:)
   end
 
   sig do
-    params(text: String, options: T.untyped)
+    params(text: String, reply_to: T.nilable(String), options: T.untyped)
       .returns(T.any(SendWhatsappGroupMessageJob, FalseClass))
   end
-  def send_message_later(text, **options)
-    SendWhatsappGroupMessageJob.set(**options).perform_later(self, text)
+  def send_message_later(text, reply_to: nil, **options)
+    SendWhatsappGroupMessageJob
+      .set(**options)
+      .perform_later(self, text, reply_to:)
   end
 
-  private
+  sig { returns(ActiveAgent::Generation) }
+  def introduce_yourself_prompt
+    WhatsappGroupAgent.with(group: self).introduce_yourself
+  end
+
+  sig { void }
+  def introduce_yourself
+    introduce_yourself_prompt.generate_now
+  end
 
   # == Helpers ==
 
-  sig { void }
-  def send_welcome_message_later
-    send_message_later(welcome_message, wait: 4.seconds)
-  end
-
-  sig { returns(String) }
-  def welcome_message
-    raise NotImplementedError
-  end
+  # sig do
+  #   params(payload: T::Hash[String, T.untyped])
+  #     .returns(T.nilable(WhatsappGroup))
+  # end
+  # def self.from_webhook_payload(payload)
+  #   event = payload.fetch("event")
+  #   case event
+  #   when "messages-group.received"
+  #     jid = payload.dig("data", "messages", "remoteJid")
+  #     WhatsappGroup.find_or_initialize_by(jid:)
+  #   end
+  # end
 end

@@ -15,4 +15,13 @@ class ApplicationRecord < ActiveRecord::Base
 
   scope :chronological, -> { order(:created_at) }
   scope :reverse_chronological, -> { order(created_at: :desc) }
+
+  # == Typechecking ==
+
+  # Support runtime type-checking for Sorbet-generated types.
+  PrivateRelation = ActiveRecord::Relation
+  PrivateRelationWhereChain = ActiveRecord::Relation
+  PrivateAssociationRelation = ActiveRecord::AssociationRelation
+  PrivateAssociationRelationWhereChain = ActiveRecord::AssociationRelation
+  PrivateCollectionProxy = ActiveRecord::Associations::CollectionProxy
 end

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "happy_town_supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?project_ref=ysiwerjzufsrkyqjftal&read_only=true&features=docs%2Cdatabase",
+      "enabled": true
+    }
+  }
+}
