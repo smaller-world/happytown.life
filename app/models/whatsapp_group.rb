@@ -97,9 +97,9 @@ class WhatsappGroup < ApplicationRecord
 
   # == Messaging ==
 
-  sig { params(text: String, reply_to: T.nilable(String)).void }
-  def send_message(text, reply_to: nil)
-    wa_sender_api.send_message(to: jid, text:, reply_to:)
+  sig { params(text: String, mentioned_jids: T.nilable(T::Array[String])).void }
+  def send_message(text, mentioned_jids: nil)
+    wa_sender_api.send_message(to: jid, text:, mentioned_jids:)
   end
 
   sig do

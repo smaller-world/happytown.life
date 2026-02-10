@@ -43,6 +43,12 @@ class WhatsappUser < ApplicationRecord
             phone: { possible: true, types: :mobile, extensions: false },
             allow_nil: true
 
+  # == Mentions ==
+  sig { returns(String) }
+  def mention_token
+    "@#{lid.delete_suffix("@lid")}"
+  end
+
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappUser) }

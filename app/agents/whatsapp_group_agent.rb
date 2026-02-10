@@ -85,33 +85,38 @@ class WhatsappGroupAgent < ApplicationAgent
       Rails.logger.info("Sending message to group (#{jid}): #{message}")
     end
     group!.send_message(message)
-    render_text("Message sent successfully.")
+    reply_with("Message sent successfully.")
   rescue => error
     tag_logger do
       Rails.logger.error(
         "Failed to send message to group (#{jid}): #{error.message}",
       )
     end
-    render_text("Failed to send message: #{error.message}")
+    reply_with("Failed to send message: #{error.message}")
   end
 
   sig { params(message: String).void }
   def send_reply(message:)
-    whatsapp_id = message!.whatsapp_id
+    sender = message!.sender!
     tag_logger do
       Rails.logger.info(
-        "Sending reply to message (#{whatsapp_id}): #{message}",
+        "Sending reply to user (#{sender.lid}): #{message}",
       )
     end
-    group!.send_message(message, reply_to: whatsapp_id)
-    render_text("Reply sent successfully.")
-  rescue => error
-    tag_logger do
-      Rails.logger.error(
-        "Failed to send reply to message (#{whatsapp_id}): #{error.message}",
+    begin
+      group!.send_message(
+        "#{sender.mention_token} #{message}",
+        mentioned_jids: [sender.lid],
       )
+      reply_with("Reply sent successfully.")
+    rescue => error
+      tag_logger do
+        Rails.logger.error(
+          "Failed to send reply to user (#{sender.lid}): #{error.message}",
+        )
+      end
+      reply_with("Failed to send reply: #{error.message}")
     end
-    render_text("Failed to send reply: #{error.message}")
   end
 
   private
@@ -149,7 +154,7 @@ class WhatsappGroupAgent < ApplicationAgent
   end
 
   sig { params(text: String).void }
-  def render_text(text)
+  def reply_with(text)
     prompt(content_type: "text/plain") do |format|
       format.text { render plain: text }
     end
