@@ -166,12 +166,10 @@ class WhatsappGroup
     config.finder_methods = FinderMethods
   end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def friendly_id
-    if (subject = self[:subject])
+    if (subject = self[:subject] && (id = self[:id]))
       "#{subject[..32].strip.parameterize}-#{id.delete("-")}"
-    else
-      id
     end
   end
 end
