@@ -82,7 +82,7 @@ class WaSenderApiController < ApplicationController
 
   sig { returns(String) }
   def whatsapp_jid
-    Rails.configuration.x.whatsapp_jid!
+    Rails.configuration.x.whatsapp_jid
   end
 
   # == Callbacks ==

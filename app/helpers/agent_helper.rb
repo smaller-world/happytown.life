@@ -6,7 +6,7 @@ module AgentHelper
 
   sig { returns(String) }
   def application_jid
-    Rails.configuration.x.whatsapp_jid!
+    Rails.configuration.x.whatsapp_jid
   end
 
   sig { params(user: WhatsappUser).returns(String) }

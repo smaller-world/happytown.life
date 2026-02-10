@@ -29,7 +29,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   sig { returns(String) }
   def self.application_jid
-    Rails.configuration.x.whatsapp_jid!
+    Rails.configuration.x.whatsapp_jid
   end
 
   delegate :application_jid, to: :class

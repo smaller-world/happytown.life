@@ -78,7 +78,7 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def import_memberships
-    participants = wa_sender_api.group_participants(id)
+    participants = wa_sender_api.group_participants(jid)
     self.memberships = participants.map do |data|
       user = WhatsappUser.find_or_initialize_by(lid: data.fetch("id"))
       WhatsappGroupMembership.new(user:, admin: data["admin"])
