@@ -24,6 +24,32 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappGroup < ApplicationRecord
+  extend FriendlyId
+
+  # == FriendlyId ==
+
+  module FinderMethods
+    include FriendlyId::FinderMethods
+
+    private
+
+    def parse_friendly_id(value)
+      value.split("-").last
+    end
+  end
+
+  friendly_id do |config|
+    config.base = :id
+    config.finder_methods = FinderMethods
+  end
+
+  sig { returns(T.nilable(String)) }
+  def friendly_id
+    if (subject = self[:subject]) && (id = self[:id])
+      "#{subject[..32].strip.parameterize}-#{id.delete("-")}"
+    end
+  end
+
   # == Attributes ==
 
   # sig { returns(T::Boolean) }
@@ -142,31 +168,5 @@ class WhatsappGroup < ApplicationRecord
   sig { returns(WaSenderApi) }
   def wa_sender_api
     HappyTown.application.wa_sender_api
-  end
-end
-
-class WhatsappGroup
-  extend FriendlyId
-
-  module FinderMethods
-    include FriendlyId::FinderMethods
-
-    private
-
-    def parse_friendly_id(value)
-      value.split("-").last
-    end
-  end
-
-  friendly_id do |config|
-    config.base = :id
-    config.finder_methods = FinderMethods
-  end
-
-  sig { returns(T.nilable(String)) }
-  def friendly_id
-    if (subject = self[:subject] && (id = self[:id]))
-      "#{subject[..32].strip.parameterize}-#{id.delete("-")}"
-    end
   end
 end
