@@ -56,7 +56,11 @@ class WhatsappUser < ApplicationRecord
       messages = payload.dig("data", "messages")
       key = messages.fetch("key")
 
-      lid = key.fetch("participantLid")
+      lid = if key.fetch("fromMe")
+        application_jid
+      else
+        key.fetch("participantLid")
+      end
       phone_number_jid = key["participantPn"]
       phone_number = key["cleanedParticipantPn"]
       display_name = messages["pushName"]

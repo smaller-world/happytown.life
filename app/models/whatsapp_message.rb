@@ -118,11 +118,6 @@ class WhatsappMessage < ApplicationRecord
 
   # == Methods
 
-  sig { returns(String) }
-  def application_jid
-    Rails.configuration.x.whatsapp_jid
-  end
-
   sig { returns(T::Boolean) }
   def from_application?
     sender&.lid == application_jid

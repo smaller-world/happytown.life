@@ -24,4 +24,13 @@ class ApplicationRecord < ActiveRecord::Base
   PrivateAssociationRelation = ActiveRecord::AssociationRelation
   PrivateAssociationRelationWhereChain = ActiveRecord::AssociationRelation
   PrivateCollectionProxy = ActiveRecord::Associations::CollectionProxy
+
+  # == Helpers ==
+
+  sig { returns(String) }
+  def self.application_jid
+    Rails.configuration.x.whatsapp_jid
+  end
+
+  delegate :application_jid, to: :class
 end
