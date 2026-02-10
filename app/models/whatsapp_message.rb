@@ -41,8 +41,7 @@ class WhatsappMessage < ApplicationRecord
   belongs_to :group, class_name: "WhatsappGroup", inverse_of: :messages
   belongs_to :sender, class_name: "WhatsappUser", autosave: true
 
-  has_one :quoted_message, class_name: "WhatsappMessage", dependent: :nullify
-  has_one :quoted_user, class_name: "WhatsappUser", dependent: :nullify
+  belongs_to :quoted_message, class_name: "WhatsappMessage", optional: true
 
   has_many :mentions,
            class_name: "WhatsappMessageMention",
