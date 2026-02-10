@@ -56,13 +56,13 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { void }
   def introduce_yourself
-    prompt(tools: [SEND_MESSAGE_TOOL])
+    prompt(tools: [SEND_MESSAGE_TOOL], tool_choice: "required")
   end
 
   sig { void }
   def reply
     @message = message!
-    prompt(tools: [SEND_REPLY_TOOL])
+    prompt(tools: [SEND_REPLY_TOOL], tool_choice: "required")
   end
 
   # == Tools ==
