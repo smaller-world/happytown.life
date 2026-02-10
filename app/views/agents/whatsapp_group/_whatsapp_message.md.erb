@@ -1,23 +1,24 @@
-<% if (index = local_assigns[:thread_index]) %>
+<% index = local_assigns[:thread_index] %>
+<% if index %>
 ---------- BEGIN WHATSAPP MESSAGE (#<%= index + 1 %>) ----------
 <% else %>
 ---------- BEGIN WHATSAPP MESSAGE ----------
 <% end %>
-MESSAGE ID: <%= @message.whatsapp_id %>
-TIMESTAMP: <%= l @message.timestamp %>
+MESSAGE ID: <%= message.whatsapp_id %>
+TIMESTAMP: <%= l message.timestamp %>
 
-WHATSAPP USER <%= whatsapp_user_identity(@message.sender) %> SENT:
+WHATSAPP USER <%= whatsapp_user_identity(message.sender) %> SENT:
 """
-<%= message_body_with_inlined_mentions(@message) %>
+<%= message_body_with_inlined_mentions(message) %>
 """
-<% if (quoted_conversation = @message.quoted_conversation) %>
+<% if (quoted_conversation = message.quoted_conversation) %>
 
-IN RESPONSE TO THIS MESSAGE SENT BY <%= quoted_participant_identity(@message) %>:
+IN RESPONSE TO THIS MESSAGE SENT BY <%= quoted_participant_identity(message) %>:
 > """
 > <%= quoted_conversation %>
 > """
 <% end %>
-<% if (index = local_assigns[:thread_index]) %>
+<% if index %>
 ---------- END WHATSAPP MESSAGE (#<%= index + 1 %>) ----------
 <% else %>
 ---------- END WHATSAPP MESSAGE ----------

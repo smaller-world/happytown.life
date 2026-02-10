@@ -120,6 +120,20 @@ class WhatsappMessage < ApplicationRecord
     sender&.lid == application_jid
   end
 
+  sig do
+    params(limit: T.nilable(Integer))
+      .returns(WhatsappMessage::PrivateAssociationRelation)
+  end
+  def previous_messages(limit: nil)
+    scope = group!.messages
+      .where(timestamp: ...timestamp)
+      .order(timestamp: :desc)
+    if limit
+      scope = scope.limit(limit)
+    end
+    scope.distinct
+  end
+
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappMessage) }

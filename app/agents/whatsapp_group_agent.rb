@@ -4,7 +4,7 @@
 class WhatsappGroupAgent < ApplicationAgent
   # == Hooks ==
 
-  before_generation :set_instructions_context
+  before_action :set_instructions_context
   around_generation :send_typing_indicator_while
 
   # == Tool Definitions ==

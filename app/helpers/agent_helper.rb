@@ -12,7 +12,7 @@ module AgentHelper
   sig { params(user: WhatsappUser).returns(String) }
   def whatsapp_user_identity(user)
     if user.lid == application_jid
-      "YOU"
+      "(YOURSELF)"
     elsif (name = user.display_name)
       "#{name} <#{user.lid}>"
     else
@@ -23,7 +23,7 @@ module AgentHelper
   sig { params(message: WhatsappMessage).returns(String) }
   def quoted_participant_identity(message)
     if message.quoted_participant_jid == application_jid
-      "YOU"
+      "(YOURSELF)"
     elsif (sender = message.quoted_message&.sender)
       whatsapp_user_identity(sender)
     elsif (jid = message.quoted_participant_jid)
@@ -41,14 +41,5 @@ module AgentHelper
       body.gsub!("@#{lid}", "@#{whatsapp_user_identity(user)}")
     end
     body
-  end
-
-  sig { params(message: WhatsappMessage).returns(T::Array[WhatsappMessage]) }
-  def recent_messages_before(message)
-    message.group!.messages
-      .where(timestamp: ...message.timestamp)
-      .order(timestamp: :desc)
-      .limit(7)
-      .reverse
   end
 end

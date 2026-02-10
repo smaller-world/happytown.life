@@ -1,10 +1,13 @@
 <recent-message-history>
-<%- recent_messages_before(@message).each_with_index do |message, index| -%>
-<% if index > 0 %>
+<%- @message
+  .previous_messages(limit: 10)
+  .reverse_each
+  .each_with_index do |message, thread_index| -%>
+<% if thread_index > 0 %>
 
 
 <% end %>
-<%= render "agents/whatsapp_group/whatsapp_message", message:, thread_index: index -%>
+<%= render "agents/whatsapp_group/whatsapp_message", message:, thread_index: -%>
 <%- end -%>
 </recent-message-history>
 
