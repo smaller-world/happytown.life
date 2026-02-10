@@ -37,7 +37,7 @@ module Components
   sig do
     params(
       group: ::WhatsappGroup,
-      messages: T.nilable(T::Array[::WhatsappMessage]),
+      messages: T::Array[::WhatsappMessage],
       attributes: T.untyped,
       block: T.nilable(T.proc.params(instance: Components::Chat).void)
     ).void
@@ -146,7 +146,7 @@ module Components
     sig do
       params(
         group: ::WhatsappGroup,
-        messages: T.nilable(T::Array[::WhatsappMessage]),
+        messages: T::Array[::WhatsappMessage],
         attributes: T.untyped,
         block: T.nilable(T.proc.params(instance: Components::Chat).void)
       ).void

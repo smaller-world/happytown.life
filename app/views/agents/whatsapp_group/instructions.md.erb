@@ -15,8 +15,7 @@ your conversational style:
 <%= JSON.pretty_generate({
   name: @group.subject,
   description: @group.description,
-  publicly_accessible_message_history_url:
-    message_history_whatsapp_group_url(@group),
+  publicly_accessible_message_history_url: whatsapp_history_url(@group),
 }) %>
 ```
 </whatsapp-group-details>

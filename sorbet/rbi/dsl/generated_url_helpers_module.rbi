@@ -149,4 +149,7 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def webhook_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def whatsapp_history_url(*args); end
 end
