@@ -39,7 +39,7 @@ class WhatsappMessage < ApplicationRecord
   # == Associations ==
 
   belongs_to :group, class_name: "WhatsappGroup", inverse_of: :messages
-  belongs_to :sender, class_name: "WhatsappUser"
+  belongs_to :sender, class_name: "WhatsappUser", autosave: true
 
   has_one :quoted_message, class_name: "WhatsappMessage", dependent: :nullify
   has_one :quoted_user, class_name: "WhatsappUser", dependent: :nullify
@@ -126,7 +126,7 @@ class WhatsappMessage < ApplicationRecord
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappMessage) }
-  def self.find_or_create_from_webhook_payload!(payload)
+  def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     case event
     when "messages.upsert"
@@ -136,9 +136,9 @@ class WhatsappMessage < ApplicationRecord
         raise "Is a reaction"
       end
 
-      user = WhatsappUser.find_or_create_from_webhook_payload!(payload)
+      user = WhatsappUser.from_webhook_payload(payload)
       remote_jid = messages.fetch("remoteJid")
-      group = WhatsappGroup.find_or_initialize_by(jid: remote_jid)
+      group = WhatsappGroup.find_or_create_by!(jid: remote_jid)
 
       if (context_info = messages.dig(
         "message",
@@ -156,7 +156,7 @@ class WhatsappMessage < ApplicationRecord
 
       message_id = messages.fetch("id")
       raw_timestamp = messages.fetch("messageTimestamp")
-      WhatsappMessage.find_or_create_by!(message_id:) do |message|
+      WhatsappMessage.find_or_initialize_by(message_id:) do |message|
         message.group = group
         message.sender = user
         message.timestamp = Time.zone.at(raw_timestamp)
@@ -170,6 +170,24 @@ class WhatsappMessage < ApplicationRecord
             WhatsappUser.from_mentioned_jids(mentioned_jids)
         end
       end
+
+    when "message.sent"
+      data = payload.fetch("data")
+      key = data["key"] or raise "Missing key"
+      remote_jid = key.fetch("remoteJid")
+      message_id = key.fetch("id")
+      body = data.dig("message", "conversation") or raise "Missing message body"
+      raw_timestamp = payload.fetch("timestamp")
+
+      sender = WhatsappUser.find_or_initialize_by(lid: application_jid)
+      group = WhatsappGroup.find_or_initialize_by(jid: remote_jid)
+      WhatsappMessage.find_or_initialize_by(message_id:) do |message|
+        message.group = group
+        message.sender = sender
+        message.timestamp = Time.zone.at(raw_timestamp)
+        message.body = body
+      end
+
     else
       raise "Unsupported event: #{event}"
     end

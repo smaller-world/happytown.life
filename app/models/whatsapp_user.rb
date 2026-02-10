@@ -46,7 +46,7 @@ class WhatsappUser < ApplicationRecord
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappUser) }
-  def self.find_or_create_from_webhook_payload!(payload)
+  def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     case event
     when "messages.upsert"
@@ -67,7 +67,6 @@ class WhatsappUser < ApplicationRecord
         user.phone_number_jid = phone_number_jid
       end
       user.display_name = display_name
-      user.save!
       user
     else
       raise "Unsupported event: #{event}"

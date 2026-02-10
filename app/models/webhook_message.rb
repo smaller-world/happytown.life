@@ -26,10 +26,10 @@ class WebhookMessage < ApplicationRecord
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WebhookMessage) }
-  def self.create_from_webhook_payload!(payload)
+  def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     timestamp = Time.zone.at(payload.fetch("timestamp") / 1000.0)
     data = payload.fetch("data")
-    WebhookMessage.create!(event:, timestamp:, data:)
+    WebhookMessage.new(event:, timestamp:, data:)
   end
 end

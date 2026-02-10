@@ -112,12 +112,9 @@ class WhatsappGroup < ApplicationRecord
       .perform_later(self, text, reply_to:)
   end
 
-  sig { params(block: T.proc.void).void }
-  def indicate_typing_while(&block)
+  sig { void }
+  def send_typing_indicator
     wa_sender_api.update_presence(jid:, type: "composing")
-    yield
-  ensure
-    wa_sender_api.update_presence(jid:, type: "available")
   end
 
   sig { returns(ActiveAgent::Generation) }

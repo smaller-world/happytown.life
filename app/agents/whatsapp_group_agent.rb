@@ -5,7 +5,6 @@ class WhatsappGroupAgent < ApplicationAgent
   # == Hooks ==
 
   before_generation :set_instructions_context
-  around_generation :indicate_typing_while
 
   # == Tool Definitions ==
 
@@ -80,6 +79,7 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { params(message: String).void }
   def send_message(message:)
+    send_typing_indicator
     group!.send_message(message)
     render_text("Message sent successfully.")
   rescue => error
@@ -88,6 +88,7 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { params(message: String).void }
   def send_reply(message:)
+    send_typing_indicator
     group!.send_message(message, reply_to: message!.message_id)
     render_text("Reply sent successfully.")
   rescue => error
@@ -103,6 +104,8 @@ class WhatsappGroupAgent < ApplicationAgent
     params.fetch(:group)
   end
 
+  delegate :send_typing_indicator, to: :group!
+
   sig { returns(WhatsappMessage) }
   def message!
     params.fetch(:message)
@@ -111,11 +114,6 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { void }
   def set_instructions_context
     @group = group!
-  end
-
-  sig { params(block: T.proc.void).void }
-  def indicate_typing_while(&block)
-    group!.indicate_typing_while(&block)
   end
 
   sig { params(text: String).void }

@@ -19,16 +19,18 @@ class WaSenderApiController < ApplicationController
     event = payload.fetch("event")
 
     # Log webhook message
-    WebhookMessage.create_from_webhook_payload!(payload)
+    webhook_message = WebhookMessage.from_webhook_payload(payload)
+    webhook_message.save!
 
     # Handle event
     case event
-    when "messages.upsert"
+    when "messages.upsert", "message.sent"
       begin
-        WhatsappMessage.find_or_create_from_webhook_payload!(payload)
+        message = WhatsappMessage.from_webhook_payload(payload)
+        message.save!
       rescue => error
         Rails.logger.warn(
-          "Couldn't create WhatsappMessage during 'messages.upsert': #{error.message}",
+          "Couldn't create WhatsappMessage during '#{event}': #{error.message}",
         )
       end
     when "groups.upsert"
