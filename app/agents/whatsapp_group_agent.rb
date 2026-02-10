@@ -105,7 +105,7 @@ class WhatsappGroupAgent < ApplicationAgent
     end
     begin
       group!.send_message(
-        "#{sender.mention_token} #{message}",
+        "#{sender.embedded_mention} #{message}",
         mentioned_jids: [sender.lid],
       )
       reply_with("Reply sent successfully.")

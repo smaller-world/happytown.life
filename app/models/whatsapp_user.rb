@@ -44,9 +44,15 @@ class WhatsappUser < ApplicationRecord
             allow_nil: true
 
   # == Mentions ==
+
   sig { returns(String) }
-  def mention_token
-    "@#{lid.delete_suffix("@lid")}"
+  def embedded_mention
+    "@" + (phone_number_jid || cleaned_lid)
+  end
+
+  sig { returns(String) }
+  def cleaned_lid
+    lid.delete_suffix("@lid")
   end
 
   # == Helpers ==
