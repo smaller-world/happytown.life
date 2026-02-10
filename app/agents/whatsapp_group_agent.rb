@@ -5,7 +5,7 @@ class WhatsappGroupAgent < ApplicationAgent
   # == Hooks ==
 
   before_action :set_instructions_context
-  around_generation :indicate_typing_while
+  around_action :indicate_typing_while
 
   # == Tool Definitions ==
 
