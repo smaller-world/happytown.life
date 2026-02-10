@@ -1,6 +1,8 @@
 amends "package://github.com/jdx/hk/releases/download/v1.35.0/hk@1.35.0#/Config.pkl"
 import "package://github.com/jdx/hk/releases/download/v1.35.0/hk@1.35.0#/Builtins.pkl"
 
+exclude = List(".kamal/hooks/*.sample", "vendor/**/*", "node_modules/**/*", "tmp/**/*")
+
 local linters = new Mapping<String, Step> {
   // Add linters here. Examples:
   ["prettier"] = (Builtins.prettier) {
@@ -16,21 +18,13 @@ local linters = new Mapping<String, Step> {
     check = "bin/tsc --noEmit -p {{ workspace_indicator }}"
   }
   ["rubocop"] = (Builtins.rubocop) {
-    exclude = List("vendor/**/*")
+    exclude = List("bin/*")
     check = "bin/rubocop --force-exclusion {{ files }}"
     check_list_files = "bin/rubocop --force-exclusion --list-target-files {{ files }}"
     fix = "bin/rubocop --force-exclusion --autocorrect {{ files }}"
   }
   ["sorbet"] = (Builtins.sorbet) {
-    exclude =
-      List(
-        ".kamal/hooks/*.sample",
-        "sorbet/tapioca/compilers/**/*.rb",
-        "bin/*",
-        "tmp/**/*",
-        "vendor/**/*",
-        "node_modules/**/*",
-      )
+    exclude = List("sorbet/tapioca/compilers/**/*.rb", "bin/*")
     check = "bin/srb tc {{ files }}"
     fix = "bin/srb tc --autocorrect {{ files }}"
   }
@@ -48,10 +42,12 @@ hooks {
     stash = "git"
     steps = linters
   }
+
   ["fix"] {
     fix = true
     steps = linters
   }
+
   ["check"] {
     steps = linters
   }
