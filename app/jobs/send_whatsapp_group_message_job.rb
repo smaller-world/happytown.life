@@ -8,8 +8,8 @@ class SendWhatsappGroupMessageJob < ApplicationJob
 
   # == Job ==
 
-  sig { params(group: WhatsappGroup, text: String).void }
-  def perform(group, text)
-    group.send_message(text)
+  sig { params(group: WhatsappGroup, text: String, options: T.untyped).void }
+  def perform(group, text, **options)
+    group.send_message(text, **options)
   end
 end
