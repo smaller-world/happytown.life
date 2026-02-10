@@ -99,7 +99,7 @@ class WhatsappGroup < ApplicationRecord
 
   sig { params(text: String, reply_to: T.nilable(String)).void }
   def send_message(text, reply_to: nil)
-    wa_sender_api.send_message(to: id, text:, reply_to:)
+    wa_sender_api.send_message(to: jid, text:, reply_to:)
   end
 
   sig do
