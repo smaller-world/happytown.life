@@ -4,8 +4,10 @@
 
 import { application } from "./application";
 import HelloController from "./hello_controller";
+import ScrollToBottomController from "./scroll_to_bottom_controller";
 import TooltipController from "./tooltip_controller";
 // import LoremPicsumController from "./lorem_picsum_controller";
 
 application.register("hello", HelloController);
 application.register("tooltip", TooltipController);
+application.register("scroll-to-bottom", ScrollToBottomController);

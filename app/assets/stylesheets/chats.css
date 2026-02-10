@@ -1,16 +1,27 @@
 .chat_card {
-  @apply flex-1 pb-0;
+  @apply min-h-0 flex-1;
+  @apply pb-0;
 }
 
 .chat_card_content {
   background-image: url("chat_background.jpg");
 
-  @apply flex-1 bg-cover py-4;
+  @apply min-h-0 flex-1;
+  @apply overflow-y-auto bg-cover py-4;
+}
+
+.chat_message {
+  @apply flex items-end gap-x-2;
+
+  &[data-from-application] {
+    @apply justify-end;
+  }
 }
 
 .chat_message_body {
-  @apply max-w-96 min-w-0 px-2 py-1;
+  @apply max-w-96 min-w-0 overflow-y-auto px-2 py-1;
   @apply rounded-lg border bg-background text-sm;
+  @apply group-data-from-application/message:bg-[#D9FDD3];
 
   time {
     @apply shrink-0 text-xs text-muted-foreground lowercase;

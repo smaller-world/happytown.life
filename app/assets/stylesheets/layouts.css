@@ -9,7 +9,7 @@
   }
 
   .page_container {
-    @apply w-full max-w-2xl flex-1 self-center p-4;
+    @apply w-full max-w-2xl self-center p-4;
   }
 
   .header_navigation {

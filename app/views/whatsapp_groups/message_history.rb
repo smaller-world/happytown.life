@@ -24,8 +24,8 @@ class Views::WhatsappGroups::MessageHistory < Views::Base
 
   sig { override.params(content: T.nilable(T.proc.void)).void }
   def view_template(&content)
-    Components::Layout() do |layout|
-      layout.page_container(class: "flex-1 flex flex-col gap-y-6") do
+    Components::Layout(body_class: "max-h-dvh") do |layout|
+      layout.page_container(class: "flex-1 min-h-0 flex flex-col gap-y-6") do
         Components::Card(size: :sm, class: "chat_card") do |card|
           card.header(class: "flex items-center gap-x-3 bg-background") do
             if (url = @group.profile_picture_url)
@@ -40,7 +40,12 @@ class Views::WhatsappGroups::MessageHistory < Views::Base
               end
             end
           end
-          card.content(class: "chat_card_content") do
+          card.content(
+            class: "chat_card_content",
+            data: {
+              controller: "scroll-to-bottom",
+            },
+          ) do
             ul(class: "space-y-2") do
               @messages.each do |message|
                 li do
@@ -60,14 +65,21 @@ class Views::WhatsappGroups::MessageHistory < Views::Base
 
   sig { params(message: WhatsappMessage).void }
   def render_chat_message(message)
-    div(class: "flex items-end gap-x-2") do
+    div(
+      class: "chat_message group/message",
+      data: {
+        from_application: message.from_application?,
+      },
+    ) do
       # image_tag(message.sender!.profile_picture_url, class: "size-12 rounded-full")
       div(class: "chat_message_body") do
-        div(class: "text-accent font-semibold") do
-          sender = message.sender!
-          sender.display_name ||
-            sender.phone&.international(true) ||
-            sender.lid
+        unless message.from_application?
+          div(class: "text-accent font-semibold") do
+            sender = message.sender!
+            sender.display_name ||
+              sender.phone&.international(true) ||
+              sender.lid
+          end
         end
         div(class: "flex items-end gap-x-2") do
           p(class: "wrap-break-word") { message.body }
