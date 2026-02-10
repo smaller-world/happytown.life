@@ -44,7 +44,7 @@ class WhatsappGroup < ApplicationRecord
 
   # == Hooks ==
 
-  after_create_commit :introduce_yourself
+  after_create_commit :send_intro_later
   after_create_commit :import_metadata_later
   after_create_commit :import_memberships_later
 
@@ -121,13 +121,21 @@ class WhatsappGroup < ApplicationRecord
   end
 
   sig { returns(ActiveAgent::Generation) }
-  def introduce_yourself_prompt
+  def intro_prompt
     WhatsappGroupAgent.with(group: self).introduce_yourself
   end
 
   sig { void }
-  def introduce_yourself
-    introduce_yourself_prompt.generate_now
+  def send_intro
+    intro_prompt.generate_now
+  end
+
+  sig do
+    params(options: T.untyped)
+      .returns(T.any(SendWhatsappGroupIntroJob, FalseClass))
+  end
+  def send_intro_later(**options)
+    SendWhatsappGroupIntroJob.set(**options).perform_later(self)
   end
 
   private

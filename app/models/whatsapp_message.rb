@@ -92,7 +92,7 @@ class WhatsappMessage < ApplicationRecord
 
   sig { void }
   def handle
-    reply unless handled?
+    send_reply_later unless handled?
   end
 
   # == Replying ==
@@ -103,9 +103,17 @@ class WhatsappMessage < ApplicationRecord
   end
 
   sig { void }
-  def reply
+  def send_reply
     reply_prompt.generate_now
     update!(handled_at: Time.current)
+  end
+
+  sig do
+    params(options: T.untyped)
+      .returns(T.any(SendWhatsappGroupReplyJob, FalseClass))
+  end
+  def send_reply_later(**options)
+    SendWhatsappGroupReplyJob.set(**options).perform_later(self)
   end
 
   # == Methods
