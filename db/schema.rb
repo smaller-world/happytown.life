@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_214150) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_10_000319) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -188,7 +188,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_214150) do
     t.timestamptz "memberships_imported_at"
     t.timestamptz "metadata_imported_at"
     t.string "profile_picture_url"
-    t.timestamptz "record_full_message_history_since"
     t.string "subject"
     t.datetime "updated_at", null: false
     t.index ["jid"], name: "index_whatsapp_groups_on_jid", unique: true

@@ -27,9 +27,9 @@ class Components::Layout < Components::Base
     @site_title = site_title
     @page_title = T.let(
       if page_title.is_a?(Array)
-        page_title.reverse.join(" | ")
+        page_title.reverse.compact.join(" | ")
       else
-        page_title.to_s
+        page_title
       end,
       T.nilable(String),
     )

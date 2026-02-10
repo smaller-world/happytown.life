@@ -28,6 +28,10 @@ class WaSenderApiController < ApplicationController
       if (message = WhatsappMessage.from_webhook_payload(payload))
         message.save!
       end
+    when "groups.upsert"
+      if (group = WhatsappGroup.find_or_create_by!(jid: payload.fetch("jid")))
+        group.import_metadata_later unless group.previously_new_record?
+      end
     when "group-participants.update"
       data = payload.fetch("data")
       if (group = WhatsappGroup.find_by(jid: data.fetch("jid")))

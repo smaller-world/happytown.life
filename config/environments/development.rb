@@ -85,5 +85,9 @@ Rails.application.configure do
   # Hot-reload page when components change
   config.hotwire.spark.html_paths << "app/components"
 
+  # Allowed development hosts
   config.hosts += [/.+\.ngrok-free\.app/, "kaibook.itskai.me"]
+
+  # Mailer default URL options
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 end

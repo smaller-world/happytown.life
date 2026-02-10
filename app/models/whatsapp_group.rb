@@ -6,16 +6,15 @@
 #
 # Table name: whatsapp_groups
 #
-#  id                                :uuid             not null, primary key
-#  description                       :text
-#  jid                               :string           not null
-#  memberships_imported_at           :timestamptz
-#  metadata_imported_at              :timestamptz
-#  profile_picture_url               :string
-#  record_full_message_history_since :timestamptz
-#  subject                           :string
-#  created_at                        :datetime         not null
-#  updated_at                        :datetime         not null
+#  id                      :uuid             not null, primary key
+#  description             :text
+#  jid                     :string           not null
+#  memberships_imported_at :timestamptz
+#  metadata_imported_at    :timestamptz
+#  profile_picture_url     :string
+#  subject                 :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
 #
 # Indexes
 #
@@ -25,6 +24,11 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappGroup < ApplicationRecord
+  # == Attributes ==
+
+  # sig { returns(T::Boolean) }
+  # def record_full_message_history? = record_full_message_history_since?
+
   # == Associations ==
 
   has_many :messages,

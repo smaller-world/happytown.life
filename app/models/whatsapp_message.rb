@@ -56,6 +56,11 @@ class WhatsappMessage < ApplicationRecord
     group or raise ActiveRecord::RecordNotFound, "Missing associated group"
   end
 
+  sig { returns(WhatsappUser) }
+  def sender!
+    sender or raise ActiveRecord::RecordNotFound, "Missing sender"
+  end
+
   # == Hooks ==
 
   after_create_commit :handle, if: :requires_handling?

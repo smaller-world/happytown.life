@@ -1,0 +1,17 @@
+.chat_card {
+  @apply pb-0;
+}
+
+.chat_card_content {
+  background-image: url("chat_background.jpg");
+
+  @apply bg-cover py-4;
+}
+
+.chat_message_body {
+  @apply max-w-96 rounded-lg border bg-background px-2 py-1 text-sm;
+
+  time {
+    @apply text-xs text-muted-foreground lowercase;
+  }
+}

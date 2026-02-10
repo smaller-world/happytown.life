@@ -9,21 +9,21 @@ class WhatsappGroupAgent < ApplicationAgent
 
   # == Tool Definitions ==
 
-  UPDATE_SETTINGS_TOOL = {
-    name: "update_settings",
-    description: "update the group's settings. use when a group admin asks " \
-      "to change a setting.",
-    parameters: {
-      type: "object",
-      properties: {
-        record_full_message_history: {
-          type: "boolean",
-          description: "record full message history for this group?",
-        },
-      },
-      required: ["record_full_message_history"],
-    },
-  }
+  # UPDATE_SETTINGS_TOOL = {
+  #   name: "update_settings",
+  #   description: "update the group's settings. use when a group admin asks " \
+  #     "to change a setting.",
+  #   parameters: {
+  #     type: "object",
+  #     properties: {
+  #       record_full_message_history: {
+  #         type: "boolean",
+  #         description: "record full message history for this group?",
+  #       },
+  #     },
+  #     required: ["record_full_message_history"],
+  #   },
+  # }
 
   SEND_MESSAGE_TOOL = {
     name: "send_message",
@@ -62,21 +62,21 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { void }
   def reply
     @message = message!
-    prompt(tools: [SEND_REPLY_TOOL, UPDATE_SETTINGS_TOOL])
+    prompt(tools: [SEND_REPLY_TOOL])
   end
 
   # == Tools ==
 
-  sig { params(record_full_message_history: T::Boolean).void }
-  def update_settings(record_full_message_history:)
-    group!.update!(
-      record_full_message_history_since:
-        record_full_message_history ? Time.current : nil,
-    )
-    render_text("Settings updated successfully.")
-  rescue => error
-    render_text("Failed to update settings: #{error.message}")
-  end
+  # sig { params(record_full_message_history: T::Boolean).void }
+  # def update_settings(record_full_message_history:)
+  #   group!.update!(
+  #     record_full_message_history_since:
+  #       record_full_message_history ? Time.current : nil,
+  #   )
+  #   render_text("Settings updated successfully.")
+  # rescue => error
+  #   render_text("Failed to update settings: #{error.message}")
+  # end
 
   sig { params(message: String).void }
   def send_message(message:)
@@ -111,10 +111,6 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { void }
   def set_instructions_context
     @group = group!
-    @group_settings = {
-      record_full_message_history:
-        @group.record_full_message_history_since.present?,
-    }
   end
 
   sig { params(block: T.proc.void).void }
