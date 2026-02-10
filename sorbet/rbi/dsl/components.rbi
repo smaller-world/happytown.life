@@ -28,11 +28,21 @@ module Components
   sig do
     params(
       size: ::Symbol,
-      options: T.untyped,
+      attributes: T.untyped,
       block: T.nilable(T.proc.params(instance: Components::Card).void)
     ).void
   end
-  def Card(size: T.unsafe(nil), **options, &block); end
+  def Card(size: T.unsafe(nil), **attributes, &block); end
+
+  sig do
+    params(
+      group: ::WhatsappGroup,
+      messages: T.nilable(T::Array[::WhatsappMessage]),
+      attributes: T.untyped,
+      block: T.nilable(T.proc.params(instance: Components::Chat).void)
+    ).void
+  end
+  def Chat(group:, messages: T.unsafe(nil), **attributes, &block); end
 
   sig do
     params(
@@ -127,11 +137,21 @@ module Components
     sig do
       params(
         size: ::Symbol,
-        options: T.untyped,
+        attributes: T.untyped,
         block: T.nilable(T.proc.params(instance: Components::Card).void)
       ).void
     end
-    def Card(size: T.unsafe(nil), **options, &block); end
+    def Card(size: T.unsafe(nil), **attributes, &block); end
+
+    sig do
+      params(
+        group: ::WhatsappGroup,
+        messages: T.nilable(T::Array[::WhatsappMessage]),
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(instance: Components::Chat).void)
+      ).void
+    end
+    def Chat(group:, messages: T.unsafe(nil), **attributes, &block); end
 
     sig do
       params(

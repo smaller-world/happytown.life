@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 class Components::Card < Components::Base
-  sig { params(size: Symbol, options: T.untyped).void }
-  def initialize(size: :default, **options)
-    super(**options)
+  sig { params(size: Symbol, attributes: T.untyped).void }
+  def initialize(size: :default, **attributes)
+    super(**attributes)
     @size = size
   end
 

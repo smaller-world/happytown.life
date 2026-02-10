@@ -8,6 +8,22 @@
 
   @apply min-h-0 flex-1;
   @apply overflow-y-auto bg-cover py-4;
+  @apply flex flex-col;
+
+  &:has(.chat_message) {
+    .chat_empty_indicator {
+      @apply hidden;
+    }
+  }
+}
+
+.chat_messages {
+  @apply space-y-2;
+}
+
+.chat_empty_indicator {
+  @apply self-center rounded-md px-2 py-1;
+  @apply bg-background text-sm text-muted-foreground;
 }
 
 .chat_message {
