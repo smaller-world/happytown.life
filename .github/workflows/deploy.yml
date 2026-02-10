@@ -60,3 +60,4 @@ jobs:
           projects: happytown
           disable_telemetry: true
           sourcemaps: ./app/assets/builds/
+          ignore_missing: true
