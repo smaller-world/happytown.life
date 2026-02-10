@@ -52,8 +52,8 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def import_metadata
-    metadata = wa_sender_api.group_metadata(jid)
-    profile_picture_url = if (data = wa_sender_api.group_profile_picture(jid))
+    metadata = wa_sender_api.group_metadata(jid:)
+    profile_picture_url = if (data = wa_sender_api.group_profile_picture(jid:))
       data.fetch("imgUrl")
     end
     update!(
@@ -78,7 +78,7 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def import_memberships
-    participants = wa_sender_api.group_participants(jid)
+    participants = wa_sender_api.group_participants(jid:)
     self.memberships = participants.map do |data|
       user = WhatsappUser.find_or_initialize_by(lid: data.fetch("id"))
       WhatsappGroupMembership.new(user:, admin: data["admin"])

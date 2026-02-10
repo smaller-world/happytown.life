@@ -1,14 +1,20 @@
 # typed: true
 # frozen_string_literal: true
 
+require "rails"
+require "httparty"
+
 class WaSenderApi
   extend T::Sig
+
   include HTTParty
 
   # == Configuration ==
 
   base_uri "https://www.wasenderapi.com/api"
   format :json
+  logger Rails.logger, Rails.configuration.log_level
+  debug_output Rails.logger
 
   sig { params(api_key: String).void }
   def initialize(api_key:)
@@ -26,9 +32,9 @@ class WaSenderApi
     end
   end
 
-  sig { params(jid: String, type: String, delay_ms: T.nilable(Integer)).void }
-  def update_presence(jid:, type:, delay_ms: nil)
-    body = { jid:, type:, "delayMs" => delay_ms }.compact
+  sig { params(jid: String, type: String).void }
+  def update_presence(jid:, type:)
+    body = { jid:, type: }
     response = self.class.post("/send-presence-update", body:)
     unless response.success?
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
@@ -36,19 +42,19 @@ class WaSenderApi
   end
 
   sig { params(jid: String).returns(T::Hash[String, T.untyped]) }
-  def group_metadata(jid)
+  def group_metadata(jid:)
     response = self.class.get("/groups/#{jid}/metadata")
     response_data!(response)
   end
 
   sig { params(jid: String).returns(T::Array[T::Hash[String, T.untyped]]) }
-  def group_participants(jid)
+  def group_participants(jid:)
     response = self.class.get("/groups/#{jid}/participants")
     response_data!(response)
   end
 
   sig { params(jid: String).returns(T.nilable(T::Hash[String, T.untyped])) }
-  def group_profile_picture(jid)
+  def group_profile_picture(jid:)
     response = self.class.get("/groups/#{jid}/picture")
     if response.code == 422
       nil
