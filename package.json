@@ -13,6 +13,7 @@
     "@fontsource-variable/figtree": "^5.2.10",
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.23",
+    "@sentry/browser": "^10.38.0",
     "@tailwindcss/cli": "^4.1.18",
     "local-time": "^3.0.3",
     "requestidlecallback-polyfill": "^1.0.2",

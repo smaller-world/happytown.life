@@ -87,6 +87,10 @@ gem "phonelib", "~> 0.10.16"
 # Cache-friendly, client-side local time
 gem "local_time"
 
+# Log errors to Sentry
+gem "sentry-rails"
+gem "sentry-ruby"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :windows], require: "debug/prelude"
