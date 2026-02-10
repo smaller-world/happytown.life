@@ -19,7 +19,7 @@ class WaSenderApi
 
   sig { params(to: String, text: String, reply_to: T.nilable(String)).void }
   def send_message(to:, text:, reply_to: nil)
-    body = { to:, text:, reply_to: }.compact
+    body = { to:, text:, "replyTo" => reply_to }.compact
     response = self.class.post("/send-message", body:)
     unless response.success?
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
