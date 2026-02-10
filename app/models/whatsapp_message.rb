@@ -129,7 +129,7 @@ class WhatsappMessage < ApplicationRecord
   def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     case event
-    when "message.upsert"
+    when "messages.upsert"
       messages = payload.dig("data", "messages") or return
       return if messages.dig("message", "reactionMessage").present?
       return if messages.dig("messageBody").nil?

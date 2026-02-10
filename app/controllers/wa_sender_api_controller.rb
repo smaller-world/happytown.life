@@ -24,7 +24,7 @@ class WaSenderApiController < ApplicationController
 
     # Handle event
     case event
-    when "message.upsert"
+    when "messages.upsert"
       if (message = WhatsappMessage.from_webhook_payload(payload))
         message.save!
       end
