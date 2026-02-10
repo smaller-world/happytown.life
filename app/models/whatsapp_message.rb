@@ -127,32 +127,36 @@ class WhatsappMessage < ApplicationRecord
     event = payload.fetch("event")
     case event
     when "messages.upsert"
-      messages = payload.dig("data", "messages") or raise "Missing messages"
-      body = messages["messageBody"] or raise "Missing message body"
-      if messages.dig("message", "reactionMessage").present?
+      messages_data = payload.dig("data", "messages") or
+        raise "Missing messages"
+      body = messages_data["messageBody"] or raise "Missing message body"
+      if messages_data.dig("message", "reactionMessage").present?
         raise "Is a reaction"
       end
 
       user = WhatsappUser.from_webhook_payload(payload)
-      remote_jid = messages.fetch("remoteJid")
+      remote_jid = messages_data.fetch("remoteJid")
       group = WhatsappGroup.find_or_create_by!(jid: remote_jid)
 
-      if (context_info = messages.dig(
+      quoted_message = if (context_info = messages_data.dig(
         "message",
         "extendedTextMessage",
         "contextInfo",
       ))
         mentioned_jids = context_info.fetch("mentionedJid") { [] }
-        quoted_conversation = context_info.dig("quotedMessage", "conversation")
-        if quoted_conversation
+        if (message_data = context_info["quotedMessage"])
+          quoted_conversation =
+            message_data["conversation"] ||
+            message_data.dig("extendedTextMessage", "text") or
+            raise "Missing quoted conversation"
           quoted_participant_jid = context_info.fetch("participant")
           stanza_id = context_info.fetch("stanzaId")
-          quoted_message = WhatsappMessage.find_by(whatsapp_id: stanza_id)
+          WhatsappMessage.find_by(whatsapp_id: stanza_id)
         end
       end
 
-      whatsapp_id = messages.fetch("id")
-      raw_timestamp = messages.fetch("messageTimestamp")
+      whatsapp_id = messages_data.fetch("id")
+      raw_timestamp = messages_data.fetch("messageTimestamp")
       WhatsappMessage.find_or_initialize_by(whatsapp_id:) do |message|
         message.group = group
         message.sender = user
