@@ -125,19 +125,18 @@ class WhatsappMessage < ApplicationRecord
 
   # == Helpers ==
 
-  sig do
-    params(payload: T::Hash[String, T.untyped])
-      .returns(T.nilable(WhatsappMessage))
-  end
+  sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappMessage) }
   def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     case event
     when "messages.upsert"
-      messages = payload.dig("data", "messages") or return
-      return if messages.dig("message", "reactionMessage").present?
-      return if messages.dig("messageBody").nil?
+      messages = payload.dig("data", "messages") or raise "Missing messages"
+      body = messages["messageBody"] or raise "Missing message body"
+      if messages.dig("message", "reactionMessage").present?
+        raise "Is a reaction"
+      end
 
-      user = WhatsappUser.from_webhook_payload(payload) or return
+      user = WhatsappUser.from_webhook_payload(payload)
       remote_jid = messages.fetch("remoteJid")
       group = WhatsappGroup.find_or_initialize_by(jid: remote_jid)
 
@@ -156,7 +155,6 @@ class WhatsappMessage < ApplicationRecord
       end
 
       message_id = messages.fetch("id")
-      body = messages.fetch("messageBody")
       raw_timestamp = messages.fetch("messageTimestamp")
       WhatsappMessage.find_or_initialize_by(message_id:) do |message|
         message.group = group
@@ -172,6 +170,8 @@ class WhatsappMessage < ApplicationRecord
             WhatsappUser.from_mentioned_jids(mentioned_jids)
         end
       end
+    else
+      raise "Unsupported event: #{event}"
     end
   end
 end

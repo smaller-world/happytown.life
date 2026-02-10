@@ -25,7 +25,7 @@ class Views::WhatsappGroups::MessageHistory < Views::Base
   sig { override.params(content: T.nilable(T.proc.void)).void }
   def view_template(&content)
     Components::Layout() do |layout|
-      layout.page_container(class: "flex flex-col gap-y-6") do
+      layout.page_container(class: "flex flex-col gap-y-6 max-w-md") do
         Components::Card(size: :sm, class: "chat_card") do |card|
           card.header(class: "flex items-center gap-x-3 bg-background") do
             if (url = @group.profile_picture_url)

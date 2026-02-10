@@ -45,10 +45,7 @@ class WhatsappUser < ApplicationRecord
 
   # == Helpers ==
 
-  sig do
-    params(payload: T::Hash[String, T.untyped])
-      .returns(T.nilable(WhatsappUser))
-  end
+  sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappUser) }
   def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     case event
@@ -72,6 +69,8 @@ class WhatsappUser < ApplicationRecord
       user.display_name = display_name
       user.save! if user.persisted? && user.changed? # auto-update display name
       user
+    else
+      raise "Unsupported event: #{event}"
     end
   end
 

@@ -4,8 +4,8 @@
 class WhatsappGroupAgent < ApplicationAgent
   # == Hooks ==
 
-  before_action :set_instructions_context
-  around_action :indicate_typing_while
+  before_generation :set_instructions_context
+  around_generation :indicate_typing_while
 
   # == Tool Definitions ==
 
@@ -80,7 +80,7 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { params(message: String).void }
   def send_message(message:)
-    group!.send_message_later(message)
+    group!.send_message(message)
     render_text("Message sent successfully.")
   rescue => error
     render_text("Failed to send message: #{error.message}")
@@ -88,7 +88,7 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { params(message: String).void }
   def send_reply(message:)
-    group!.send_message_later(message, reply_to: message!.message_id)
+    group!.send_message(message, reply_to: message!.message_id)
     render_text("Reply sent successfully.")
   rescue => error
     render_text("Failed to send reply: #{error.message}")
