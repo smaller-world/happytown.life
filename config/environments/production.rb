@@ -92,5 +92,8 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # Mailer default URL options
-  config.action_mailer.default_url_options = { host: "happytown.life" }
+  config.action_mailer.default_url_options = {
+    protocol: "https",
+    host: "happytown.life",
+  }
 end

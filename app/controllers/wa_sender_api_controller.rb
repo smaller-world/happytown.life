@@ -15,6 +15,8 @@ class WaSenderApiController < ApplicationController
 
   sig { void }
   def webhook
+    forward_webhook_message_to_dev_server if Rails.env.production?
+
     payload = JSON.parse(request.raw_post)
     event = payload.fetch("event")
 
@@ -50,6 +52,11 @@ class WaSenderApiController < ApplicationController
 
   # == Helpers ==
 
+  sig { returns(String) }
+  def webhook_signature!
+    request.headers["X-Webhook-Signature"] or raise "Missing webhook signature"
+  end
+
   sig { void }
   def verify_webhook_signature!
     signature = request.headers["X-Webhook-Signature"]
@@ -65,6 +72,21 @@ class WaSenderApiController < ApplicationController
   def webhook_secret
     Rails.application.credentials.dig(:wa_sender_api, :webhook_secret) or
       raise "Missing WASenderAPI webhook secret"
+  end
+
+  sig { void }
+  def forward_webhook_message_to_dev_server
+    Thread.new do
+      development_url = webhook_url(protocol: "https", host: "kaibook.itskai.me")
+      response = HTTParty.post(development_url, body: request.raw_post, headers: {
+        "X-Webhook-Signature" => webhook_signature!,
+      })
+      if response.success?
+        Rails.logger.info(
+          "Forwarded webhook message to dev server (status: #{response.code})",
+        )
+      end
+    end
   end
 
   sig { returns(String) }
