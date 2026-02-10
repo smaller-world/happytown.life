@@ -52,7 +52,7 @@ class WhatsappUser < ApplicationRecord
   def self.from_webhook_payload(payload)
     event = payload.fetch("event")
     case event
-    when "messages-group.received"
+    when "messages.upsert"
       messages = payload.dig("data", "messages")
       key = messages.fetch("key")
 
