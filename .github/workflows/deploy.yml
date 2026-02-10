@@ -2,8 +2,9 @@
 
 name: Deploy
 
-# prettier-ignore
-run-name: "Deploy from ${{ github.event.workflow_run.head_branch }} (${{ github.event.workflow_run.head_commit.message }})"
+run-name:
+  "Deploy from ${{ github.event.workflow_run.head_branch }} (${{
+  github.event.workflow_run.head_sha }})"
 
 on:
   workflow_run:
@@ -26,3 +27,32 @@ jobs:
         run: flyctl deploy --remote-only --ha=false
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  release:
+    name: Release on Sentry
+    needs: deploy
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_PATH: vendor/bundle
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Ruby gems
+        run: mise x -- bundle install
+      - name: Install Bun packages
+        run: mise x -- bun install
+      - name: Build source maps
+        run: bin/rails assets:precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE_DUMMY: "1"
+      - name: Create Sentry release
+        uses: getsentry/action-release@v3
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: happytown
+        with:
+          environment: production
+          projects: happytown
+          disable_telemetry: true
+          sourcemaps: ./app/assets/builds/
