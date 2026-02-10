@@ -123,6 +123,7 @@ GEM
     debug (1.11.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    dig_bang (0.2.1)
     dockerfile-rails (1.7.10)
       rails (>= 3.0.0)
     dotenv (3.2.0)
@@ -518,6 +519,7 @@ DEPENDENCIES
   capybara
   cssbundling-rails
   debug
+  dig_bang
   dockerfile-rails
   enumerize (~> 2.8)
   friendly_id (~> 5.6)
@@ -602,6 +604,7 @@ CHECKSUMS
   csv (3.3.5) sha256=6e5134ac3383ef728b7f02725d9872934f523cb40b961479f69cf3afa6c8e73f
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
   debug (1.11.1) sha256=2e0b0ac6119f2207a6f8ac7d4a73ca8eb4e440f64da0a3136c30343146e952b6
+  dig_bang (0.2.1) sha256=94912d64bd481505f5eb642fa6d9bc38042019d3c11c75ae8e2881fce0f8b8a5
   dockerfile-rails (1.7.10) sha256=04163273792ec6c6560244d32c0b44bbed705384a47b8063adcbf0d7bc8abd26
   dotenv (3.2.0) sha256=e375b83121ea7ca4ce20f214740076129ab8514cd81378161f11c03853fe619d
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373

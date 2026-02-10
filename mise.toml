@@ -22,8 +22,9 @@
   annotate = { run = "bin/annotaterb models" }
 
   # Connect to production server
-  ssh = { run = "fly ssh console" }
-  console = { run = "fly ssh console --pty -C 'bin/rails console'" }
+  "fly:ssh" = { run = "fly ssh console" }
+  "fly:console" = { run = "bin/fly-exec bin/rails console" }
+  "fly:eval" = { run = "bin/fly-eval" }
 
 [hooks]
   postinstall = 'if [ -z "$CI" ]; then bin/setup --skip-server; fi'

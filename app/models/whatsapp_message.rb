@@ -127,70 +127,87 @@ class WhatsappMessage < ApplicationRecord
     event = payload.fetch("event")
     case event
     when "messages.upsert"
-      messages_data = payload.dig("data", "messages") or
-        raise "Missing messages"
-      body = messages_data["messageBody"] or raise "Missing message body"
-      if messages_data.dig("message", "reactionMessage").present?
-        raise "Is a reaction"
-      end
+      data = payload.dig!("data", "messages")
+      key = data.fetch("key")
 
-      user = WhatsappUser.from_webhook_payload(payload)
-      remote_jid = messages_data.fetch("remoteJid")
-      group = WhatsappGroup.find_or_create_by!(jid: remote_jid)
+      sender = WhatsappUser.from_webhook_payload(payload)
+      group = WhatsappGroup.find_or_create_by!(jid: key.fetch("remoteJid"))
+      timestamp_value = data.fetch("messageTimestamp")
+      message_data = data.fetch("message")
 
-      quoted_message = if (context_info = messages_data.dig(
-        "message",
-        "extendedTextMessage",
-        "contextInfo",
-      ))
-        mentioned_jids = context_info.fetch("mentionedJid") { [] }
-        if (message_data = context_info["quotedMessage"])
-          quoted_conversation =
-            message_data["conversation"] ||
-            message_data.dig("extendedTextMessage", "text") or
-            raise "Missing quoted conversation"
-          quoted_participant_jid = context_info.fetch("participant")
-          stanza_id = context_info.fetch("stanzaId")
-          WhatsappMessage.find_by(whatsapp_id: stanza_id)
-        end
-      end
-
-      whatsapp_id = messages_data.fetch("id")
-      raw_timestamp = messages_data.fetch("messageTimestamp")
-      WhatsappMessage.find_or_initialize_by(whatsapp_id:) do |message|
+      WhatsappMessage.find_or_initialize_by(
+        whatsapp_id: key.fetch("id"),
+      ) do |message|
         message.group = group
-        message.sender = user
-        message.timestamp = Time.zone.at(raw_timestamp)
-        message.body = body
-        message.quoted_conversation = quoted_conversation
-        message.quoted_participant_jid = quoted_participant_jid
-        message.quoted_message = quoted_message
-        if mentioned_jids
-          message.mentioned_jids = mentioned_jids
-          message.mentioned_users =
-            WhatsappUser.from_mentioned_jids(mentioned_jids)
-        end
+        message.sender = sender
+        message.timestamp = parse_webhook_timestamp(timestamp_value)
+        message.attributes = parse_webhook_message(message_data)
       end
 
     when "message.sent"
       data = payload.fetch("data")
-      key = data["key"] or raise "Missing key"
-      remote_jid = key.fetch("remoteJid")
-      whatsapp_id = key.fetch("id")
-      body = data.dig("message", "conversation") or raise "Missing message body"
-      raw_timestamp = payload.fetch("timestamp")
+      key = data.fetch("key")
 
       sender = WhatsappUser.find_or_initialize_by(lid: application_jid)
-      group = WhatsappGroup.find_or_initialize_by(jid: remote_jid)
-      WhatsappMessage.find_or_initialize_by(whatsapp_id:) do |message|
+      group = WhatsappGroup.find_or_initialize_by(jid: key.fetch("remoteJid"))
+      timestamp_value = payload.fetch("timestamp")
+      message_data = data.fetch("message")
+
+      WhatsappMessage.find_or_initialize_by(
+        whatsapp_id: key.fetch("id"),
+      ) do |message|
         message.group = group
         message.sender = sender
-        message.timestamp = Time.zone.at(raw_timestamp)
-        message.body = body
+        message.timestamp = parse_webhook_timestamp(timestamp_value)
+        message.attributes = parse_webhook_message(message_data)
       end
 
     else
       raise "Unsupported event: #{event}"
     end
+  end
+
+  private
+
+  # == Helpers ==
+
+  sig do
+    params(value: T.any(Integer, T::Hash[String, T.untyped]))
+      .returns(ActiveSupport::TimeWithZone)
+  end
+  private_class_method def self.parse_webhook_timestamp(value)
+    timestamp = value.is_a?(Hash) ? value.fetch("low") : value
+    Time.zone.at(timestamp)
+  end
+
+  sig do
+    params(data: T::Hash[String, T.untyped]).returns(T::Hash[Symbol, T.untyped])
+  end
+  private_class_method def self.parse_webhook_message(data)
+    body = parse_message_text(data) or raise "Missing message body"
+    if (context_info = data.dig("extendedTextMessage", "contextInfo"))
+      mentioned_jids = context_info.fetch("mentionedJid") { [] }
+      if (message_data = context_info["quotedMessage"])
+        quoted_conversation = parse_message_text(message_data) or
+          raise "Missing quoted message body"
+        quoted_participant_jid = context_info.fetch("participant")
+        stanza_id = context_info.fetch("stanzaId")
+        quoted_message = WhatsappMessage.find_by(whatsapp_id: stanza_id)
+      end
+    end
+    {
+      body:,
+      quoted_conversation:,
+      quoted_participant_jid:,
+      quoted_message:,
+      mentioned_jids: mentioned_jids || [],
+      mentioned_users:
+        mentioned_jids ? WhatsappUser.from_mentioned_jids(mentioned_jids) : [],
+    }
+  end
+
+  sig { params(data: T::Hash[String, T.untyped]).returns(T.nilable(String)) }
+  private_class_method def self.parse_message_text(data)
+    data["conversation"] || data.dig("extendedTextMessage", "text")
   end
 end
