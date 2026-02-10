@@ -143,8 +143,10 @@ class WhatsappMessage < ApplicationRecord
         "contextInfo",
       ))
         mentioned_jids = context_info.fetch("mentionedJid") { [] }
-        quoted_conversation = context_info.dig("quotedMessage", "conversation")
-        if quoted_conversation
+        if (quoted_message_info = context_info["quotedMessage"])
+          quoted_conversation =
+            quoted_message_info["conversation"] ||
+            quoted_message_info.dig("extendedTextMessage", "text")
           quoted_participant_jid = context_info.fetch("participant")
           stanza_id = context_info.fetch("stanzaId")
           quoted_message = WhatsappMessage.find_by(whatsapp_id: stanza_id)
