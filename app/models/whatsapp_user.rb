@@ -40,13 +40,13 @@ class WhatsappUser < ApplicationRecord
 
   validates :lid, presence: true, uniqueness: true
   validates :phone_number,
-            presence: true,
-            phone: { possible: true, types: :mobile, extensions: false }
+            phone: { possible: true, types: :mobile, extensions: false },
+            allow_nil: true
 
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappUser) }
-  def self.from_webhook_payload(payload)
+  def self.find_or_create_from_webhook_payload!(payload)
     event = payload.fetch("event")
     case event
     when "messages.upsert"
@@ -67,7 +67,7 @@ class WhatsappUser < ApplicationRecord
         user.phone_number_jid = phone_number_jid
       end
       user.display_name = display_name
-      user.save! if user.persisted? && user.changed? # auto-update display name
+      user.save!
       user
     else
       raise "Unsupported event: #{event}"

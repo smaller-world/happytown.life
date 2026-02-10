@@ -126,7 +126,7 @@ class WhatsappMessage < ApplicationRecord
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappMessage) }
-  def self.from_webhook_payload(payload)
+  def self.find_or_create_from_webhook_payload!(payload)
     event = payload.fetch("event")
     case event
     when "messages.upsert"
@@ -136,7 +136,7 @@ class WhatsappMessage < ApplicationRecord
         raise "Is a reaction"
       end
 
-      user = WhatsappUser.from_webhook_payload(payload)
+      user = WhatsappUser.find_or_create_from_webhook_payload!(payload)
       remote_jid = messages.fetch("remoteJid")
       group = WhatsappGroup.find_or_initialize_by(jid: remote_jid)
 
@@ -156,10 +156,10 @@ class WhatsappMessage < ApplicationRecord
 
       message_id = messages.fetch("id")
       raw_timestamp = messages.fetch("messageTimestamp")
-      WhatsappMessage.find_or_initialize_by(message_id:) do |message|
+      WhatsappMessage.find_or_create_by!(message_id:) do |message|
         message.group = group
         message.sender = user
-        message.timestamp = Time.zone.at(raw_timestamp / 1000.0)
+        message.timestamp = Time.zone.at(raw_timestamp)
         message.body = body
         message.quoted_conversation = quoted_conversation
         message.quoted_participant_jid = quoted_participant_jid
