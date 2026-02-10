@@ -23,7 +23,7 @@
 
   # Connect to production server
   "fly:ssh" = { run = "fly ssh console" }
-  "fly:console" = { run = "bin/fly-exec bin/rails console" }
+  "fly:console" = { run = "bin/fly-exec 'bin/rails console'" }
   "fly:eval" = { run = "bin/fly-eval" }
 
 [hooks]
