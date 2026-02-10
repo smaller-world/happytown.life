@@ -15,7 +15,6 @@ console_command = "./bin/rails console"
   CANONICAL_HOST = "happytown.life"
   HTTP_PORT = "8080"
   HTTPS_PORT = "8443"
-  RAILS_LOG_LEVEL = "debug"
   SOLID_QUEUE_IN_PUMA = "1"
 
 [processes]

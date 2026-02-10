@@ -5,6 +5,7 @@ class WhatsappGroupAgent < ApplicationAgent
   # == Hooks ==
 
   before_generation :set_instructions_context
+  around_generation :send_typing_indicator_while
 
   # == Tool Definitions ==
 
@@ -79,19 +80,37 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { params(message: String).void }
   def send_message(message:)
-    send_typing_indicator
+    jid = group!.jid
+    tag_logger do
+      Rails.logger.info("Sending message to group (#{jid}): #{message}")
+    end
     group!.send_message(message)
     render_text("Message sent successfully.")
   rescue => error
+    tag_logger do
+      Rails.logger.error(
+        "Failed to send message to group (#{jid}): #{error.message}",
+      )
+    end
     render_text("Failed to send message: #{error.message}")
   end
 
   sig { params(message: String).void }
   def send_reply(message:)
-    send_typing_indicator
-    group!.send_message(message, reply_to: message!.message_id)
+    whatsapp_id = message!.whatsapp_id
+    tag_logger do
+      Rails.logger.info(
+        "Sending reply to message (#{whatsapp_id}): #{message}",
+      )
+    end
+    group!.send_message(message, reply_to: whatsapp_id)
     render_text("Reply sent successfully.")
   rescue => error
+    tag_logger do
+      Rails.logger.error(
+        "Failed to send reply to message (#{whatsapp_id}): #{error.message}",
+      )
+    end
     render_text("Failed to send reply: #{error.message}")
   end
 
@@ -104,8 +123,6 @@ class WhatsappGroupAgent < ApplicationAgent
     params.fetch(:group)
   end
 
-  delegate :send_typing_indicator, to: :group!
-
   sig { returns(WhatsappMessage) }
   def message!
     params.fetch(:message)
@@ -114,6 +131,21 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { void }
   def set_instructions_context
     @group = group!
+  end
+
+  sig { params(block: T.proc.void).void }
+  def send_typing_indicator_while(&block)
+    indicator_thread = Thread.new do
+      group!.send_typing_indicator
+      sleep(rand(1.2..2.5))
+      loop do
+        group!.send_typing_indicator
+        sleep(rand(0.8..2.0))
+      end
+    end
+    yield
+  ensure
+    indicator_thread&.kill
   end
 
   sig { params(text: String).void }

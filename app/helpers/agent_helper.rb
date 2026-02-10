@@ -6,7 +6,7 @@ module AgentHelper
 
   sig { returns(String) }
   def application_jid
-    Rails.configuration.x.whatsapp_jid
+    Rails.configuration.x.whatsapp_jid!
   end
 
   sig { params(user: WhatsappUser).returns(String) }
@@ -24,8 +24,8 @@ module AgentHelper
   def quoted_participant_identity(message)
     if message.quoted_participant_jid == application_jid
       "YOU"
-    elsif (user = message.quoted_user)
-      whatsapp_user_identity(user)
+    elsif (sender = message.quoted_message&.sender)
+      whatsapp_user_identity(sender)
     elsif (jid = message.quoted_participant_jid)
       "(UNKNOWN USER) <#{jid}>"
     else

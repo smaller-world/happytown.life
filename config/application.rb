@@ -28,6 +28,10 @@ module HappyTown
     config.x.instagram_url = "https://instagram.com/happytown.to"
     config.x.tiktok_url = "https://tiktok.com/@adamdriversbod"
     config.x.whatsapp_jid = "189971403149563@lid"
+    config.x.dev_server_url_options = {
+      protocol: "https",
+      host: "kaibook.itskai.me",
+    }
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.

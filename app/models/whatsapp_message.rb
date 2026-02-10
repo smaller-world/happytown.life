@@ -16,9 +16,9 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  group_id               :uuid             not null
-#  message_id             :string           not null
 #  quoted_message_id      :uuid
 #  sender_id              :uuid             not null
+#  whatsapp_id            :string           not null
 #
 # Indexes
 #
@@ -67,7 +67,6 @@ class WhatsappMessage < ApplicationRecord
   # == Handling ==
 
   scope :requires_handling, -> {
-    application_jid = Rails.configuration.x.whatsapp_jid
     sender_id = WhatsappUser.where(lid: application_jid).select(:id)
     where(handled_at: nil).where.not(sender_id:)
       .and(
@@ -82,7 +81,6 @@ class WhatsappMessage < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def requires_handling?
-    application_jid = Rails.configuration.x.whatsapp_jid
     !from_application? && (
       quoted_participant_jid == application_jid ||
         mentioned_jids.include?(application_jid)
@@ -149,13 +147,13 @@ class WhatsappMessage < ApplicationRecord
         if quoted_conversation
           quoted_participant_jid = context_info.fetch("participant")
           stanza_id = context_info.fetch("stanzaId")
-          quoted_message = WhatsappMessage.find_by(message_id: stanza_id)
+          quoted_message = WhatsappMessage.find_by(whatsapp_id: stanza_id)
         end
       end
 
-      message_id = messages.fetch("id")
+      whatsapp_id = messages.fetch("id")
       raw_timestamp = messages.fetch("messageTimestamp")
-      WhatsappMessage.find_or_initialize_by(message_id:) do |message|
+      WhatsappMessage.find_or_initialize_by(whatsapp_id:) do |message|
         message.group = group
         message.sender = user
         message.timestamp = Time.zone.at(raw_timestamp)
@@ -174,13 +172,13 @@ class WhatsappMessage < ApplicationRecord
       data = payload.fetch("data")
       key = data["key"] or raise "Missing key"
       remote_jid = key.fetch("remoteJid")
-      message_id = key.fetch("id")
+      whatsapp_id = key.fetch("id")
       body = data.dig("message", "conversation") or raise "Missing message body"
       raw_timestamp = payload.fetch("timestamp")
 
       sender = WhatsappUser.find_or_initialize_by(lid: application_jid)
       group = WhatsappGroup.find_or_initialize_by(jid: remote_jid)
-      WhatsappMessage.find_or_initialize_by(message_id:) do |message|
+      WhatsappMessage.find_or_initialize_by(whatsapp_id:) do |message|
         message.group = group
         message.sender = sender
         message.timestamp = Time.zone.at(raw_timestamp)

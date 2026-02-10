@@ -41,6 +41,17 @@ class Views::Admin::WebhookMessages::Index < Views::Base
                         class: "text-xs text-muted-foreground lowercase",
                       )
                     end
+                    if (group = message.associated_whatsapp_group)
+                      card.description do
+                        link_to(
+                          [:message_history, group],
+                          class: "link inline-flex items-center gap-x-1",
+                        ) do
+                          Icon("huge/arrow-right-02", class: "size-4.5")
+                          span { group.subject || group.jid }
+                        end
+                      end
+                    end
                   end
                   card.content(class: "overflow-x-auto") do
                     pre(class: "text-sm") do

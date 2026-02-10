@@ -1,5 +1,4 @@
 # typed: true
-# frozen_string_literal: true
 
 class ApplicationCable::Connection
   sig { params(value: T.nilable(User)).returns(T.nilable(User)) }

@@ -423,9 +423,6 @@ class WhatsappMessage
     def build_quoted_message(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::WhatsappUser) }
-    def build_quoted_user(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::WhatsappUser) }
     def build_sender(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::WhatsappGroup) }
@@ -439,12 +436,6 @@ class WhatsappMessage
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::WhatsappMessage) }
     def create_quoted_message!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::WhatsappUser) }
-    def create_quoted_user(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::WhatsappUser) }
-    def create_quoted_user!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::WhatsappUser) }
     def create_sender(*args, &blk); end
@@ -498,20 +489,17 @@ class WhatsappMessage
     sig { params(value: T.nilable(::WhatsappMessage)).void }
     def quoted_message=(value); end
 
-    sig { returns(T.nilable(::WhatsappUser)) }
-    def quoted_user; end
+    sig { returns(T::Boolean) }
+    def quoted_message_changed?; end
 
-    sig { params(value: T.nilable(::WhatsappUser)).void }
-    def quoted_user=(value); end
+    sig { returns(T::Boolean) }
+    def quoted_message_previously_changed?; end
 
     sig { returns(T.nilable(::WhatsappGroup)) }
     def reload_group; end
 
     sig { returns(T.nilable(::WhatsappMessage)) }
     def reload_quoted_message; end
-
-    sig { returns(T.nilable(::WhatsappUser)) }
-    def reload_quoted_user; end
 
     sig { returns(T.nilable(::WhatsappUser)) }
     def reload_sender; end
@@ -521,9 +509,6 @@ class WhatsappMessage
 
     sig { void }
     def reset_quoted_message; end
-
-    sig { void }
-    def reset_quoted_user; end
 
     sig { void }
     def reset_sender; end
@@ -1015,51 +1000,6 @@ class WhatsappMessage
     sig { void }
     def mentioned_jids_will_change!; end
 
-    sig { returns(::String) }
-    def message_id; end
-
-    sig { params(value: ::String).returns(::String) }
-    def message_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def message_id?; end
-
-    sig { returns(T.nilable(::String)) }
-    def message_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def message_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def message_id_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def message_id_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def message_id_change_to_be_saved; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def message_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def message_id_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def message_id_previous_change; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def message_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def message_id_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def message_id_was; end
-
-    sig { void }
-    def message_id_will_change!; end
-
     sig { returns(T.nilable(::String)) }
     def quoted_conversation; end
 
@@ -1217,9 +1157,6 @@ class WhatsappMessage
     def restore_mentioned_jids!; end
 
     sig { void }
-    def restore_message_id!; end
-
-    sig { void }
     def restore_quoted_conversation!; end
 
     sig { void }
@@ -1236,6 +1173,9 @@ class WhatsappMessage
 
     sig { void }
     def restore_updated_at!; end
+
+    sig { void }
+    def restore_whatsapp_id!; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_body; end
@@ -1279,12 +1219,6 @@ class WhatsappMessage
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def saved_change_to_mentioned_jids?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_message_id; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def saved_change_to_message_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_quoted_conversation; end
 
@@ -1320,6 +1254,12 @@ class WhatsappMessage
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def saved_change_to_updated_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_whatsapp_id; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_whatsapp_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(::String) }
     def sender_id; end
@@ -1456,6 +1396,51 @@ class WhatsappMessage
     sig { void }
     def updated_at_will_change!; end
 
+    sig { returns(::String) }
+    def whatsapp_id; end
+
+    sig { params(value: ::String).returns(::String) }
+    def whatsapp_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def whatsapp_id?; end
+
+    sig { returns(T.nilable(::String)) }
+    def whatsapp_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def whatsapp_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def whatsapp_id_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def whatsapp_id_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def whatsapp_id_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def whatsapp_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def whatsapp_id_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def whatsapp_id_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def whatsapp_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def whatsapp_id_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def whatsapp_id_was; end
+
+    sig { void }
+    def whatsapp_id_will_change!; end
+
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_body?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
@@ -1478,9 +1463,6 @@ class WhatsappMessage
     def will_save_change_to_mentioned_jids?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def will_save_change_to_message_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_quoted_conversation?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
@@ -1497,6 +1479,9 @@ class WhatsappMessage
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_updated_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_whatsapp_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
   end
 
   module GeneratedRelationMethods

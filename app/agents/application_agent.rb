@@ -4,13 +4,17 @@
 class ApplicationAgent < ActiveAgent::Base
   extend T::Sig
 
+  include TaggedLogging
+
   # == Configuration ==
 
   generate_with :open_router, instructions: true
   helper AgentHelper
 
-  sig { returns(Hash) }
+  # == URL Generation ==
+
+  sig { returns(T::Hash[Symbol, T.untyped]) }
   def default_url_options
-    Rails.configuration.action_mailer.default_url_options
+    ActionMailer::Base.default_url_options
   end
 end

@@ -15,9 +15,9 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  group_id               :uuid             not null
-#  message_id             :string           not null
 #  quoted_message_id      :uuid
 #  sender_id              :uuid             not null
+#  whatsapp_id            :string           not null
 #
 # Indexes
 #

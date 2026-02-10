@@ -23,6 +23,15 @@ class WebhookMessage < ApplicationRecord
   validates :timestamp, presence: true
   validates :data, presence: true
 
+  # == Methods ==
+
+  sig { returns(T.nilable(WhatsappGroup)) }
+  def associated_whatsapp_group
+    if (jid = data.dig("messages", "remoteJid"))
+      WhatsappGroup.find_by(jid:)
+    end
+  end
+
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WebhookMessage) }

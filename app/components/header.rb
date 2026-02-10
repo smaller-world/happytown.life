@@ -8,7 +8,7 @@ class Components::Header < Components::Base
   def view_template(&content)
     site_name = Rails.configuration.x.site_name
     root_element(:header, class: "flex justify-center border-b border-border") do
-      div(class: "w-full max-w-2xl p-2 flex justify-between items-center") do
+      div(class: "w-full max-w-2xl py-2 px-4 flex justify-between items-center") do
         Components::Button(
           element: :a,
           variant: :ghost,

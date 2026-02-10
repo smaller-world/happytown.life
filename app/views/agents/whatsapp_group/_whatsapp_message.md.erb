@@ -3,7 +3,7 @@
 <% else %>
 ---------- BEGIN WHATSAPP MESSAGE ----------
 <% end %>
-MESSAGE ID: <%= @message.message_id %>
+MESSAGE ID: <%= @message.whatsapp_id %>
 TIMESTAMP: <%= l @message.timestamp %>
 
 WHATSAPP USER <%= whatsapp_user_identity(@message.sender) %> SENT:
