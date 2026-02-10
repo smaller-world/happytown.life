@@ -35,8 +35,12 @@ jobs:
     env:
       BUNDLE_PATH: vendor/bundle
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+      - name: Set up tooling
+        uses: jdx/mise-action@v3
+        with:
+          install_args: ruby bun
       - name: Install Ruby gems
         run: mise x -- bundle install
       - name: Install Bun packages

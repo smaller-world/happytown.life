@@ -47,7 +47,7 @@ class WhatsappUser < ApplicationRecord
 
   sig { returns(String) }
   def embedded_mention
-    "@" + (phone_number_jid || cleaned_lid)
+    "@" + (phone&.sanitized || cleaned_lid)
   end
 
   sig { returns(String) }

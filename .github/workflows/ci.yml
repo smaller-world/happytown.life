@@ -104,8 +104,10 @@ jobs:
           libpq-dev
       - name: Checkout code
         uses: actions/checkout@v6
-      - name: Set up tools
+      - name: Set up tooling
         uses: jdx/mise-action@v3
+        with:
+          install_args: ruby bun
       - name: Install Ruby gems
         run: mise x -- bundle install
       - name: Install Bun packages
