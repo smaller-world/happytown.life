@@ -34,8 +34,8 @@ module HappyTown
     config.x.tiktok_url = "https://tiktok.com/@adamdriversbod"
 
     # == WhatsApp
-    config.x.whatsapp_jid = "189971403149563@lid"
-    config.x.whatsapp_messaging_enabled = false
+    config.x.whatsapp_user_jid = "189971403149563@lid"
+    config.x.perform_whatsapp_deliveries = false
 
     # == Webhook Forwarding
     config.x.dev_server_url_options = {

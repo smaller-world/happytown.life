@@ -24,6 +24,7 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappUser < ApplicationRecord
+  include WhatsappMessaging
   include NormalizesPhoneNumber
 
   # == Attributes ==
@@ -89,7 +90,7 @@ class WhatsappUser < ApplicationRecord
       key = messages.fetch("key")
 
       lid = if key.fetch("fromMe")
-        application_jid
+        application_user_jid
       else
         key.fetch("participantLid")
       end

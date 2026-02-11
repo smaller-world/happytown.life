@@ -155,14 +155,8 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def send_intro
-    if whatsapp_messaging_enabled?
-      intro_prompt.generate_now
-      update!(intro_sent_at: Time.current)
-    else
-      tag_logger do
-        Rails.logger.info("WhatsApp messaging is disabled; skipping intro")
-      end
-    end
+    intro_prompt.generate_now
+    update!(intro_sent_at: Time.current)
   end
 
   sig do
@@ -170,13 +164,7 @@ class WhatsappGroup < ApplicationRecord
       .returns(T.any(SendWhatsappGroupIntroJob, FalseClass))
   end
   def send_intro_later(**options)
-    if whatsapp_messaging_enabled?
-      SendWhatsappGroupIntroJob.set(**options).perform_later(self)
-    else
-      tag_logger do
-        Rails.logger.info("WhatsApp messaging is disabled; skipping intro")
-      end
-    end
+    SendWhatsappGroupIntroJob.set(**options).perform_later(self)
   end
 
   private

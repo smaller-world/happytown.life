@@ -8,7 +8,7 @@ Rails.application.configure do
 
   # == Custom Configuration ==
 
-  config.x.whatsapp_messaging_enabled = true
+  config.x.perform_whatsapp_deliveries = true
 
   # == Rails Configuration ==
 

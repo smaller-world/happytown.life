@@ -7,9 +7,7 @@ require "httparty"
 class WaSenderApi
   extend T::Sig
 
-  include HTTParty
-
-  # == Exceptions ==
+  # == Errors ==
 
   class Error < StandardError
     extend T::Sig
@@ -17,7 +15,10 @@ class WaSenderApi
     sig { params(response: HTTParty::Response).void }
     def initialize(response)
       @response = response
-      super("WASenderAPI error (status #{response.code}): #{response.parsed_response}")
+      super(
+        "WASenderAPI error (status #{response.code}): " \
+          "#{response.parsed_response}"
+      )
     end
 
     sig { returns(HTTParty::Response) }
@@ -27,6 +28,8 @@ class WaSenderApi
   class TooManyRequests < Error; end
 
   # == Configuration ==
+
+  include HTTParty
 
   base_uri "https://www.wasenderapi.com/api"
   format :json
@@ -42,24 +45,30 @@ class WaSenderApi
 
   sig { params(to: String, text: String, mentioned_jids: T.nilable(T::Array[String])).void }
   def send_message(to:, text:, mentioned_jids: nil)
+    unless perform_deliveries?
+      tag_logger do
+        Rails.logger.info("Skipping message delivery to #{to}: #{text}")
+      end
+      return
+    end
+
     body = { to:, text:, mentions: mentioned_jids }.compact_blank
     response = self.class.post("/send-message", body:)
-    unless response.success?
-      raise TooManyRequests, response.parsed_response.to_s if response.code == 429
-
-      raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
-    end
+    check_response!(response)
   end
 
   sig { params(jid: String, type: String).void }
   def update_presence(jid:, type:)
+    unless perform_deliveries?
+      tag_logger do
+        Rails.logger.info("Skipping presence update for #{jid}: #{type}")
+      end
+      return
+    end
+
     body = { jid:, type: }
     response = self.class.post("/send-presence-update", body:)
-    unless response.success?
-      raise TooManyRequests, response.parsed_response.to_s if response.code == 429
-
-      raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
-    end
+    check_response!(response)
   end
 
   sig { params(jid: String).returns(T::Hash[String, T.untyped]) }
@@ -105,8 +114,8 @@ class WaSenderApi
 
   # == Helpers ==
 
-  sig { params(response: HTTParty::Response).returns(T.untyped) }
-  def response_data!(response)
+  sig { params(response: HTTParty::Response).void }
+  def check_response!(response)
     unless response.success?
       case response.code
       when 429
@@ -115,6 +124,11 @@ class WaSenderApi
         raise Error, response
       end
     end
+  end
+
+  sig { params(response: HTTParty::Response).returns(T.untyped) }
+  def response_data!(response)
+    check_response!(response)
     response.parsed_response.fetch("data")
   end
 
@@ -122,5 +136,21 @@ class WaSenderApi
   def normalize_phone_number(phone_number)
     phone = Phonelib.parse(phone_number)
     phone.sanitized
+  end
+
+  sig { returns(T::Boolean) }
+  def perform_deliveries?
+    Rails.configuration.x.perform_whatsapp_deliveries
+  end
+
+  sig { params(block: T.proc.void).void }
+  def tag_logger(&block)
+    logger = Rails.logger
+    if logger.respond_to?(:tagged)
+      args = [:tagged, "WaSenderApi"]
+      logger.public_send(*T.unsafe(args), &block)
+    else
+      yield
+    end
   end
 end

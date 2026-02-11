@@ -9,6 +9,7 @@ class WhatsappGroupAgent
     requires_ancestor { WhatsappGroupAgent }
 
     extend ActiveSupport::Concern
+    include WhatsappMessaging
     include SendMessageTool
 
     # == Tool ==

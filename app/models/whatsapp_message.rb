@@ -24,8 +24,8 @@
 #
 #  index_whatsapp_messages_on_group_id           (group_id)
 #  index_whatsapp_messages_on_quoted_message_id  (quoted_message_id)
-#  index_whatsapp_messages_on_reply_sent_at      (reply_sent_at)
-#  index_whatsapp_messages_on_sender_id          (sender_id)
+#  index_whatsapp_messages_on_reply_sent_at      (reply_sent_at)bin/srb tc
+#  )
 #  index_whatsapp_messages_on_timestamp          (timestamp)
 #
 # Foreign Keys
@@ -36,6 +36,8 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappMessage < ApplicationRecord
+  include WhatsappMessaging
+
   # == Associations ==
 
   belongs_to :group, class_name: "WhatsappGroup", inverse_of: :messages
@@ -67,11 +69,11 @@ class WhatsappMessage < ApplicationRecord
   # == Handling ==
 
   scope :requiring_reply, -> {
-    sender_id = WhatsappUser.where(lid: application_jid).select(:id)
+    sender_id = WhatsappUser.where(lid: application_user_jid).select(:id)
     where(reply_sent_at: nil).where.not(sender_id:)
       .and(
-        where(quoted_participant_jid: application_jid).or(
-          where("? = ANY(mentioned_jids)", application_jid),
+        where(quoted_participant_jid: application_user_jid).or(
+          where("? = ANY(mentioned_jids)", application_user_jid),
         ),
       )
   }
@@ -82,8 +84,8 @@ class WhatsappMessage < ApplicationRecord
   sig { returns(T::Boolean) }
   def requires_reply?
     !reply_sent? && !from_application? && (
-      quoted_participant_jid == application_jid ||
-        mentioned_jids.include?(application_jid)
+      quoted_participant_jid == application_user_jid ||
+        mentioned_jids.include?(application_user_jid)
     )
   end
 
@@ -96,15 +98,8 @@ class WhatsappMessage < ApplicationRecord
 
   sig { void }
   def send_reply
-    if whatsapp_messaging_enabled?
-      reply_prompt.generate_now
-      update!(reply_sent_at: Time.current)
-    else
-      tag_logger do
-        Rails.logger.info("WhatsApp messaging is disabled; skipping reply")
-        false
-      end
-    end
+    reply_prompt.generate_now
+    update!(reply_sent_at: Time.current)
   rescue => error
     tag_logger do
       Rails.logger.warn(
@@ -120,21 +115,14 @@ class WhatsappMessage < ApplicationRecord
       .returns(T.any(SendWhatsappGroupReplyJob, FalseClass))
   end
   def send_reply_later(**options)
-    if whatsapp_messaging_enabled?
-      SendWhatsappGroupReplyJob.set(**options).perform_later(self)
-    else
-      tag_logger do
-        Rails.logger.info("WhatsApp messaging is disabled; skipping reply")
-        false
-      end
-    end
+    SendWhatsappGroupReplyJob.set(**options).perform_later(self)
   end
 
   # == Methods
 
   sig { returns(T::Boolean) }
   def from_application?
-    sender&.lid == application_jid
+    sender&.lid == application_user_jid
   end
 
   sig do
@@ -179,7 +167,7 @@ class WhatsappMessage < ApplicationRecord
       data = payload.fetch("data")
       key = data.fetch("key")
 
-      sender = WhatsappUser.find_or_initialize_by(lid: application_jid)
+      sender = WhatsappUser.find_or_initialize_by(lid: application_user_jid)
       group = WhatsappGroup.find_or_initialize_by(jid: key.fetch("remoteJid"))
       timestamp_value = payload.fetch("timestamp")
       message_data = data.fetch("message")
