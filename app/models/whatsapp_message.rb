@@ -247,7 +247,7 @@ class WhatsappMessage < ApplicationRecord
     sender = sender!
     group!.send_message(
       "#{sender.embedded_mention} ran into an error while replying to your " \
-        "message: #{error.message}",
+        "message:\n\n#{error.message}",
       mentioned_jids: [sender.lid],
     )
   end
