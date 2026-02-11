@@ -17,6 +17,7 @@
 #
 #  index_whatsapp_group_memberships_on_group_id  (group_id)
 #  index_whatsapp_group_memberships_on_user_id   (user_id)
+#  index_whatsapp_group_memberships_uniqueness   (group_id,user_id) UNIQUE
 #
 # Foreign Keys
 #
