@@ -2,12 +2,13 @@
 <%- @message
   .previous_messages(limit: 10)
   .reverse_each
-  .each_with_index do |message, thread_index| -%>
-<% if thread_index > 0 %>
+  .each_with_index do |message, index| -%>
+<% if index > 0 %>
 
 
 <% end %>
-<%= render "agents/whatsapp_group/whatsapp_message", message:, thread_index: -%>
+## MESSAGE <%= index + 1 %>:
+<%= render "agents/whatsapp_group/whatsapp_message", message:, index: -%>
 <%- end -%>
 </recent-message-history>
 
@@ -18,15 +19,16 @@
 
 
 <tool-usage>
-use `send_reply` to respond to the incoming message. this sends your
-reply to the user who sent the message.
-
+## YOUR TOOLS:
 - **send_reply** - takes a `message` parameter (string) containing your
-  response. you can mention users by their phone number, i.e. "@14153334444".
+  response, and sends a reply to the incoming message. you can mention users by
+  their phone number, i.e. "@14153334444".
+- **send_message_history_link** - sends a message to the group containing the
+  group's full message history URL.
 </tool-usage>
 
 
 <command>
-read the incoming message and use `send_reply` to respond. use the recent
-message history for context if needed, but always reply to the incoming message.
+- read the incoming message and use `send_reply` to respond.
+- use the recent message history for context if needed.
 </command>

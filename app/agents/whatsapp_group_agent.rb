@@ -52,6 +52,12 @@ class WhatsappGroupAgent < ApplicationAgent
     },
   }
 
+  SEND_MESSAGE_HISTORY_LINK_TOOL = {
+    name: "send_message_history_link",
+    description: "send a message to the group containing the group's full " \
+      "message history URL.",
+  }
+
   # == Actions ==
 
   sig { void }
@@ -62,7 +68,10 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { void }
   def reply
     @message = message!
-    prompt(tools: [SEND_REPLY_TOOL], tool_choice: "required")
+    prompt(
+      tools: [SEND_REPLY_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
+      tool_choice: "required",
+    )
   end
 
   # == Tools ==
@@ -84,7 +93,8 @@ class WhatsappGroupAgent < ApplicationAgent
     tag_logger do
       Rails.logger.info("Sending message to group (#{jid}): #{message}")
     end
-    group!.send_message(message)
+    mentioned_jids = mentioned_jids_in(message)
+    group!.send_message(message, mentioned_jids:)
     reply_with("Message sent successfully.")
   rescue => error
     tag_logger do
@@ -98,27 +108,16 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { params(message: String).void }
   def send_reply(message:)
     sender = message!.sender!
-    tag_logger do
-      Rails.logger.info(
-        "Sending reply to user (#{sender.lid}): #{message}",
-      )
+    if mentioned_jids_in(message).exclude?(sender.lid)
+      message = "#{sender.embedded_mention} #{message}"
     end
-    begin
-      mentioned_lids = mentioned_lids(message:)
-      if mentioned_lids.exclude?(sender.lid)
-        message = "#{sender.embedded_mention} #{message}"
-        mentioned_lids << sender.lid
-      end
-      group!.send_message(message, mentioned_jids: mentioned_lids)
-      reply_with("Reply sent successfully.")
-    rescue => error
-      tag_logger do
-        Rails.logger.error(
-          "Failed to send reply to user (#{sender.lid}): #{error.message}",
-        )
-      end
-      reply_with("Failed to send reply: #{error.message}")
-    end
+    send_message(message:)
+  end
+
+  sig { void }
+  def send_message_history_link
+    history_url = message_history_url(group!)
+    send_message(message: "see older messages: #{history_url}")
   end
 
   private
@@ -156,7 +155,7 @@ class WhatsappGroupAgent < ApplicationAgent
   end
 
   sig { params(message: String).returns(T::Array[String]) }
-  def mentioned_lids(message:)
+  def mentioned_jids_in(message)
     mentioned_jids = message.scan(/@(\d+)/).flatten
     WhatsappUser.where(phone_number_jid: mentioned_jids).distinct.pluck(:lid)
   end

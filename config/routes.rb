@@ -39,9 +39,9 @@ Rails.application.routes.draw do
       get :message_history
     end
   end
-  get "/whatsapp_history/:id",
+  get "/history/:id",
       to: redirect("/whatsapp_groups/%{id}/message_history", status: 302),
-      as: :whatsapp_history
+      as: :message_history
 
   # == Admin ==
 

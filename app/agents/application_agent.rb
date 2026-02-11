@@ -5,6 +5,7 @@ class ApplicationAgent < ActiveAgent::Base
   extend T::Sig
 
   include TaggedLogging
+  include UrlHelpers
 
   # == Configuration ==
 

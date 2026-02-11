@@ -22,6 +22,9 @@ module GeneratedPathHelpersModule
   def edit_session_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def message_history_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def message_history_whatsapp_group_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -149,7 +152,4 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def webhook_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def whatsapp_history_path(*args); end
 end
