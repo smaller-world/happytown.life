@@ -21,7 +21,7 @@ class Components::Chat < Components::Base
       size: :sm,
       **mix({ class: "chat_card" }, @attributes),
     ) do |card|
-      card.header(class: "flex items-center gap-x-3 bg-background") do
+      card.header(class: "flex items-center gap-x-3") do
         if (url = @group.profile_picture_url)
           image_tag(url, class: "size-12 rounded-full")
         end
@@ -65,7 +65,7 @@ class Components::Chat < Components::Base
     div(
       class: "chat_message group/message",
       data: {
-        from_application: message.from_application?,
+        sender: ("application" if message.from_application?),
       },
     ) do
       # image_tag(message.sender!.profile_picture_url, class: "size-12 rounded-full")

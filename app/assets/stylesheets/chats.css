@@ -4,11 +4,9 @@
 }
 
 .chat_card_content {
-  background-image: url("chat_background.jpg");
-
-  @apply min-h-0 flex-1;
-  @apply overflow-y-auto bg-cover py-4;
+  @apply min-h-0 flex-1 overflow-y-auto py-4;
   @apply flex flex-col;
+  @apply bg-[url('chat_background.jpg')] bg-cover dark:bg-[url('chat_background-dark.jpg')];
 
   &:has(.chat_message) {
     .chat_empty_indicator {
@@ -29,15 +27,19 @@
 .chat_message {
   @apply flex items-end gap-x-2;
 
-  &[data-from-application] {
-    @apply justify-end;
+  &:not([data-sender="application"]) {
+    @apply pr-12;
+  }
+
+  &[data-sender="application"] {
+    @apply justify-end pl-12;
   }
 }
 
 .chat_message_body {
   @apply max-w-96 min-w-0 overflow-y-auto px-2 py-1;
   @apply rounded-lg border bg-background text-sm;
-  @apply group-data-from-application/message:bg-[#D9FDD3];
+  @apply group-data-[sender=application]/message:bg-sender-message;
 
   time {
     @apply shrink-0 text-xs text-muted-foreground lowercase;

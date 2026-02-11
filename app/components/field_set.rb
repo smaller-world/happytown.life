@@ -6,11 +6,7 @@ class Components::FieldSet < Components::Base
 
   sig { override.params(content: T.nilable(T.proc.void)).void }
   def view_template(&content)
-    root_element(
-      :div,
-      data: { slot: "field-set" },
-      &content
-    )
+    root_element(:div, data: { slot: "field-set" }, &content)
   end
 
   sig do
@@ -18,7 +14,10 @@ class Components::FieldSet < Components::Base
   end
   def legend(variant: :legend, **attributes, &content)
     legend(
-      **mix({ data: { slot: "field-legend", variant: } }, **attributes),
+      **mix(
+        { data: { slot: "field-legend", variant: } },
+        **attributes,
+      ),
       &content
     )
   end
