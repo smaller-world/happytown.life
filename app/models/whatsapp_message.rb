@@ -103,6 +103,14 @@ class WhatsappMessage < ApplicationRecord
   def send_reply
     reply_prompt.generate_now
     update!(handled_at: Time.current)
+  rescue => error
+    tag_logger do
+      Rails.logger.warn(
+        "Failed to reply to message (#{whatsapp_id}); sending failure message",
+      )
+    end
+    send_reply_failure_message(error)
+    raise
   end
 
   sig do
@@ -223,5 +231,15 @@ class WhatsappMessage < ApplicationRecord
   sig { params(data: T::Hash[String, T.untyped]).returns(T.nilable(String)) }
   private_class_method def self.parse_message_text(data)
     data["conversation"] || data.dig("extendedTextMessage", "text")
+  end
+
+  sig { params(error: Exception).void }
+  def send_reply_failure_message(error)
+    sender = sender!
+    group!.send_message(
+      "#{sender.embedded_mention} ran into an error while replying to your " \
+        "message: #{error.message}",
+      mentioned_jids: [sender.lid],
+    )
   end
 end

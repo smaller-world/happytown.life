@@ -7,6 +7,8 @@ class ApplicationRecord < ActiveRecord::Base
 
   abstract!
 
+  include TaggedLogging
+
   # == Configuration ==
 
   primary_abstract_class
