@@ -5,6 +5,7 @@ class ForwardWebhookMessageToDevServerJob < ApplicationJob
   # == Configuration ==
 
   queue_as :default
+  discard_on OpenSSL::SSL::SSLError
 
   sig { returns(T::Hash[Symbol, T.untyped]) }
   def default_url_options
