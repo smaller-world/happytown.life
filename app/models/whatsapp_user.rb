@@ -47,6 +47,10 @@ class WhatsappUser < ApplicationRecord
             phone: { possible: true, types: :mobile, extensions: false },
             allow_nil: true
 
+  # == Hooks ==
+
+  after_create_commit :import_metadata_later
+
   # == Mentions ==
 
   sig { returns(String) }
