@@ -18,7 +18,11 @@ class WhatsappMessagesController < ApplicationController
         update_pagination = if pagy.next
           turbo_stream.replace(
             "pagination",
-            renderable: Components::Chat::PaginationButton.new(group:, pagy:),
+            renderable: Components::Chat::PaginationButton.new(
+              group:,
+              pagy:,
+              disable_for: 1.second,
+            ),
           )
         else
           turbo_stream.remove("pagination")

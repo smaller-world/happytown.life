@@ -12,9 +12,9 @@ class Components::PaginationButton < Components::Base
       pagy: T.nilable(Pagy),
       variant: Symbol,
       size: Symbol,
-      click_on_appear: T::Boolean,
       form_class: T.nilable(String),
       form: T::Hash[Symbol, T.untyped],
+      disable_for: T.nilable(ActiveSupport::Duration),
       options: T.untyped,
     ).void
   end
@@ -23,9 +23,9 @@ class Components::PaginationButton < Components::Base
     pagy: nil,
     variant: :default,
     size: :default,
-    click_on_appear: false,
     form_class: nil,
     form: {},
+    disable_for: nil,
     **options
   )
     super()
@@ -33,11 +33,11 @@ class Components::PaginationButton < Components::Base
     @pagy = pagy
     @variant = variant
     @size = size
-    @click_on_appear = click_on_appear
     @form_options = T.let(
       mix(form, { class: form_class }),
       T::Hash[Symbol, T.untyped],
     )
+    @disable_for = disable_for
     @options = options
   end
 
@@ -45,8 +45,8 @@ class Components::PaginationButton < Components::Base
 
   sig { override(allow_incompatible: true).params(content: T.proc.void).void }
   def view_template(&content)
-    action = if @click_on_appear
-      "click-on-appear:appear->click-on-appear#click"
+    enable_after_value = if (disable_for = @disable_for)
+      disable_for.to_i * 1000
     end
     button_to(
       @to,
@@ -66,12 +66,17 @@ class Components::PaginationButton < Components::Base
             page: @pagy&.next,
           }.compact,
           class: "group/button",
+          disabled: @disable_for.present?,
           data: {
             slot: "button",
             variant: @variant,
             size: @size,
-            controller: "click-on-appear",
-            action:,
+            controller: class_names(
+              "intersection click",
+              "disabled" => @disable_for.present?,
+            ),
+            action: "intersection:appear->click#click",
+            disabled_enable_after_value: enable_after_value,
           },
         },
         @options,

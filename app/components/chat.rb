@@ -50,11 +50,7 @@ class Components::Chat < Components::Base
           end
         end
         if @pagy.nil? || @pagy.next
-          render PaginationButton.new(
-            group: @group,
-            pagy: @pagy,
-            click_on_appear: @pagy.nil?,
-          )
+          render PaginationButton.new(group: @group, pagy: @pagy)
         end
         ul(id: "messages", class: "chat_messages") do
           render Messages.new(messages: @messages)

@@ -3,8 +3,10 @@
 // ./bin/rails generate stimulus controllerName
 
 import { application } from "./application";
-import ClickOnAppearController from "./click_on_appear_controller";
+import ClickController from "./click_controller";
+import DisabledController from "./disabled_controller";
 import HelloController from "./hello_controller";
+import IntersectionController from "./intersection_controller";
 import MaintainScrollController from "./maintain_scroll_controller";
 import ScrollToBottomController from "./scroll_to_bottom_controller";
 import TooltipController from "./tooltip_controller";
@@ -13,5 +15,7 @@ import TooltipController from "./tooltip_controller";
 application.register("hello", HelloController);
 application.register("tooltip", TooltipController);
 application.register("scroll-to-bottom", ScrollToBottomController);
-application.register("click-on-appear", ClickOnAppearController);
+application.register("intersection", IntersectionController);
 application.register("maintain-scroll", MaintainScrollController);
+application.register("click", ClickController);
+application.register("disabled", DisabledController);
