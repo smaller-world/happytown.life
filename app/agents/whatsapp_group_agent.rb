@@ -31,11 +31,11 @@ class WhatsappGroupAgent < ApplicationAgent
     parameters: {
       type: "object",
       properties: {
-        message: {
+        text: {
           type: "string",
         },
       },
-      required: ["message"],
+      required: ["text"],
     },
   }
 
@@ -45,10 +45,11 @@ class WhatsappGroupAgent < ApplicationAgent
     parameters: {
       type: "object",
       properties: {
-        message: {
+        text: {
           type: "string",
         },
       },
+      required: ["text"],
     },
   }
 
@@ -87,14 +88,14 @@ class WhatsappGroupAgent < ApplicationAgent
   #   render_text("Failed to update settings: #{error.message}")
   # end
 
-  sig { params(message: String).void }
-  def send_message(message:)
+  sig { params(text: String).void }
+  def send_message(text:)
     jid = group!.jid
     tag_logger do
-      Rails.logger.info("Sending message to group (#{jid}): #{message}")
+      Rails.logger.info("Sending message to group (#{jid}): #{text}")
     end
-    mentioned_jids = mentioned_jids_in(message)
-    group!.send_message(message, mentioned_jids:)
+    mentioned_jids = mentioned_jids_in(text)
+    group!.send_message(text:, mentioned_jids:)
     reply_with("Message sent successfully.")
   rescue => error
     tag_logger do
@@ -105,25 +106,25 @@ class WhatsappGroupAgent < ApplicationAgent
     reply_with("Failed to send message: #{error.message}")
   end
 
-  sig { params(message: String).void }
-  def send_reply(message:)
+  sig { params(text: String).void }
+  def send_reply(text:)
     sender = message!.sender!
-    if mentioned_jids_in(message).exclude?(sender.lid)
+    if mentioned_jids_in(text).exclude?(sender.lid)
       tag_logger do
         Rails.logger.info(
           "Adding sender mention (#{sender.embedded_mention}) to reply " \
-            "message: #{message}",
+            "message: #{text}",
         )
       end
-      message = "#{sender.embedded_mention} #{message}"
+      text = "#{sender.embedded_mention} #{text}"
     end
-    send_message(message:)
+    send_message(text:)
   end
 
   sig { void }
   def send_message_history_link
     history_url = message_history_whatsapp_group_url(group!)
-    send_message(message: "see older messages: #{history_url}")
+    send_message(text: "see older messages: #{history_url}")
   end
 
   private

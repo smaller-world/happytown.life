@@ -10,6 +10,9 @@ class SendWhatsappGroupReplyJob < ApplicationJob
 
   sig { params(message: WhatsappMessage).void }
   def perform(message)
+    tag_logger do
+      Rails.logger.info("Sending reply to message: #{message.whatsapp_id}")
+    end
     message.send_reply unless message.reply_sent?
   end
 end

@@ -11,6 +11,9 @@ class ImportWhatsappGroupMembershipsJob < ApplicationJob
 
   sig { params(group: WhatsappGroup).void }
   def perform(group)
+    tag_logger do
+      Rails.logger.info("Importing memberships for group: #{group.jid}")
+    end
     group.import_memberships
   end
 end

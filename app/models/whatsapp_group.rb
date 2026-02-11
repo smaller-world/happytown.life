@@ -110,9 +110,11 @@ class WhatsappGroup < ApplicationRecord
   sig { void }
   def import_memberships
     participants = wa_sender_api.group_participants(jid:)
-    self.memberships = participants.map do |data|
-      user = WhatsappUser.find_or_initialize_by(lid: data.fetch("id"))
-      WhatsappGroupMembership.new(user:, admin: data["admin"])
+    transaction do
+      self.memberships = participants.map do |data|
+        user = WhatsappUser.find_or_initialize_by(lid: data.fetch("id"))
+        WhatsappGroupMembership.new(user:, admin: data["admin"])
+      end
     end
   end
 
@@ -129,7 +131,7 @@ class WhatsappGroup < ApplicationRecord
   # == Messaging ==
 
   sig { params(text: String, mentioned_jids: T.nilable(T::Array[String])).void }
-  def send_message(text, mentioned_jids: nil)
+  def send_message(text:, mentioned_jids: nil)
     wa_sender_api.send_message(to: jid, text:, mentioned_jids:)
   end
 

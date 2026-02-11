@@ -9,7 +9,10 @@ class SendWhatsappGroupMessageJob < ApplicationJob
   # == Job ==
 
   sig { params(group: WhatsappGroup, text: String, options: T.untyped).void }
-  def perform(group, text, **options)
-    group.send_message(text, **options)
+  def perform(group, text:, **options)
+    tag_logger do
+      Rails.logger.info("Sending message to group #{group.jid}: #{text}")
+    end
+    group.send_message(**T.unsafe({ text:, **options }))
   end
 end

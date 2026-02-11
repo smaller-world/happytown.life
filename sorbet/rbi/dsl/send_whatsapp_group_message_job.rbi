@@ -15,9 +15,9 @@ class SendWhatsappGroupMessageJob
         block: T.nilable(T.proc.params(job: SendWhatsappGroupMessageJob).void)
       ).returns(T.any(SendWhatsappGroupMessageJob, FalseClass))
     end
-    def perform_later(group, text, **options, &block); end
+    def perform_later(group, text:, **options, &block); end
 
     sig { params(group: ::WhatsappGroup, text: ::String, options: T.untyped).void }
-    def perform_now(group, text, **options); end
+    def perform_now(group, text:, **options); end
   end
 end
