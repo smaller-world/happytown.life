@@ -3,6 +3,11 @@
 
 class ApplicationJob < ActiveJob::Base
   extend T::Sig
+  extend T::Helpers
+
+  abstract!
+
+  include UrlHelpers
 
   # == Configuration ==
 
@@ -14,8 +19,6 @@ class ApplicationJob < ActiveJob::Base
   discard_on ActiveJob::DeserializationError
 
   rescue_from Exception, with: :report_to_sentry
-
-  # == URL Generation ==
 
   sig { returns(T::Hash[Symbol, T.untyped]) }
   def default_url_options
