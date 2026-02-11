@@ -17,7 +17,7 @@ class ForwardWebhookMessageToDevServerJob < ApplicationJob
     })
     if response.success?
       Rails.logger.info("Forwarded webhook message to dev server")
-    elsif response.code == 530
+    elsif response.code.in?(530, 502)
       Rails.logger.debug("Dev server is offline")
     else
       raise "Failed to forward webhook message (status: #{response.code}): " \
