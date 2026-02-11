@@ -67,11 +67,11 @@ class WhatsappMessage < ApplicationRecord
   # == Handling ==
 
   scope :requiring_reply, -> {
-    sender_id = WhatsappUser.where(lid: application_jid).select(:id)
+    sender_id = WhatsappUser.where(lid: application_user_jid).select(:id)
     where(reply_sent_at: nil).where.not(sender_id:)
       .and(
-        where(quoted_participant_jid: application_jid).or(
-          where("? = ANY(mentioned_jids)", application_jid),
+        where(quoted_participant_jid: application_user_jid).or(
+          where("? = ANY(mentioned_jids)", application_user_jid),
         ),
       )
   }
@@ -82,8 +82,8 @@ class WhatsappMessage < ApplicationRecord
   sig { returns(T::Boolean) }
   def requires_reply?
     !reply_sent? && !from_application_user? && (
-      quoted_participant_jid == application_jid ||
-        mentioned_jids.include?(application_jid)
+      quoted_participant_jid == application_user_jid ||
+        mentioned_jids.include?(application_user_jid)
     )
   end
 
@@ -134,7 +134,7 @@ class WhatsappMessage < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def from_application_user?
-    sender&.lid == application_jid
+    sender&.lid == application_user_jid
   end
 
   sig do
@@ -179,7 +179,7 @@ class WhatsappMessage < ApplicationRecord
       data = payload.fetch("data")
       key = data.fetch("key")
 
-      sender = WhatsappUser.find_or_initialize_by(lid: application_jid)
+      sender = WhatsappUser.find_or_initialize_by(lid: application_user_jid)
       group = WhatsappGroup.find_or_initialize_by(jid: key.fetch("remoteJid"))
       timestamp_value = payload.fetch("timestamp")
       message_data = data.fetch("message")

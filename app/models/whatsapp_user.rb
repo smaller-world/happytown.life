@@ -89,7 +89,7 @@ class WhatsappUser < ApplicationRecord
       key = messages.fetch("key")
 
       lid = if key.fetch("fromMe")
-        application_jid
+        application_user_jid
       else
         key.fetch("participantLid")
       end

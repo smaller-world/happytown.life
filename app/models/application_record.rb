@@ -30,7 +30,7 @@ class ApplicationRecord < ActiveRecord::Base
   # == Helpers ==
 
   sig { returns(String) }
-  def self.application_jid
+  def self.application_user_jid
     Rails.configuration.x.whatsapp_jid
   end
 
@@ -39,5 +39,5 @@ class ApplicationRecord < ActiveRecord::Base
     Rails.configuration.x.whatsapp_messaging_enabled
   end
 
-  delegate :application_jid, :whatsapp_messaging_enabled?, to: :class
+  delegate :application_user_jid, :whatsapp_messaging_enabled?, to: :class
 end

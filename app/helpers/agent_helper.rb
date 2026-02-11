@@ -8,13 +8,13 @@ module AgentHelper
   requires_ancestor { Kernel }
 
   sig { returns(String) }
-  def application_jid
+  def application_user_jid
     Rails.configuration.x.whatsapp_jid
   end
 
   sig { params(user: WhatsappUser).returns(String) }
   def whatsapp_user_identity(user)
-    if user.lid == application_jid
+    if user.lid == application_user_jid
       "(YOURSELF)"
     else
       display_text = user.display_name || "(UNKNOWN USER)"
@@ -30,7 +30,7 @@ module AgentHelper
     if (sender = message.quoted_message&.sender)
       whatsapp_user_identity(sender)
     elsif (jid = message.quoted_participant_jid)
-      if jid == application_jid
+      if jid == application_user_jid
         "(YOURSELF)"
       else
         "(UNKNOWN USER)"
