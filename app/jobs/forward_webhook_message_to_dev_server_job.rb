@@ -7,15 +7,11 @@ class ForwardWebhookMessageToDevServerJob < ApplicationJob
   queue_as :default
   discard_on OpenSSL::SSL::SSLError
 
-  sig { returns(T::Hash[Symbol, T.untyped]) }
-  def default_url_options
-    ActionMailer::Base.default_url_options
-  end
-
   # == Job ==
 
   sig { params(body: String, webhook_signature: String).void }
   def perform(body:, webhook_signature:)
+    webhook_url = webhook_url(**Rails.configuration.x.dev_server_url_options)
     response = HTTParty.post(webhook_url, body: body, headers: {
       "X-Webhook-Signature" => webhook_signature,
     })
