@@ -109,6 +109,12 @@ class WhatsappGroupAgent < ApplicationAgent
   def send_reply(message:)
     sender = message!.sender!
     if mentioned_jids_in(message).exclude?(sender.lid)
+      tag_logger do
+        Rails.logger.info(
+          "Adding sender mention (#{sender.embedded_mention}) to reply " \
+            "message: #{message}",
+        )
+      end
       message = "#{sender.embedded_mention} #{message}"
     end
     send_message(message:)
