@@ -19,12 +19,12 @@ class Components::Chat::Messages < Components::Base
         div(
           class: "chat_message group/message",
           data: {
-            sender: ("you" if message.from_application?),
+            sender: ("you" if message.from_application_user?),
           },
         ) do
           # image_tag(message.sender!.profile_picture_url, class: "size-12 rounded-full")
           div(class: "chat_message_body") do
-            unless message.from_application?
+            unless message.from_application_user?
               div(class: "text-accent font-semibold") do
                 sender_label(message)
               end

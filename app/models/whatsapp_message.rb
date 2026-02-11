@@ -81,7 +81,7 @@ class WhatsappMessage < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def requires_reply?
-    !reply_sent? && !from_application? && (
+    !reply_sent? && !from_application_user? && (
       quoted_participant_jid == application_jid ||
         mentioned_jids.include?(application_jid)
     )
@@ -133,7 +133,7 @@ class WhatsappMessage < ApplicationRecord
   # == Methods
 
   sig { returns(T::Boolean) }
-  def from_application?
+  def from_application_user?
     sender&.lid == application_jid
   end
 
