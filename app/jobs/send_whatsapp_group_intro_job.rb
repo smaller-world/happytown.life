@@ -10,6 +10,6 @@ class SendWhatsappGroupIntroJob < ApplicationJob
 
   sig { params(group: WhatsappGroup).void }
   def perform(group)
-    group.send_intro
+    group.send_intro unless group.intro_sent?
   end
 end

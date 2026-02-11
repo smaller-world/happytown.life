@@ -10,6 +10,7 @@ require "test_helper"
 #
 #  id                      :uuid             not null, primary key
 #  description             :text
+#  intro_sent_at           :timestamptz
 #  jid                     :string           not null
 #  memberships_imported_at :timestamptz
 #  metadata_imported_at    :timestamptz
@@ -20,6 +21,7 @@ require "test_helper"
 #
 # Indexes
 #
+#  index_whatsapp_groups_on_intro_sent_at            (intro_sent_at)
 #  index_whatsapp_groups_on_jid                      (jid) UNIQUE
 #  index_whatsapp_groups_on_memberships_imported_at  (memberships_imported_at)
 #  index_whatsapp_groups_on_metadata_imported_at     (metadata_imported_at)

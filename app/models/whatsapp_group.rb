@@ -8,6 +8,7 @@
 #
 #  id                      :uuid             not null, primary key
 #  description             :text
+#  intro_sent_at           :timestamptz
 #  jid                     :string           not null
 #  memberships_imported_at :timestamptz
 #  metadata_imported_at    :timestamptz
@@ -18,6 +19,7 @@
 #
 # Indexes
 #
+#  index_whatsapp_groups_on_intro_sent_at            (intro_sent_at)
 #  index_whatsapp_groups_on_jid                      (jid) UNIQUE
 #  index_whatsapp_groups_on_memberships_imported_at  (memberships_imported_at)
 #  index_whatsapp_groups_on_metadata_imported_at     (metadata_imported_at)
@@ -54,6 +56,9 @@ class WhatsappGroup < ApplicationRecord
 
   # sig { returns(T::Boolean) }
   # def record_full_message_history? = record_full_message_history_since?
+
+  sig { returns(T::Boolean) }
+  def intro_sent? = intro_sent_at?
 
   # == Associations ==
 
@@ -150,7 +155,14 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def send_intro
-    intro_prompt.generate_now
+    if whatsapp_messaging_enabled?
+      intro_prompt.generate_now
+      update!(intro_sent_at: Time.current)
+    else
+      tag_logger do
+        Rails.logger.info("WhatsApp messaging is disabled; skipping intro")
+      end
+    end
   end
 
   sig do
@@ -158,7 +170,13 @@ class WhatsappGroup < ApplicationRecord
       .returns(T.any(SendWhatsappGroupIntroJob, FalseClass))
   end
   def send_intro_later(**options)
-    SendWhatsappGroupIntroJob.set(**options).perform_later(self)
+    if whatsapp_messaging_enabled?
+      SendWhatsappGroupIntroJob.set(**options).perform_later(self)
+    else
+      tag_logger do
+        Rails.logger.info("WhatsApp messaging is disabled; skipping intro")
+      end
+    end
   end
 
   private
