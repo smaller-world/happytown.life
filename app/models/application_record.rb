@@ -34,5 +34,10 @@ class ApplicationRecord < ActiveRecord::Base
     Rails.configuration.x.whatsapp_jid
   end
 
-  delegate :application_jid, to: :class
+  sig { returns(T::Boolean) }
+  def self.whatsapp_messaging_enabled?
+    Rails.configuration.x.whatsapp_messaging_enabled
+  end
+
+  delegate :application_jid, :whatsapp_messaging_enabled?, to: :class
 end

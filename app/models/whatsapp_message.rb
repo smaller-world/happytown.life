@@ -8,10 +8,10 @@
 #
 #  id                     :uuid             not null, primary key
 #  body                   :text             not null
-#  handled_at             :timestamptz
 #  mentioned_jids         :string           default([]), not null, is an Array
 #  quoted_conversation    :text
 #  quoted_participant_jid :string
+#  reply_sent_at          :timestamptz
 #  timestamp              :timestamptz      not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
@@ -23,8 +23,8 @@
 # Indexes
 #
 #  index_whatsapp_messages_on_group_id           (group_id)
-#  index_whatsapp_messages_on_handled_at         (handled_at)
 #  index_whatsapp_messages_on_quoted_message_id  (quoted_message_id)
+#  index_whatsapp_messages_on_reply_sent_at      (reply_sent_at)
 #  index_whatsapp_messages_on_sender_id          (sender_id)
 #  index_whatsapp_messages_on_timestamp          (timestamp)
 #
@@ -62,13 +62,13 @@ class WhatsappMessage < ApplicationRecord
 
   # == Hooks ==
 
-  after_create_commit :handle, if: :requires_handling?
+  after_create_commit :send_reply_later, if: :requires_reply?
 
   # == Handling ==
 
-  scope :requires_handling, -> {
+  scope :requiring_reply, -> {
     sender_id = WhatsappUser.where(lid: application_jid).select(:id)
-    where(handled_at: nil).where.not(sender_id:)
+    where(reply_sent_at: nil).where.not(sender_id:)
       .and(
         where(quoted_participant_jid: application_jid).or(
           where("? = ANY(mentioned_jids)", application_jid),
@@ -77,19 +77,14 @@ class WhatsappMessage < ApplicationRecord
   }
 
   sig { returns(T::Boolean) }
-  def handled? = handled_at?
+  def reply_sent? = reply_sent_at?
 
   sig { returns(T::Boolean) }
-  def requires_handling?
-    !from_application? && (
+  def requires_reply?
+    !reply_sent? && !from_application? && (
       quoted_participant_jid == application_jid ||
         mentioned_jids.include?(application_jid)
     )
-  end
-
-  sig { void }
-  def handle
-    send_reply_later unless handled?
   end
 
   # == Replying ==
@@ -101,8 +96,15 @@ class WhatsappMessage < ApplicationRecord
 
   sig { void }
   def send_reply
-    reply_prompt.generate_now
-    update!(handled_at: Time.current)
+    if whatsapp_messaging_enabled?
+      reply_prompt.generate_now
+      update!(handled_at: Time.current)
+    else
+      tag_logger do
+        Rails.logger.info("WhatsApp messaging is disabled; skipping reply")
+        false
+      end
+    end
   rescue => error
     tag_logger do
       Rails.logger.warn(
@@ -118,7 +120,14 @@ class WhatsappMessage < ApplicationRecord
       .returns(T.any(SendWhatsappGroupReplyJob, FalseClass))
   end
   def send_reply_later(**options)
-    SendWhatsappGroupReplyJob.set(**options).perform_later(self)
+    if whatsapp_messaging_enabled?
+      SendWhatsappGroupReplyJob.set(**options).perform_later(self)
+    else
+      tag_logger do
+        Rails.logger.info("WhatsApp messaging is disabled; skipping reply")
+        false
+      end
+    end
   end
 
   # == Methods

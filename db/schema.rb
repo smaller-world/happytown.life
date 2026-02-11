@@ -208,18 +208,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_155142) do
     t.text "body", null: false
     t.datetime "created_at", null: false
     t.uuid "group_id", null: false
-    t.timestamptz "handled_at"
     t.string "mentioned_jids", default: [], null: false, array: true
     t.text "quoted_conversation"
     t.uuid "quoted_message_id"
     t.string "quoted_participant_jid"
+    t.timestamptz "reply_sent_at"
     t.uuid "sender_id", null: false
     t.timestamptz "timestamp", null: false
     t.datetime "updated_at", null: false
     t.string "whatsapp_id", null: false
     t.index ["group_id"], name: "index_whatsapp_messages_on_group_id"
-    t.index ["handled_at"], name: "index_whatsapp_messages_on_handled_at"
     t.index ["quoted_message_id"], name: "index_whatsapp_messages_on_quoted_message_id"
+    t.index ["reply_sent_at"], name: "index_whatsapp_messages_on_reply_sent_at"
     t.index ["sender_id"], name: "index_whatsapp_messages_on_sender_id"
     t.index ["timestamp"], name: "index_whatsapp_messages_on_timestamp"
   end

@@ -7,10 +7,10 @@
 #
 #  id                     :uuid             not null, primary key
 #  body                   :text             not null
-#  handled_at             :timestamptz
 #  mentioned_jids         :string           default([]), not null, is an Array
 #  quoted_conversation    :text
 #  quoted_participant_jid :string
+#  reply_sent_at          :timestamptz
 #  timestamp              :timestamptz      not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
@@ -22,8 +22,8 @@
 # Indexes
 #
 #  index_whatsapp_messages_on_group_id           (group_id)
-#  index_whatsapp_messages_on_handled_at         (handled_at)
 #  index_whatsapp_messages_on_quoted_message_id  (quoted_message_id)
+#  index_whatsapp_messages_on_reply_sent_at      (reply_sent_at)
 #  index_whatsapp_messages_on_sender_id          (sender_id)
 #  index_whatsapp_messages_on_timestamp          (timestamp)
 #

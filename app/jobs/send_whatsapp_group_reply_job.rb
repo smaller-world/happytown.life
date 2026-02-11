@@ -10,6 +10,6 @@ class SendWhatsappGroupReplyJob < ApplicationJob
 
   sig { params(message: WhatsappMessage).void }
   def perform(message)
-    message.send_reply
+    message.send_reply unless message.reply_sent?
   end
 end

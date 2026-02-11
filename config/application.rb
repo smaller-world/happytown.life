@@ -18,20 +18,32 @@ module HappyTown
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults(8.1)
 
+    # == Custom Configuration ==
+
+    # == Site
     config.x.site_name = "happy town"
     config.x.site_tagline = "a home for third-space hosts and guests"
     config.x.site_description =
       "a new kind of third space in toronto. weekly walks, irl chat groups, " \
         "and hobby tables for curious, friendly people who like wandering " \
         "conversations."
+
+    # == Socials
     config.x.luma_url = "https://luma.com/happytown"
     config.x.instagram_url = "https://instagram.com/happytown.to"
     config.x.tiktok_url = "https://tiktok.com/@adamdriversbod"
+
+    # == WhatsApp
     config.x.whatsapp_jid = "189971403149563@lid"
+    config.x.whatsapp_messaging_enabled = false
+
+    # == Webhook Forwarding
     config.x.dev_server_url_options = {
       protocol: "https",
       host: "kaibook.itskai.me",
     }
+
+    # == Rails Configuration ==
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -48,6 +60,8 @@ module HappyTown
 
     # Disable HTTP basic auth for the jobs dashboard
     config.mission_control.jobs.http_basic_auth_enabled = false
+
+    # == Singletons ==
 
     sig { returns(WaSenderApi) }
     def wa_sender_api
