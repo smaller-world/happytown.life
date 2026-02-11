@@ -28,6 +28,8 @@ class WaSenderApi
 
   # == Configuration ==
 
+  ACCOUNT_PROTECTION_INTERVAL = 5
+
   base_uri "https://www.wasenderapi.com/api"
   format :json
   logger Rails.logger, Rails.configuration.log_level
@@ -36,6 +38,7 @@ class WaSenderApi
   sig { params(api_key: String).void }
   def initialize(api_key:)
     self.class.headers("Authorization" => "Bearer #{api_key}")
+    @message_last_sent_at = T.let(nil, T.nilable(ActiveSupport::TimeWithZone))
   end
 
   # == Methods ==
@@ -49,9 +52,11 @@ class WaSenderApi
       return
     end
 
+    wait_for_account_protection
     body = { to:, text:, mentions: mentioned_jids }.compact_blank
     response = self.class.post("/send-message", body:)
     check_response!(response)
+    @message_last_sent_at = Time.current
   end
 
   sig { params(jid: String, type: String).void }
@@ -148,6 +153,22 @@ class WaSenderApi
       logger.public_send(*T.unsafe(args), &block)
     else
       yield
+    end
+  end
+
+  sig { void }
+  def wait_for_account_protection
+    if @message_last_sent_at
+      time_since_last_sent = Time.current - @message_last_sent_at
+      if time_since_last_sent < ACCOUNT_PROTECTION_INTERVAL
+        duration = ACCOUNT_PROTECTION_INTERVAL - time_since_last_sent
+        tag_logger do
+          Rails.logger.info(
+            "Waiting #{duration} seconds for account protection...",
+          )
+        end
+        sleep(duration)
+      end
     end
   end
 end
