@@ -8,7 +8,7 @@
 #  id                     :uuid             not null, primary key
 #  body                   :text             not null
 #  mentioned_jids         :string           default([]), not null, is an Array
-#  quoted_conversation    :text
+#  quoted_message_body    :text
 #  quoted_participant_jid :string
 #  reply_sent_at          :timestamptz
 #  timestamp              :timestamptz      not null

@@ -3,6 +3,9 @@
 
 module AgentHelper
   extend T::Sig
+  extend T::Helpers
+
+  requires_ancestor { Kernel }
 
   sig { returns(String) }
   def application_jid
@@ -43,5 +46,14 @@ module AgentHelper
       body.gsub!("@#{lid}", "@#{whatsapp_user_identity(user)}")
     end
     body
+  end
+
+  sig { params(message: WhatsappMessage).returns(T.nilable(String)) }
+  def quoted_message_body_with_inlined_mentions(message)
+    if (quoted_message = message.quoted_message)
+      message_body_with_inlined_mentions(quoted_message)
+    else
+      message.quoted_message_body
+    end
   end
 end

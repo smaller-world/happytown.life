@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_11_035003) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_11_044114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -211,7 +211,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_11_035003) do
     t.datetime "created_at", null: false
     t.uuid "group_id", null: false
     t.string "mentioned_jids", default: [], null: false, array: true
-    t.text "quoted_conversation"
+    t.text "quoted_message_body"
     t.uuid "quoted_message_id"
     t.string "quoted_participant_jid"
     t.timestamptz "reply_sent_at"

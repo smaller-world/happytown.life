@@ -1,25 +1,20 @@
-<% index = local_assigns[:thread_index] %>
-<% if index %>
----------- BEGIN WHATSAPP MESSAGE (#<%= index + 1 %>) ----------
-<% else %>
 ---------- BEGIN WHATSAPP MESSAGE ----------
-<% end %>
-MESSAGE ID: <%= message.whatsapp_id %>
-TIMESTAMP: <%= l message.timestamp %>
+```json
+<%= JSON.pretty_generate({
+  message_id: message.whatsapp_id,
+  timestamp: l(message.timestamp),
+}) %>
+```
 
-WHATSAPP USER <%= whatsapp_user_identity(message.sender) %> SENT:
+**WHATSAPP USER <%= whatsapp_user_identity(message.sender) %> SENT:**
 """
 <%= message_body_with_inlined_mentions(message) %>
 """
-<% if (quoted_conversation = message.quoted_conversation) %>
+<% if (message_body = quoted_message_body_with_inlined_mentions(message)) %>
 
-IN RESPONSE TO THIS MESSAGE SENT BY <%= quoted_participant_identity(message) %>:
+**IN RESPONSE TO THIS MESSAGE SENT BY <%= quoted_participant_identity(message) %>:**
 > """
-> <%= quoted_conversation %>
+> <%= message_body %>
 > """
 <% end %>
-<% if index %>
----------- END WHATSAPP MESSAGE (#<%= index + 1 %>) ----------
-<% else %>
 ---------- END WHATSAPP MESSAGE ----------
-<% end %>

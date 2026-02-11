@@ -9,7 +9,7 @@
 #  id                     :uuid             not null, primary key
 #  body                   :text             not null
 #  mentioned_jids         :string           default([]), not null, is an Array
-#  quoted_conversation    :text
+#  quoted_message_body    :text
 #  quoted_participant_jid :string
 #  reply_sent_at          :timestamptz
 #  timestamp              :timestamptz      not null
@@ -219,7 +219,7 @@ class WhatsappMessage < ApplicationRecord
     if (context_info = data.dig("extendedTextMessage", "contextInfo"))
       mentioned_jids = context_info.fetch("mentionedJid") { [] }
       if (message_data = context_info["quotedMessage"])
-        quoted_conversation = parse_message_text(message_data) or
+        quoted_message_body = parse_message_text(message_data) or
           raise "Missing quoted message body"
         quoted_participant_jid = context_info.fetch("participant")
         stanza_id = context_info.fetch("stanzaId")
@@ -228,7 +228,7 @@ class WhatsappMessage < ApplicationRecord
     end
     {
       body:,
-      quoted_conversation:,
+      quoted_message_body:,
       quoted_participant_jid:,
       quoted_message:,
       mentioned_jids: mentioned_jids || [],
