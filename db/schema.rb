@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_11_145535) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_11_180158) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -231,10 +231,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_11_145535) do
     t.datetime "created_at", null: false
     t.string "display_name"
     t.string "lid", null: false
+    t.timestamptz "metadata_imported_at"
     t.string "phone_number"
     t.string "phone_number_jid"
+    t.string "profile_picture_url"
     t.datetime "updated_at", null: false
     t.index ["lid"], name: "index_whatsapp_users_on_lid", unique: true
+    t.index ["metadata_imported_at"], name: "index_whatsapp_users_on_metadata_imported_at"
     t.index ["phone_number"], name: "index_whatsapp_users_on_phone_number", unique: true
   end
 

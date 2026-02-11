@@ -84,9 +84,7 @@ class WhatsappGroup < ApplicationRecord
   sig { void }
   def import_metadata
     metadata = wa_sender_api.group_metadata(jid:)
-    profile_picture_url = if (data = wa_sender_api.group_profile_picture(jid:))
-      data.fetch("imgUrl")
-    end
+    profile_picture_url = wa_sender_api.group_profile_picture_url(jid:)
     update!(
       subject: metadata["subject"],
       description: metadata["desc"],

@@ -9,6 +9,23 @@ class WaSenderApi
 
   include HTTParty
 
+  # == Exceptions ==
+
+  class Error < StandardError
+    extend T::Sig
+
+    sig { params(response: HTTParty::Response).void }
+    def initialize(response)
+      @response = response
+      super("WASenderAPI error (status #{response.code}): #{response.parsed_response}")
+    end
+
+    sig { returns(HTTParty::Response) }
+    attr_reader :response
+  end
+
+  class TooManyRequests < Error; end
+
   # == Configuration ==
 
   base_uri "https://www.wasenderapi.com/api"
@@ -28,6 +45,8 @@ class WaSenderApi
     body = { to:, text:, mentions: mentioned_jids }.compact_blank
     response = self.class.post("/send-message", body:)
     unless response.success?
+      raise TooManyRequests, response.parsed_response.to_s if response.code == 429
+
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
     end
   end
@@ -37,6 +56,8 @@ class WaSenderApi
     body = { jid:, type: }
     response = self.class.post("/send-presence-update", body:)
     unless response.success?
+      raise TooManyRequests, response.parsed_response.to_s if response.code == 429
+
       raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
     end
   end
@@ -47,19 +68,36 @@ class WaSenderApi
     response_data!(response)
   end
 
+  sig { params(jid: String).returns(T.nilable(String)) }
+  def group_profile_picture_url(jid:)
+    response = self.class.get("/groups/#{jid}/picture")
+    if response.code == 422
+      nil
+    else
+      response_data!(response).fetch("imgUrl")
+    end
+  end
+
   sig { params(jid: String).returns(T::Array[T::Hash[String, T.untyped]]) }
   def group_participants(jid:)
     response = self.class.get("/groups/#{jid}/participants")
     response_data!(response)
   end
 
-  sig { params(jid: String).returns(T.nilable(T::Hash[String, T.untyped])) }
-  def group_profile_picture(jid:)
-    response = self.class.get("/groups/#{jid}/picture")
+  sig { params(lid: String).returns(String) }
+  def phone_number_jid_for_user(lid:)
+    response = self.class.get("/pn-from-lid/#{lid}")
+    response_data!(response).fetch("pn")
+  end
+
+  sig { params(phone_number: String).returns(T.nilable(String)) }
+  def contact_profile_picture_url(phone_number:)
+    phone_number = normalize_phone_number(phone_number)
+    response = self.class.get("/contacts/#{phone_number}/picture")
     if response.code == 422
       nil
     else
-      response_data!(response)
+      response_data!(response).fetch("imgUrl")
     end
   end
 
@@ -70,9 +108,19 @@ class WaSenderApi
   sig { params(response: HTTParty::Response).returns(T.untyped) }
   def response_data!(response)
     unless response.success?
-      raise "WASenderAPI error (#{response.code}): #{response.parsed_response}"
+      case response.code
+      when 429
+        raise TooManyRequests, response
+      else
+        raise Error, response
+      end
     end
-
     response.parsed_response.fetch("data")
+  end
+
+  sig { params(phone_number: String).returns(String) }
+  def normalize_phone_number(phone_number)
+    phone = Phonelib.parse(phone_number)
+    phone.sanitized
   end
 end

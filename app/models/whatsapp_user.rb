@@ -6,18 +6,21 @@
 #
 # Table name: whatsapp_users
 #
-#  id               :uuid             not null, primary key
-#  display_name     :string
-#  lid              :string           not null
-#  phone_number     :string
-#  phone_number_jid :string
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
+#  id                   :uuid             not null, primary key
+#  display_name         :string
+#  lid                  :string           not null
+#  metadata_imported_at :timestamptz
+#  phone_number         :string
+#  phone_number_jid     :string
+#  profile_picture_url  :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #
 # Indexes
 #
-#  index_whatsapp_users_on_lid           (lid) UNIQUE
-#  index_whatsapp_users_on_phone_number  (phone_number) UNIQUE
+#  index_whatsapp_users_on_lid                   (lid) UNIQUE
+#  index_whatsapp_users_on_metadata_imported_at  (metadata_imported_at)
+#  index_whatsapp_users_on_phone_number          (phone_number) UNIQUE
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappUser < ApplicationRecord
@@ -55,6 +58,26 @@ class WhatsappUser < ApplicationRecord
     lid.delete_suffix("@lid")
   end
 
+  # == Metadata ==
+
+  sig { void }
+  def import_metadata
+    phone_number_jid = wa_sender_api.phone_number_jid_for_user(lid:)
+    phone_number = phone_number_jid.delete_suffix("@s.whatsapp.net")
+    profile_picture_url = wa_sender_api.contact_profile_picture_url(phone_number:)
+    update!(phone_number:, phone_number_jid:, profile_picture_url:, metadata_imported_at: Time.current)
+  end
+
+  sig do
+    params(options: T.untyped)
+      .returns(T.any(ImportWhatsappUserMetadataJob, FalseClass))
+  end
+  def import_metadata_later(**options)
+    ImportWhatsappUserMetadataJob
+      .set(**options)
+      .perform_later(self)
+  end
+
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappUser) }
@@ -88,5 +111,12 @@ class WhatsappUser < ApplicationRecord
   sig { params(jids: T::Array[String]).returns(WhatsappUser::PrivateRelation) }
   def self.from_mentioned_jids(jids)
     where(phone_number_jid: jids).or(where(lid: jids))
+  end
+
+  private
+
+  sig { returns(WaSenderApi) }
+  def wa_sender_api
+    HappyTown.application.wa_sender_api
   end
 end

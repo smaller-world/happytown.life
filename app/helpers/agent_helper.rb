@@ -16,10 +16,12 @@ module AgentHelper
   def whatsapp_user_identity(user)
     if user.lid == application_jid
       "(YOURSELF)"
-    elsif (name = user.display_name)
-      "#{name} <#{user.phone&.sanitized || user.lid}>"
     else
-      "(UNKNOWN USER) <#{user.lid}>"
+      display_text = user.display_name || "(UNKNOWN USER)"
+      if (number = user.phone&.sanitized)
+        display_text += " <#{number}>"
+      end
+      display_text
     end
   end
 
@@ -31,7 +33,7 @@ module AgentHelper
       if jid == application_jid
         "(YOURSELF)"
       else
-        "(UNKNOWN USER) <#{jid}>"
+        "(UNKNOWN USER)"
       end
     else
       "(UNKNOWN USER)"

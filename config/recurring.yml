@@ -23,3 +23,6 @@ production:
   reconcile_whatsapp_group_memberships:
     class: ReconcileWhatsappGroupMembershipsJob
     schedule: at 3:48am America/Toronto every day
+  reconcile_whatsapp_user_metadata:
+    class: ReconcileWhatsappUserMetadataJob
+    schedule: at 4:18am America/Toronto every day
