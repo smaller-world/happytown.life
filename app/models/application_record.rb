@@ -26,18 +26,4 @@ class ApplicationRecord < ActiveRecord::Base
   PrivateAssociationRelation = ActiveRecord::AssociationRelation
   PrivateAssociationRelationWhereChain = ActiveRecord::AssociationRelation
   PrivateCollectionProxy = ActiveRecord::Associations::CollectionProxy
-
-  # == Helpers ==
-
-  sig { returns(String) }
-  def self.application_user_jid
-    Rails.configuration.x.whatsapp_jid
-  end
-
-  sig { returns(T::Boolean) }
-  def self.whatsapp_messaging_enabled?
-    Rails.configuration.x.whatsapp_messaging_enabled
-  end
-
-  delegate :application_user_jid, :whatsapp_messaging_enabled?, to: :class
 end

@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 class WhatsappGroupAgent < ApplicationAgent
+  include WhatsappMessaging
   include SendMessageTool
   include SendReplyTool
   include SendMessageHistoryLinkTool

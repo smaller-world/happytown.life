@@ -7,10 +7,9 @@ module AgentHelper
 
   requires_ancestor { Kernel }
 
-  sig { returns(String) }
-  def application_user_jid
-    Rails.configuration.x.whatsapp_jid
-  end
+  include WhatsappMessaging
+
+  # == Methods ==
 
   sig { params(user: WhatsappUser).returns(String) }
   def whatsapp_user_identity(user)

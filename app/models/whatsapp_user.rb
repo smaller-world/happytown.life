@@ -24,6 +24,7 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappUser < ApplicationRecord
+  include WhatsappMessaging
   include NormalizesPhoneNumber
 
   # == Attributes ==

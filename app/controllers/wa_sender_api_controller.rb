@@ -81,11 +81,6 @@ class WaSenderApiController < ApplicationController
       raise "Missing WASenderAPI webhook secret"
   end
 
-  sig { returns(String) }
-  def whatsapp_jid
-    Rails.configuration.x.whatsapp_jid
-  end
-
   # == Callbacks ==
 
   sig { void }

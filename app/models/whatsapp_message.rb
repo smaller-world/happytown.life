@@ -36,6 +36,8 @@
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappMessage < ApplicationRecord
+  include WhatsappMessaging
+
   # == Associations ==
 
   belongs_to :group, class_name: "WhatsappGroup", inverse_of: :messages
@@ -96,15 +98,8 @@ class WhatsappMessage < ApplicationRecord
 
   sig { void }
   def send_reply
-    if whatsapp_messaging_enabled?
-      reply_prompt.generate_now
-      update!(reply_sent_at: Time.current)
-    else
-      tag_logger do
-        Rails.logger.info("WhatsApp messaging is disabled; skipping reply")
-        false
-      end
-    end
+    reply_prompt.generate_now
+    update!(reply_sent_at: Time.current)
   rescue => error
     tag_logger do
       Rails.logger.warn(
@@ -120,14 +115,7 @@ class WhatsappMessage < ApplicationRecord
       .returns(T.any(SendWhatsappGroupReplyJob, FalseClass))
   end
   def send_reply_later(**options)
-    if whatsapp_messaging_enabled?
-      SendWhatsappGroupReplyJob.set(**options).perform_later(self)
-    else
-      tag_logger do
-        Rails.logger.info("WhatsApp messaging is disabled; skipping reply")
-        false
-      end
-    end
+    SendWhatsappGroupReplyJob.set(**options).perform_later(self)
   end
 
   # == Methods

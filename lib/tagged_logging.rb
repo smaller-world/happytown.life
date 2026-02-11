@@ -61,7 +61,8 @@ module TaggedLogging
   end
   def tag_logger(*tags, &block)
     if logger.respond_to?(:tagged)
-      T.unsafe(logger).tagged(*log_tags, *tags, &block)
+      args = [:tagged, *log_tags, *tags]
+      logger.public_send(*T.unsafe(args), &block)
     else
       yield
     end

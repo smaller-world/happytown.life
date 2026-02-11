@@ -1,33 +1,26 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 # rubocop:disable Layout/LineLength, Lint/RedundantCopDisableDirective
 # == Schema Information
 #
 # Table name: whatsapp_groups
 #
-#  id                      :uuid             not null, primary key
-#  description             :text
-#  intro_sent_at           :timestamptz
-#  jid                     :string           not null
-#  memberships_imported_at :timestamptz
-#  metadata_imported_at    :timestamptz
-#  profile_picture_url     :string
-#  subject                 :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
+#  id                   :uuid             not null, primary key
+#  creation             :bigint
+#  description          :text
+#  intro_sent_at        :timestamptz
+#  metadata_imported_at :timestamptz
+#  participants         :jsonb
+#  subject              :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  jid                  :string           not null
 #
 # Indexes
 #
-#  index_whatsapp_groups_on_intro_sent_at            (intro_sent_at)
-#  index_whatsapp_groups_on_jid                      (jid) UNIQUE
-#  index_whatsapp_groups_on_memberships_imported_at  (memberships_imported_at)
-#  index_whatsapp_groups_on_metadata_imported_at     (metadata_imported_at)
+#  index_whatsapp_groups_on_jid                  (jid) UNIQUE
+#  index_whatsapp_groups_on_metadata_imported_at  (metadata_imported_at)
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
-# ur_mom:
-#   jid: urmom@g.us
-#   subject: ur mom
-
-# our_moms:
-#   jid: ourmoms@g.us
-#   subject: our moms
+hangout:
+  jid: hangout@g.us
+  subject: the hangout
+  description: a place to hang out
