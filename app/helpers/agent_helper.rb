@@ -14,7 +14,7 @@ module AgentHelper
     if user.lid == application_jid
       "(YOURSELF)"
     elsif (name = user.display_name)
-      "#{name} <#{user.lid}>"
+      "#{name} <#{user.phone&.sanitized || user.lid}>"
     else
       "(UNKNOWN USER) <#{user.lid}>"
     end
@@ -22,12 +22,14 @@ module AgentHelper
 
   sig { params(message: WhatsappMessage).returns(String) }
   def quoted_participant_identity(message)
-    if message.quoted_participant_jid == application_jid
-      "(YOURSELF)"
-    elsif (sender = message.quoted_message&.sender)
+    if (sender = message.quoted_message&.sender)
       whatsapp_user_identity(sender)
     elsif (jid = message.quoted_participant_jid)
-      "(UNKNOWN USER) <#{jid}>"
+      if jid == application_jid
+        "(YOURSELF)"
+      else
+        "(UNKNOWN USER) <#{jid}>"
+      end
     else
       "(UNKNOWN USER)"
     end

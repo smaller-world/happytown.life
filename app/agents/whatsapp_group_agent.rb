@@ -104,10 +104,12 @@ class WhatsappGroupAgent < ApplicationAgent
       )
     end
     begin
-      group!.send_message(
-        "#{sender.embedded_mention} #{message}",
-        mentioned_jids: [sender.lid],
-      )
+      mentioned_lids = mentioned_lids(message:)
+      if mentioned_lids.exclude?(sender.lid)
+        message = "#{sender.embedded_mention} #{message}"
+        mentioned_lids << sender.lid
+      end
+      group!.send_message(message, mentioned_jids: mentioned_lids)
       reply_with("Reply sent successfully.")
     rescue => error
       tag_logger do
@@ -151,6 +153,12 @@ class WhatsappGroupAgent < ApplicationAgent
     yield
   ensure
     indicator_thread&.kill
+  end
+
+  sig { params(message: String).returns(T::Array[String]) }
+  def mentioned_lids(message:)
+    mentioned_jids = message.scan(/@(\d+)/).flatten
+    WhatsappUser.where(phone_number_jid: mentioned_jids).pluck(:lid)
   end
 
   sig { params(text: String).void }
