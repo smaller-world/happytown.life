@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class Views::Admin::Dashboard::Show < Views::Base
-  sig { override.params(content: T.nilable(T.proc.void)).void }
-  def view_template(&content)
+  sig { override.void }
+  def view_template
     Components::Layout() do |layout|
       layout.page_container(class: "flex flex-col gap-y-4") do
         div do

@@ -9,6 +9,7 @@
 @import "./pagy.css";
 
 @import "./theme.css";
+@import "./loading.css";
 @import "./badges.css";
 @import "./buttons.css";
 @import "./cards.css";
@@ -17,7 +18,7 @@
 @import "./inputs.css";
 @import "./fields.css";
 @import "./forms.css";
-@import "./chats.css";
 @import "./layouts.css";
 
 @import "./landing.css";
+@import "./chats.css";

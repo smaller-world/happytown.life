@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class Views::Pages::Landing < Views::Base
-  sig { override.params(content: T.nilable(T.proc.void)).void }
-  def view_template(&content)
+  sig { override.void }
+  def view_template
     Components::Layout(site_title:, body_class: "no-dark bg-[#fdfdfd]") do
       main(class: [
         "max-w-4xl mx-auto px-6 py-12 space-y-24",

@@ -22,9 +22,6 @@ module GeneratedUrlHelpersModule
   def edit_session_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def message_history_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def message_history_whatsapp_group_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -152,4 +149,7 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def webhook_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def whatsapp_group_whatsapp_messages_url(*args); end
 end

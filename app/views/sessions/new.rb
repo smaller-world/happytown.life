@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class Views::Sessions::New < Views::Base
-  sig { override.params(content: T.nilable(T.proc.void)).void }
-  def view_template(&content)
+  sig { override.void }
+  def view_template
     Components::Layout(title: "sign in to happy town") do |layout|
       layout.page_container(
         class: "flex flex-col items-center justify-center",

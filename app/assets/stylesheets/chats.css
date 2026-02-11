@@ -1,14 +1,15 @@
 .chat_card {
-  @apply min-h-0 flex-1;
+  @apply min-h-0 flex-1 gap-0;
   @apply pb-0;
 }
 
-.chat_card_content {
+.chat_content {
   @apply min-h-0 flex-1 overflow-y-auto py-4;
-  @apply flex flex-col;
+  @apply flex flex-col gap-y-3;
   @apply bg-[url('chat_background.jpg')] bg-cover dark:bg-[url('chat_background-dark.jpg')];
 
-  &:has(.chat_message) {
+  &:has(.chat_message),
+  &:has(.pagination_button) {
     .chat_empty_indicator {
       @apply hidden;
     }
@@ -27,11 +28,11 @@
 .chat_message {
   @apply flex items-end gap-x-2;
 
-  &:not([data-sender="application"]) {
+  &:not([data-sender="you"]) {
     @apply pr-12;
   }
 
-  &[data-sender="application"] {
+  &[data-sender="you"] {
     @apply justify-end pl-12;
   }
 }
@@ -39,7 +40,7 @@
 .chat_message_body {
   @apply max-w-96 min-w-0 overflow-y-auto px-2 py-1;
   @apply rounded-lg border bg-background text-sm;
-  @apply group-data-[sender=application]/message:bg-sender-message;
+  @apply group-data-[sender=you]/message:bg-sender-message;
 
   time {
     @apply shrink-0 text-xs text-muted-foreground lowercase;

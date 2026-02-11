@@ -25,32 +25,32 @@ class Components::Card < Components::Base
 
   sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
   def header(**attributes, &content)
-    div_with_slot("card-header", **attributes, &content)
+    slot("card-header", **attributes, &content)
   end
 
   sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
   def title(**attributes, &content)
-    div_with_slot("card-title", **attributes, &content)
+    slot("card-title", **attributes, &content)
   end
 
   sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
   def description(**attributes, &content)
-    div_with_slot("card-description", **attributes, &content)
+    slot("card-description", **attributes, &content)
   end
 
   sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
   def action(**attributes, &content)
-    div_with_slot("card-action", **attributes, &content)
+    slot("card-action", **attributes, &content)
   end
 
   sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
   def content(**attributes, &content)
-    div_with_slot("card-content", **attributes, &content)
+    slot("card-content", **attributes, &content)
   end
 
   sig { params(attributes: T.untyped, content: T.nilable(T.proc.void)).void }
   def footer(**attributes, &content)
-    div_with_slot("card-footer", **attributes, &content)
+    slot("card-footer", **attributes, &content)
   end
 
   private
@@ -59,11 +59,12 @@ class Components::Card < Components::Base
   sig do
     params(
       slot: String,
+      element: Symbol,
       attributes: T.untyped,
       content: T.nilable(T.proc.void),
     ).void
   end
-  def div_with_slot(slot, **attributes, &content)
+  def slot(slot, element: :div, **attributes, &content)
     div(**mix({ data: { slot: } }, **attributes), &content)
   end
 end

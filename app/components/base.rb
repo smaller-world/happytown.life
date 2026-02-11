@@ -14,6 +14,7 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ImageTag
   include Phlex::Rails::Helpers::FormWith
+  include Phlex::Rails::Helpers::TurboFrameTag
   include PhlexIcons
 
   register_output_helper :local_time
@@ -36,10 +37,8 @@ class Components::Base < Phlex::HTML
     end
   end
 
-  sig do
-    abstract.params(content: T.nilable(T.proc.void)).void
-  end
-  def view_template(&content); end
+  sig { overridable.void }
+  def view_template; end
 
   private
 

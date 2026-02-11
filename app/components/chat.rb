@@ -6,23 +6,27 @@ class Components::Chat < Components::Base
     params(
       group: WhatsappGroup,
       messages: T::Array[WhatsappMessage],
+      pagy: T.nilable(Pagy),
       attributes: T.untyped,
     ).void
   end
-  def initialize(group:, messages: [], **attributes)
+  def initialize(group:, messages: [], pagy: nil, **attributes)
     super(**attributes)
     @group = group
     @messages = messages
+    @pagy = pagy
   end
 
-  sig { override.params(block: T.nilable(T.proc.void)).void }
-  def view_template(&block)
+  sig { override.params(content: T.nilable(T.proc.void)).void }
+  def view_template(&content)
+    vanish(&content)
+
     Components::Card(
       size: :sm,
       **mix({ class: "chat_card" }, @attributes),
     ) do |card|
-      card.header(class: "flex items-center gap-x-3") do
-        if (url = @group.profile_picture_url)
+      card.header(class: "flex items-center gap-x-3 border-b") do
+        if view_context && (url = @group.profile_picture_url)
           image_tag(url, class: "size-12 rounded-full")
         end
         div(class: "flex flex-col gap-y-1") do
@@ -35,52 +39,25 @@ class Components::Chat < Components::Base
         end
       end
       card.content(
-        class: "chat_card_content",
+        class: "chat_content",
         data: {
-          controller: "scroll-to-bottom",
+          controller: "maintain-scroll",
         },
       ) do
-        ul(id: "whatsapp_messages", class: "chat_messages") do
-          @messages.each do |message|
-            li do
-              render_message(message)
-            end
-          end
-        end
         div(class: "chat_empty_indicator") do
           p(class: "text-muted-foreground text-sm") do
             "no messages found 😪"
           end
         end
-      end
-    end
-  end
-
-  private
-
-  # == Helpers ==
-
-  sig { params(message: WhatsappMessage).void }
-  def render_message(message)
-    div(
-      class: "chat_message group/message",
-      data: {
-        sender: ("application" if message.from_application?),
-      },
-    ) do
-      # image_tag(message.sender!.profile_picture_url, class: "size-12 rounded-full")
-      div(class: "chat_message_body") do
-        unless message.from_application?
-          div(class: "text-accent font-semibold") do
-            sender = message.sender!
-            sender.display_name ||
-              sender.phone&.international(true) ||
-              sender.lid
-          end
+        if @pagy.nil? || @pagy.next
+          render PaginationButton.new(
+            group: @group,
+            pagy: @pagy,
+            click_on_appear: @pagy.nil?,
+          )
         end
-        div(class: "flex items-end gap-x-2") do
-          p(class: "wrap-break-word") { message.body }
-          local_time(message.timestamp, format: "%l:%M %p")
+        ul(id: "messages", class: "chat_messages") do
+          render Messages.new(messages: @messages)
         end
       end
     end

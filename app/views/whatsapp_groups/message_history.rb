@@ -10,16 +10,15 @@ class Views::WhatsappGroups::MessageHistory < Views::Base
   def initialize(group:)
     super()
     @group = group
-    @messages = group.messages.order(created_at: :asc).last(50)
   end
 
   # == View ==
 
-  sig { override.params(content: T.nilable(T.proc.void)).void }
-  def view_template(&content)
+  sig { override.void }
+  def view_template
     Components::Layout(body_class: "max-h-dvh") do |layout|
       layout.page_container(class: "flex-1 min-h-0 flex flex-col gap-y-6") do
-        Components::Chat(group: @group, messages: @messages)
+        Components::Chat(group: @group)
       end
     end
   end

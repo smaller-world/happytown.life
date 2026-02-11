@@ -38,11 +38,12 @@ module Components
     params(
       group: ::WhatsappGroup,
       messages: T::Array[::WhatsappMessage],
+      pagy: T.nilable(::Pagy),
       attributes: T.untyped,
       block: T.nilable(T.proc.params(instance: Components::Chat).void)
     ).void
   end
-  def Chat(group:, messages: T.unsafe(nil), **attributes, &block); end
+  def Chat(group:, messages: T.unsafe(nil), pagy: T.unsafe(nil), **attributes, &block); end
 
   sig do
     params(
@@ -106,6 +107,20 @@ module Components
 
   sig do
     params(
+      to: T.untyped,
+      pagy: T.nilable(::Pagy),
+      variant: ::Symbol,
+      size: ::Symbol,
+      form_class: T.nilable(::String),
+      form: T::Hash[::Symbol, T.untyped],
+      options: T.untyped,
+      block: T.nilable(T.proc.params(instance: Components::PaginationButton).void)
+    ).void
+  end
+  def PaginationButton(to:, pagy: T.unsafe(nil), variant: T.unsafe(nil), size: T.unsafe(nil), form_class: T.unsafe(nil), form: T.unsafe(nil), **options, &block); end
+
+  sig do
+    params(
       orientation: ::Symbol,
       decorative: T::Boolean,
       options: T.untyped,
@@ -147,11 +162,12 @@ module Components
       params(
         group: ::WhatsappGroup,
         messages: T::Array[::WhatsappMessage],
+        pagy: T.nilable(::Pagy),
         attributes: T.untyped,
         block: T.nilable(T.proc.params(instance: Components::Chat).void)
       ).void
     end
-    def Chat(group:, messages: T.unsafe(nil), **attributes, &block); end
+    def Chat(group:, messages: T.unsafe(nil), pagy: T.unsafe(nil), **attributes, &block); end
 
     sig do
       params(
@@ -212,6 +228,20 @@ module Components
       ).void
     end
     def Layout(site_title: T.unsafe(nil), page_title: T.unsafe(nil), body_class: T.unsafe(nil), **attributes, &block); end
+
+    sig do
+      params(
+        to: T.untyped,
+        pagy: T.nilable(::Pagy),
+        variant: ::Symbol,
+        size: ::Symbol,
+        form_class: T.nilable(::String),
+        form: T::Hash[::Symbol, T.untyped],
+        options: T.untyped,
+        block: T.nilable(T.proc.params(instance: Components::PaginationButton).void)
+      ).void
+    end
+    def PaginationButton(to:, pagy: T.unsafe(nil), variant: T.unsafe(nil), size: T.unsafe(nil), form_class: T.unsafe(nil), form: T.unsafe(nil), **options, &block); end
 
     sig do
       params(

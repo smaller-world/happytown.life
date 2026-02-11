@@ -31,6 +31,7 @@ Rails/Delegate:
 
 Layout/ArgumentAlignment:
   EnforcedStyle: with_first_argument
+
 Style/ClassAndModuleChildren:
   Enabled: false
 Style/ClassMethodsDefinitions:
@@ -44,6 +45,8 @@ Style/MethodCallWithArgsParentheses:
     - require
     - puts
 
+Sorbet/AllowIncompatibleOverride:
+  Enabled: false
 Sorbet/FalseSigil:
   Enabled: false
 Sorbet/TrueSigil:

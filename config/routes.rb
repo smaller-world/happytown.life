@@ -34,14 +34,12 @@ Rails.application.routes.draw do
   end
 
   # == Whatsapp Groups ==
-  resources :whatsapp_groups, only: [] do
+  resources :whatsapp_groups, path: "/groups", only: [] do
     member do
       get :message_history
     end
+    resources :whatsapp_messages, path: "/messages", only: :index
   end
-  get "/history/:id",
-      to: redirect("/whatsapp_groups/%{id}/message_history", status: 302),
-      as: :message_history
 
   # == Admin ==
 

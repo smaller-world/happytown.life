@@ -122,7 +122,7 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { void }
   def send_message_history_link
-    history_url = message_history_url(group!)
+    history_url = message_history_whatsapp_group_url(group!)
     send_message(message: "see older messages: #{history_url}")
   end
 

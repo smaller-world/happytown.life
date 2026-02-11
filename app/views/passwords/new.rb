@@ -10,8 +10,8 @@ class Views::Passwords::New < Views::Base
 
   # == Component ==
 
-  sig { override.params(content: T.nilable(T.proc.void)).void }
-  def view_template(&content)
+  sig { override.void }
+  def view_template
     Components::Layout(title: "forgot your password?") do |layout|
       layout.page_container(
         class: "flex flex-col items-center justify-center",

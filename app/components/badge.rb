@@ -8,7 +8,7 @@ class Components::Badge < Components::Base
     @variant = variant
   end
 
-  sig { override.params(content: T.nilable(T.proc.void)).void }
+  sig { override.params(content: T.proc.void).void }
   def view_template(&content)
     span(
       class: "group/badge",

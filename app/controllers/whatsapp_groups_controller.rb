@@ -8,6 +8,7 @@ class WhatsappGroupsController < ApplicationController
 
   # == Actions ==
 
+  # GET /groups/:id/message_history
   def message_history
     respond_to do |format|
       format.html do

@@ -18,6 +18,7 @@
     "local-time": "^3.0.3",
     "requestidlecallback-polyfill": "^1.0.2",
     "shadcn": "^3.8.4",
+    "stimulus-use": "^0.52.3",
     "tailwindcss": "^4.1.18",
     "tippy.js": "^6.3.7",
     "tw-animate-css": "^1.4.0"
