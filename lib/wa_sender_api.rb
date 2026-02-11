@@ -14,7 +14,7 @@ class WaSenderApi
   base_uri "https://www.wasenderapi.com/api"
   format :json
   logger Rails.logger, Rails.configuration.log_level
-  debug_output Rails.logger
+  debug_output Rails.logger.debug if Rails.env.development?
 
   sig { params(api_key: String).void }
   def initialize(api_key:)
