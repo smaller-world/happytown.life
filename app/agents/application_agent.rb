@@ -18,4 +18,15 @@ class ApplicationAgent < ActiveAgent::Base
   def default_url_options
     ActionMailer::Base.default_url_options
   end
+
+  private
+
+  # == Helpers ==
+
+  sig { params(text: String).void }
+  def reply_with(text)
+    prompt(content_type: "text/plain") do |format|
+      format.text { render plain: text }
+    end
+  end
 end

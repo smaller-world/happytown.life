@@ -2,68 +2,23 @@
 # frozen_string_literal: true
 
 class WhatsappGroupAgent < ApplicationAgent
+  include SendMessageTool
+  include SendReplyTool
+  include SendMessageHistoryLinkTool
+
   # == Hooks ==
 
   before_action :set_instructions_context
   around_generation :send_typing_indicator_while
 
-  # == Tool Definitions ==
-
-  # UPDATE_SETTINGS_TOOL = {
-  #   name: "update_settings",
-  #   description: "update the group's settings. use when a group admin asks " \
-  #     "to change a setting.",
-  #   parameters: {
-  #     type: "object",
-  #     properties: {
-  #       record_full_message_history: {
-  #         type: "boolean",
-  #         description: "record full message history for this group?",
-  #       },
-  #     },
-  #     required: ["record_full_message_history"],
-  #   },
-  # }
-
-  SEND_MESSAGE_TOOL = {
-    name: "send_message",
-    description: "send a message to everyone in the group.",
-    parameters: {
-      type: "object",
-      properties: {
-        text: {
-          type: "string",
-        },
-      },
-      required: ["text"],
-    },
-  }
-
-  SEND_REPLY_TOOL = {
-    name: "send_reply",
-    description: "send a reply to the received message.",
-    parameters: {
-      type: "object",
-      properties: {
-        text: {
-          type: "string",
-        },
-      },
-      required: ["text"],
-    },
-  }
-
-  SEND_MESSAGE_HISTORY_LINK_TOOL = {
-    name: "send_message_history_link",
-    description: "send a message to the group containing the group's full " \
-      "message history URL.",
-  }
-
   # == Actions ==
 
   sig { void }
   def introduce_yourself
-    prompt(tools: [SEND_MESSAGE_TOOL], tool_choice: "required")
+    prompt(
+      tools: [SEND_MESSAGE_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
+      tool_choice: "required",
+    )
   end
 
   sig { void }
@@ -73,58 +28,6 @@ class WhatsappGroupAgent < ApplicationAgent
       tools: [SEND_REPLY_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
       tool_choice: "required",
     )
-  end
-
-  # == Tools ==
-
-  # sig { params(record_full_message_history: T::Boolean).void }
-  # def update_settings(record_full_message_history:)
-  #   group!.update!(
-  #     record_full_message_history_since:
-  #       record_full_message_history ? Time.current : nil,
-  #   )
-  #   render_text("Settings updated successfully.")
-  # rescue => error
-  #   render_text("Failed to update settings: #{error.message}")
-  # end
-
-  sig { params(text: String).void }
-  def send_message(text:)
-    jid = group!.jid
-    tag_logger do
-      Rails.logger.info("Sending message to group (#{jid}): #{text}")
-    end
-    mentioned_jids = mentioned_jids_in(text)
-    group!.send_message(text:, mentioned_jids:)
-    reply_with("Message sent successfully.")
-  rescue => error
-    tag_logger do
-      Rails.logger.error(
-        "Failed to send message to group (#{jid}): #{error.message}",
-      )
-    end
-    reply_with("Failed to send message: #{error.message}")
-  end
-
-  sig { params(text: String).void }
-  def send_reply(text:)
-    sender = message!.sender!
-    if mentioned_jids_in(text).exclude?(sender.lid)
-      tag_logger do
-        Rails.logger.info(
-          "Adding sender mention (#{sender.embedded_mention}) to reply " \
-            "message: #{text}",
-        )
-      end
-      text = "#{sender.embedded_mention} #{text}"
-    end
-    send_message(text:)
-  end
-
-  sig { void }
-  def send_message_history_link
-    history_url = message_history_whatsapp_group_url(group!)
-    send_message(text: "see older messages: #{history_url}")
   end
 
   private
@@ -159,22 +62,5 @@ class WhatsappGroupAgent < ApplicationAgent
     yield
   ensure
     indicator_thread&.kill
-  end
-
-  sig { params(message: String).returns(T::Array[String]) }
-  def mentioned_jids_in(message)
-    mentions = message.scan(/@(\d+)/).flatten
-    mentioned_numbers = mentions.map do |mention|
-      phone = Phonelib.parse(mention.delete_prefix("@"))
-      phone.to_s
-    end
-    WhatsappUser.where(phone_number: mentioned_numbers).distinct.pluck(:lid)
-  end
-
-  sig { params(text: String).void }
-  def reply_with(text)
-    prompt(content_type: "text/plain") do |format|
-      format.text { render plain: text }
-    end
   end
 end
