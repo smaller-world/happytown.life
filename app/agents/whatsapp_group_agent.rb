@@ -18,7 +18,7 @@ class WhatsappGroupAgent < ApplicationAgent
   def introduce_yourself
     prompt(
       tools: [SEND_MESSAGE_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
-      tool_choice: "required",
+      tool_choice: "any",
     )
   end
 
@@ -27,7 +27,7 @@ class WhatsappGroupAgent < ApplicationAgent
     @message = message!
     prompt(
       tools: [SEND_REPLY_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
-      tool_choice: "required",
+      tool_choice: "any",
     )
   end
 

@@ -1,6 +1,3 @@
-# typed: false
-# frozen_string_literal: true
-
 # rubocop:disable Layout/LineLength, Lint/RedundantCopDisableDirective
 # == Schema Information
 #
@@ -40,6 +37,6 @@ hello_from_alice:
   body: "hey @189971403149563 what can you do?"
   group: hangout
   sender: alice
-  timestamp: <%= 1.hour.ago.iso8601 %>
+  timestamp: <%= 10.seconds.ago %>
   mentioned_jids:
     - "189971403149563@lid"
