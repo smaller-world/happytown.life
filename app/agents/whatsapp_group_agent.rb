@@ -163,8 +163,12 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { params(message: String).returns(T::Array[String]) }
   def mentioned_jids_in(message)
-    mentioned_jids = message.scan(/@(\d+)/).flatten
-    WhatsappUser.where(phone_number_jid: mentioned_jids).distinct.pluck(:lid)
+    mentions = message.scan(/@(\d+)/).flatten
+    mentioned_numbers = mentions.map do |mention|
+      phone = Phonelib.parse(mention.delete_prefix("@"))
+      phone.to_s
+    end
+    WhatsappUser.where(phone_number: mentioned_numbers).distinct.pluck(:lid)
   end
 
   sig { params(text: String).void }
