@@ -60,6 +60,9 @@ class WhatsappGroup < ApplicationRecord
   sig { returns(T::Boolean) }
   def intro_sent? = intro_sent_at?
 
+  sig { returns(T::Boolean) }
+  def metadata_imported? = metadata_imported_at?
+
   # == Associations ==
 
   has_many :messages,
@@ -75,7 +78,7 @@ class WhatsappGroup < ApplicationRecord
 
   # == Hooks ==
 
-  after_create_commit :send_intro_later
+  after_commit :send_intro_later, if: :metadata_imported?, unless: :intro_sent?
   after_create_commit :import_metadata_later
   after_create_commit :import_memberships_later
 
