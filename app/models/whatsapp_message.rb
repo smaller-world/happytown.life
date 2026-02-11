@@ -98,7 +98,7 @@ class WhatsappMessage < ApplicationRecord
   def send_reply
     if whatsapp_messaging_enabled?
       reply_prompt.generate_now
-      update!(handled_at: Time.current)
+      update!(reply_sent_at: Time.current)
     else
       tag_logger do
         Rails.logger.info("WhatsApp messaging is disabled; skipping reply")
