@@ -158,7 +158,7 @@ class WhatsappGroupAgent < ApplicationAgent
   sig { params(message: String).returns(T::Array[String]) }
   def mentioned_lids(message:)
     mentioned_jids = message.scan(/@(\d+)/).flatten
-    WhatsappUser.where(phone_number_jid: mentioned_jids).pluck(:lid)
+    WhatsappUser.where(phone_number_jid: mentioned_jids).distinct.pluck(:lid)
   end
 
   sig { params(text: String).void }
