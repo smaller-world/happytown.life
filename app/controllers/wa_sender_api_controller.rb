@@ -37,7 +37,8 @@ class WaSenderApiController < ApplicationController
         end
       end
     when "groups.upsert"
-      if (group = WhatsappGroup.find_or_create_by!(jid: payload.fetch("jid")))
+      data = payload.fetch("data")
+      if (group = WhatsappGroup.find_or_create_by!(jid: data.fetch("jid")))
         group.import_metadata_later unless group.previously_new_record?
       end
     when "group-participants.update"
