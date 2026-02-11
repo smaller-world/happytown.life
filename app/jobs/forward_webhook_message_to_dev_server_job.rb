@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class ForwardWebhookToDevServerJob < ApplicationJob
+class ForwardWebhookMessageToDevServerJob < ApplicationJob
   # == Configuration ==
 
   queue_as :default
@@ -18,8 +18,13 @@ class ForwardWebhookToDevServerJob < ApplicationJob
     response = HTTParty.post(webhook_url, body: body, headers: {
       "X-Webhook-Signature" => webhook_signature,
     })
-    Rails.logger.info(
-      "Forwarded webhook message to dev server (status: #{response.code})",
-    )
+    if response.success?
+      Rails.logger.info("Forwarded webhook message to dev server")
+    elsif response.code == 530
+      Rails.logger.debug("Dev server is offline")
+    else
+      raise "Failed to forward webhook message (status: #{response.code}): " \
+        "#{response.parsed_response}"
+    end
   end
 end

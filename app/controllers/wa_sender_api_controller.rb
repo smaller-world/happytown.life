@@ -89,7 +89,7 @@ class WaSenderApiController < ApplicationController
 
   sig { void }
   def forward_webhook_message_to_dev_server
-    ForwardWebhookToDevServerJob.perform_later(
+    ForwardWebhookMessageToDevServerJob.perform_later(
       body: request.raw_post,
       webhook_signature: webhook_signature!,
     )
