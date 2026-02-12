@@ -35,7 +35,15 @@ class Components::Chat::Messages < Components::Base
         sender: ("you" if message.from_application_user?),
       },
     ) do
-      # image_tag(message.sender!.profile_picture_url, class: "size-12 rounded-full")
+      unless message.from_application_user?
+        if (src = message.sender!.profile_picture_url)
+          image_tag(src, class: "chat_avatar")
+        else
+          div(class: "chat_avatar chat_avatar-fallback") do
+            Icon("hero/user", variant: :solid, class: "size-4")
+          end
+        end
+      end
       div(class: "chat_message_body") do
         unless message.from_application_user?
           div(class: "text-accent font-semibold") do

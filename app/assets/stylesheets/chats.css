@@ -37,6 +37,15 @@
   }
 }
 
+.chat_avatar {
+  @apply mb-0.5 size-7 rounded-full;
+
+  &.chat_avatar-fallback {
+    @apply flex items-center justify-center;
+    @apply bg-[#103529] text-[#25D366];
+  }
+}
+
 .chat_message_body {
   @apply max-w-96 min-w-0 overflow-y-auto px-2 py-1;
   @apply rounded-lg border bg-background text-sm;
