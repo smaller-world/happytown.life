@@ -10,6 +10,14 @@
   "rubocop.mode": "enableViaGemfile",
   "rubocop.bundleCommandPath": "mise x -- bundle",
 
+  // == Ruby LSP
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "mise"
+  },
+  "rubyLsp.featureFlags": {
+    "tapiocaAddon": false
+  },
+
   // == Tailwind
   "tailwindCSS.includeLanguages": {
     "ruby": "html"
