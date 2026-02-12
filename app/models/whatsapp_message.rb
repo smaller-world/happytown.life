@@ -37,6 +37,7 @@
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappMessage < ApplicationRecord
   include WhatsappMessaging
+  include Turbo::Broadcastable
 
   # == Associations ==
 
@@ -65,6 +66,7 @@ class WhatsappMessage < ApplicationRecord
   # == Hooks ==
 
   after_create_commit :send_reply_later, if: :requires_reply?
+  after_create_commit :append_to_group_message_history
 
   # == Handling ==
 
@@ -244,5 +246,17 @@ class WhatsappMessage < ApplicationRecord
       text = "#{embedded_mention} #{text}"
     end
     group!.send_message(text: text, mentioned_jids: [sender.lid])
+  end
+
+  # == Callbacks ==
+
+  sig { void }
+  def append_to_group_message_history
+    broadcast_append_to(
+      group,
+      :message_history,
+      target: "messages",
+      renderable: Components::Chat::Messages::Item.new(message: self),
+    )
   end
 end

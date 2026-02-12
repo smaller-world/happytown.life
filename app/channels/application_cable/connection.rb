@@ -10,7 +10,7 @@ module ApplicationCable
 
     sig { void }
     def connect
-      set_current_user || reject_unauthorized_connection
+      set_current_user
     end
 
     private

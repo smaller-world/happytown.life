@@ -1,6 +1,6 @@
 // import { isDevelopment } from "#helpers/env_helpers";
 
-import "@hotwired/turbo";
+import "@hotwired/turbo-rails";
 
 // if (isDevelopment()) {
 [

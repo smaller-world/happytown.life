@@ -5,8 +5,6 @@ class ApplicationController < ActionController::Base
   extend T::Sig
   extend T::Helpers
 
-  abstract!
-
   include Pagy::Method
   include Authentication
   include TaggedLogging

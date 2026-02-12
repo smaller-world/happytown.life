@@ -47,11 +47,34 @@
 }
 
 .chat_message_body {
-  @apply max-w-96 min-w-0 overflow-y-auto px-2 py-1;
-  @apply rounded-lg border bg-background text-sm;
-  @apply group-data-[sender=you]/message:bg-sender-message;
+  @apply max-w-96 min-w-0 rounded-lg border p-1 text-sm;
+  @apply bg-background group-data-[sender=you]/message:bg-sender-message;
+}
+
+.chat_message_sender {
+  @apply px-1 font-semibold;
+  @apply text-accent group-data-[sender=you]/message:text-secondary;
+
+  .chat_message_quote & {
+    @apply text-muted-foreground;
+  }
+}
+
+.chat_message_content {
+  @apply flex items-end gap-x-2 px-1;
 
   time {
     @apply shrink-0 text-xs text-muted-foreground lowercase;
+  }
+}
+
+.chat_message_quote {
+  @apply relative my-1 rounded-md bg-muted p-1 pr-2 pl-4;
+
+  &::before {
+    content: "";
+
+    @apply absolute top-0 bottom-0 left-0 w-1 rounded-l-md;
+    @apply bg-muted-foreground;
   }
 }

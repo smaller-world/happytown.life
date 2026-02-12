@@ -15,9 +15,11 @@ class Components::Base < Phlex::HTML
   include Phlex::Rails::Helpers::ImageTag
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::TurboFrameTag
+  include Phlex::Rails::Helpers::TurboStreamFrom
   include PhlexIcons
 
   register_output_helper :local_time
+  register_value_helper :auto_link
 
   # == Configuration ==
 

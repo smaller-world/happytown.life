@@ -8,6 +8,7 @@ class Components::Layout < Components::Base
   include Phlex::Rails::Helpers::JavaScriptIncludeTag
   include Phlex::Rails::Helpers::Flash
   include Phlex::Rails::Helpers::AssetPath
+  include Phlex::Rails::Helpers::ActionCableMetaTag
 
   sig do
     params(
@@ -60,6 +61,7 @@ class Components::Layout < Components::Base
 
         csrf_meta_tags
         csp_meta_tag
+        action_cable_meta_tag
 
         meta(name: "env", content: Rails.env)
 

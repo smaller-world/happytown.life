@@ -31,7 +31,7 @@ class Components::Chat < Components::Base
         end
         div(class: "flex flex-col gap-y-1") do
           card.title(class: "text-2xl font-bold") do
-            @group.subject
+            @group.subject || @group.jid
           end
           if (description = @group.description)
             card.description { description }
