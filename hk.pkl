@@ -25,8 +25,8 @@ local linters = new Mapping<String, Step> {
   }
   ["sorbet"] = (Builtins.sorbet) {
     exclude = List("sorbet/tapioca/compilers/**/*.rb", "bin/*")
-    check = "bin/srb tc {{ files }}"
-    fix = "bin/srb tc --autocorrect {{ files }}"
+    check = "bin/srb tc --no-error-count {{ files }}"
+    fix = "bin/srb tc --no-error-count --autocorrect {{ files }}"
   }
 
   // Or define custom steps:
