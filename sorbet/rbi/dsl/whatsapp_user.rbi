@@ -6,6 +6,7 @@
 
 
 class WhatsappUser
+  include GeneratedAssociationMethods
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
@@ -412,6 +413,36 @@ class WhatsappUser
 
     sig { returns(::WhatsappUser) }
     def third_to_last!; end
+  end
+
+  module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def group_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def group_ids=(ids); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def group_membership_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def group_membership_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `WhatsappUser` class because it declared `has_many :group_memberships`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::WhatsappGroupMembership::PrivateCollectionProxy) }
+    def group_memberships; end
+
+    sig { params(value: T::Enumerable[::WhatsappGroupMembership]).void }
+    def group_memberships=(value); end
+
+    # This method is created by ActiveRecord on the `WhatsappUser` class because it declared `has_many :groups, through: :group_memberships`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::WhatsappGroup::PrivateCollectionProxy) }
+    def groups; end
+
+    sig { params(value: T::Enumerable[::WhatsappGroup]).void }
+    def groups=(value); end
   end
 
   module GeneratedAssociationRelationMethods

@@ -48,9 +48,9 @@ class WhatsappGroupAgent
 
     # == Helpers ==
 
-    sig { params(message: String).returns(T::Array[String]) }
-    def mentioned_jids_in(message)
-      mentions = message.scan(/@(\d+)/).flatten
+    sig { params(text: String).returns(T::Array[String]) }
+    def mentioned_jids_in(text)
+      mentions = text.scan(/@(\d+)/).flatten
       mentioned_numbers = mentions.map do |mention|
         phone = Phonelib.parse(mention.delete_prefix("@"))
         phone.to_s

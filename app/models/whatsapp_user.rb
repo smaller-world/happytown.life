@@ -36,6 +36,15 @@ class WhatsappUser < ApplicationRecord
     end
   end
 
+  # == Associations ==
+
+  has_many :group_memberships,
+           class_name: "WhatsappGroupMembership",
+           dependent: :destroy,
+           inverse_of: :user,
+           foreign_key: :user_id
+  has_many :groups, through: :group_memberships
+
   # == Normalizations ==
 
   normalizes_phone_number :phone_number

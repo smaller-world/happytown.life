@@ -7,6 +7,10 @@ class WhatsappGroupAgent < ApplicationAgent
   include SendReplyTool
   include SendMessageHistoryLinkTool
 
+  # == Configuration ==
+
+  helper_method :mentioned_jids_in
+
   # == Hooks ==
 
   before_action :set_instructions_context

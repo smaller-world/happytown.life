@@ -75,6 +75,7 @@ class WhatsappGroup < ApplicationRecord
            dependent: :destroy,
            inverse_of: :group,
            foreign_key: :group_id
+  has_many :users, through: :memberships
 
   # == Hooks ==
 

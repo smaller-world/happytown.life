@@ -113,11 +113,12 @@ module Components
       size: ::Symbol,
       form_class: T.nilable(::String),
       form: T::Hash[::Symbol, T.untyped],
+      disable_for: T.nilable(::ActiveSupport::Duration),
       options: T.untyped,
       block: T.nilable(T.proc.params(instance: Components::PaginationButton).void)
     ).void
   end
-  def PaginationButton(to:, pagy: T.unsafe(nil), variant: T.unsafe(nil), size: T.unsafe(nil), form_class: T.unsafe(nil), form: T.unsafe(nil), **options, &block); end
+  def PaginationButton(to:, pagy: T.unsafe(nil), variant: T.unsafe(nil), size: T.unsafe(nil), form_class: T.unsafe(nil), form: T.unsafe(nil), disable_for: T.unsafe(nil), **options, &block); end
 
   sig do
     params(
@@ -237,11 +238,12 @@ module Components
         size: ::Symbol,
         form_class: T.nilable(::String),
         form: T::Hash[::Symbol, T.untyped],
+        disable_for: T.nilable(::ActiveSupport::Duration),
         options: T.untyped,
         block: T.nilable(T.proc.params(instance: Components::PaginationButton).void)
       ).void
     end
-    def PaginationButton(to:, pagy: T.unsafe(nil), variant: T.unsafe(nil), size: T.unsafe(nil), form_class: T.unsafe(nil), form: T.unsafe(nil), **options, &block); end
+    def PaginationButton(to:, pagy: T.unsafe(nil), variant: T.unsafe(nil), size: T.unsafe(nil), form_class: T.unsafe(nil), form: T.unsafe(nil), disable_for: T.unsafe(nil), **options, &block); end
 
     sig do
       params(
