@@ -135,7 +135,6 @@ class WaSenderApi
 
   sig { params(phone_number: String).returns(T.nilable(String)) }
   def contact_profile_picture_url(phone_number:)
-    phone_number = normalize_phone_number(phone_number)
     response = self.class.get("/contacts/#{phone_number}/picture")
     if response.code == 422
       nil
@@ -164,12 +163,6 @@ class WaSenderApi
   def response_data!(response)
     check_response!(response)
     response.parsed_response.fetch("data")
-  end
-
-  sig { params(phone_number: String).returns(String) }
-  def normalize_phone_number(phone_number)
-    phone = Phonelib.parse(phone_number)
-    phone.sanitized
   end
 
   sig { returns(T::Boolean) }
