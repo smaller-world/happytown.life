@@ -31,7 +31,8 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
 
   test "reply calls required tools" do
     tool_method_calls = stub_tool_methods(
-      :send_reply, :send_message_history_link
+      :send_reply,
+      :send_message_history_link,
     )
 
     group = whatsapp_groups(:hangout)
@@ -48,7 +49,10 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   end
 
   test "reply with message history link when requested" do
-    tool_method_calls = stub_tool_methods(:send_message_history_link)
+    tool_method_calls = stub_tool_methods(
+      :send_reply,
+      :send_message_history_link,
+    )
 
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:message_history_request_message)
@@ -74,20 +78,25 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
       T::Hash[Symbol, T::Array[T::Hash[Symbol, T.untyped]]],
     )
 
-    methods.each do |method_name|
-      original_method_name = :"original_#{method_name}"
-      WhatsappGroupAgent.alias_method original_method_name, method_name
-      WhatsappGroupAgent.define_method(method_name) do |**kwargs|
-        calls.fetch(method_name) << kwargs
-        send(original_method_name, **kwargs)
+    WhatsappGroupAgent.class_eval do
+      methods.each do |method_name|
+        original_method_name = :"original_#{method_name}"
+        alias_method original_method_name, method_name
+
+        define_method(method_name) do |**kwargs|
+          calls.fetch(method_name) << kwargs
+          "OK"
+        end
       end
     end
 
     teardown do
-      methods.each do |method_name|
-        original_method_name = :"original_#{method_name}"
-        WhatsappGroupAgent.alias_method original_method_name, method_name
-        WhatsappGroupAgent.undef_method original_method_name
+      WhatsappGroupAgent.class_eval do
+        methods.each do |method_name|
+          original_method_name = :"original_#{method_name}"
+          alias_method method_name, original_method_name
+          remove_method original_method_name
+        end
       end
     end
 

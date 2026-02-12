@@ -10,8 +10,6 @@ class WhatsappGroupAgent
 
     extend ActiveSupport::Concern
 
-    include SendMessageTool
-
     # == Tool ==
 
     SEND_REPLY_TOOL = {
@@ -31,17 +29,28 @@ class WhatsappGroupAgent
     sig { params(text: String).returns(String) }
     def send_reply(text:)
       sender = message!.sender!
-      if (embedded_mention = sender.phone_mention_token) &&
+      if (mention_token = sender.phone_mention_token) &&
           mentioned_jids_in(text).exclude?(sender.lid)
         tag_logger do
           logger.info(
-            "Adding sender mention (#{embedded_mention}) to reply " \
-              "message: #{text}",
+            "Adding sender mention (#{mention_token}) to reply message: #{text}",
           )
         end
         text = "#{sender.phone_mention_token} #{text}"
       end
-      send_message(text:)
+      group = group!
+      jid = group.jid
+      tag_logger do
+        logger.info("Sending reply to group #{jid}: #{text}")
+      end
+      mentioned_jids = mentioned_jids_in(text)
+      group.send_message(text:, mentioned_jids:)
+      "OK"
+    rescue => error
+      tag_logger do
+        logger.error("Failed to send reply to group #{jid}: #{error}")
+      end
+      "ERROR: #{error}"
     end
   end
 end

@@ -28,18 +28,19 @@ class WhatsappGroupAgent
 
     sig { params(text: String).returns(String) }
     def send_message(text:)
-      jid = group!.jid
+      group = group!
+      jid = group.jid
       tag_logger do
         logger.info("Sending message to group #{jid}: #{text}")
       end
       mentioned_jids = mentioned_jids_in(text)
-      group!.send_message(text:, mentioned_jids:)
-      "Message sent successfully."
+      group.send_message(text:, mentioned_jids:)
+      "OK"
     rescue => error
       tag_logger do
-        logger.error("Failed to send message to group #{jid}: #{error.message}")
+        logger.error("Failed to send message to group #{jid}: #{error}")
       end
-      "Failed to send message: #{error.message}"
+      "ERROR: #{error}"
     end
 
     private
