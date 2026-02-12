@@ -1,8 +1,8 @@
 ---------- BEGIN WHATSAPP MESSAGE ----------
-MESSAGE ID: <%= message.whatsapp_id %>
-TIMESTAMP: <%= message.timestamp.iso8601 %>
+message id: <%= message.whatsapp_id %>
+timestamp: <%= message.timestamp.iso8601 %>
 --------------------------------------------
-**WHATSAPP USER <%= whatsapp_user_identity(message.sender) %> SENT:**
+**<%= whatsapp_user_identity(message.sender) %> SENT:**
 """
 <%= message_body_with_inlined_mentions(message) %>
 """

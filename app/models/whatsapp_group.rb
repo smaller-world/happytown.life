@@ -54,14 +54,14 @@ class WhatsappGroup < ApplicationRecord
 
   # == Attributes ==
 
-  # sig { returns(T::Boolean) }
-  # def record_full_message_history? = record_full_message_history_since?
-
   sig { returns(T::Boolean) }
   def intro_sent? = intro_sent_at?
 
   sig { returns(T::Boolean) }
   def metadata_imported? = metadata_imported_at?
+
+  sig { returns(T::Boolean) }
+  def memberships_imported? = memberships_imported_at?
 
   # == Associations ==
 
