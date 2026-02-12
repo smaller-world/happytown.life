@@ -88,6 +88,7 @@ class WhatsappGroupAgent < ApplicationAgent
       if Rails.env.test?
         logger.debug("Full thread: #{response.messages}")
       end
+      warn_on_bad_output(output)
     end
     response
   end
@@ -101,5 +102,31 @@ class WhatsappGroupAgent < ApplicationAgent
     JSON.parse(output).to_s
   rescue JSON::ParserError
     output
+  end
+
+  sig { params(output: String).void }
+  def warn_on_bad_output(output)
+    if output.blank?
+      tag_logger do
+        logger.warn("Got empty output")
+      end
+    end
+
+    result = JSON.parse(output)
+    if result.is_a?(Hash)
+      if result["tools_used"].blank?
+        tag_logger do
+          logger.warn("No tool usage reported: #{result}")
+        end
+      end
+    else
+      tag_logger do
+        logger.warn("Unexpected JSON output: #{output}")
+      end
+    end
+  rescue JSON::ParserError
+    tag_logger do
+      logger.warn("Invalid JSON output: #{output}")
+    end
   end
 end
