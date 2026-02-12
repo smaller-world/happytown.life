@@ -102,7 +102,7 @@ class WhatsappMessage < ApplicationRecord
     update!(reply_sent_at: Time.current)
   rescue => error
     tag_logger do
-      Rails.logger.warn(
+      logger.warn(
         "Failed to reply to message (#{whatsapp_id}); sending failure message",
       )
     end

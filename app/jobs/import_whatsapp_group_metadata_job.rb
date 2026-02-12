@@ -13,7 +13,7 @@ class ImportWhatsappGroupMetadataJob < ApplicationJob
   sig { params(group: WhatsappGroup).void }
   def perform(group)
     tag_logger do
-      Rails.logger.info("Importing metadata for group: #{group.jid}")
+      logger.info("Importing metadata for group: #{group.jid}")
     end
     group.import_metadata
   end

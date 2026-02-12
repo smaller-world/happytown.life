@@ -11,7 +11,7 @@ class SendWhatsappGroupIntroJob < ApplicationJob
   sig { params(group: WhatsappGroup).void }
   def perform(group)
     tag_logger do
-      Rails.logger.info("Sending intro to group: #{group.jid}")
+      logger.info("Sending intro to group: #{group.jid}")
     end
     group.send_intro unless group.intro_sent?
   end

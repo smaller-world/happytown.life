@@ -34,14 +34,14 @@
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 hello_message:
   whatsapp_id: "123"
-  body: "hey! say hi back so i know you're working."
+  body: hey! say hi back so i know you're working.
   group: hangout
   sender: alice
   timestamp: <%= 10.seconds.ago %>
 
 message_history_request_message:
   whatsapp_id: "234"
-  body: "how do i see the message history?"
+  body: send the message history link.
   group: hangout
   sender: alice
   timestamp: <%= 10.seconds.ago %>

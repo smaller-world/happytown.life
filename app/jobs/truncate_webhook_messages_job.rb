@@ -13,7 +13,7 @@ class TruncateWebhookMessagesJob < ApplicationJob
   def perform
     cutoff = WebhookMessage.order(timestamp: :desc).offset(5000).pick(:timestamp)
     tag_logger do
-      Rails.logger.info("Truncating webhook messages before: #{cutoff}")
+      logger.info("Truncating webhook messages before: #{cutoff}")
     end
     if cutoff
       WebhookMessage.where(timestamp: ...cutoff).delete_all

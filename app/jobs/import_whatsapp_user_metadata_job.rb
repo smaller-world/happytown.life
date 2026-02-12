@@ -13,7 +13,7 @@ class ImportWhatsappUserMetadataJob < ApplicationJob
   sig { params(user: WhatsappUser).void }
   def perform(user)
     tag_logger do
-      Rails.logger.info("Importing metadata for user: #{user.lid}")
+      logger.info("Importing metadata for user: #{user.lid}")
     end
     user.import_metadata
   end

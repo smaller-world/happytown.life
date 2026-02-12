@@ -16,9 +16,9 @@ class ForwardWebhookMessageToDevServerJob < ApplicationJob
       "X-Webhook-Signature" => webhook_signature,
     })
     if response.success?
-      Rails.logger.info("Forwarded webhook message to dev server")
+      logger.info("Forwarded webhook message to dev server")
     elsif response.code.in?(530, 502)
-      Rails.logger.debug("Dev server is offline")
+      logger.debug("Dev server is offline")
     else
       raise "Failed to forward webhook message (status: #{response.code}): " \
         "#{response.parsed_response}"

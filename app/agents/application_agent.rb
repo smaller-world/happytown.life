@@ -6,6 +6,31 @@ class ApplicationAgent < ActiveAgent::Base
 
   include TaggedLogging
   include UrlHelpers
+  include ActionView::Helpers::AssetUrlHelper
+
+  # == Consants ==
+
+  TOOL_CALL_INFO_RESPONSE_FORMAT = {
+    type: "json_schema",
+    json_schema: {
+      name: "tool_call_info",
+      schema: {
+        type: "object",
+        properties: {
+          tools_used: {
+            type: "array",
+            description: "a list of tools you used during the session",
+            items: {
+              type: "string",
+            },
+          },
+        },
+        required: ["tools_used"],
+        additionalProperties: false,
+      },
+      strict: true,
+    },
+  }
 
   # == Configuration ==
 

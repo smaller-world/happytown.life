@@ -30,16 +30,14 @@ class WhatsappGroupAgent
     def send_message(text:)
       jid = group!.jid
       tag_logger do
-        Rails.logger.info("Sending message to group (#{jid}): #{text}")
+        logger.info("Sending message to group #{jid}: #{text}")
       end
       mentioned_jids = mentioned_jids_in(text)
       group!.send_message(text:, mentioned_jids:)
       "Message sent successfully."
     rescue => error
       tag_logger do
-        Rails.logger.error(
-          "Failed to send message to group (#{jid}): #{error.message}",
-        )
+        logger.error("Failed to send message to group #{jid}: #{error.message}")
       end
       "Failed to send message: #{error.message}"
     end

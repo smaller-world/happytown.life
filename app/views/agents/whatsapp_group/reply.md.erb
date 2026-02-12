@@ -33,7 +33,14 @@
 
 
 <ACTION_SEQUENCE>
-1. YOU MUST read the incoming message and use the `send_reply` tool to respond.
-   DO NOT output your message; you MUST use the provided tool.
-2. afterwards, YOU MUST output the number of tool calls you made.
+YOU MUST read the incoming message and use the `send_reply` tool to respond.
+DO NOT output your message; you MUST use the provided tool.
 </ACTION_SEQUENCE>
+
+
+<OUTPUT_FORMAT>
+after using tools, you MUST output a JSON object with the following format:
+{
+  "tools_used": [...names of tools used during the session...]
+}
+</OUTPUT_FORMAT>

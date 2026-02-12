@@ -47,13 +47,45 @@ class WaSenderApi
   def send_message(to:, text:, mentioned_jids: nil)
     unless perform_deliveries?
       tag_logger do
-        Rails.logger.info("Skipping message delivery to #{to}: #{text}")
+        logger.info("Skipping message delivery to #{to}: #{text}")
       end
       return
     end
 
-    wait_for_account_protection
+    wait_for_account_protection_period
     body = { to:, text:, mentions: mentioned_jids }.compact_blank
+    response = self.class.post("/send-message", body:)
+    check_response!(response)
+    @message_last_sent_at = Time.current
+  end
+
+  sig { params(to: String, image_url: String, text: T.nilable(String)).void }
+  def send_image_message(to:, image_url:, text: nil)
+    unless perform_deliveries?
+      tag_logger do
+        logger.info("Skipping image message delivery to #{to}: #{image_url}")
+      end
+      return
+    end
+
+    wait_for_account_protection_period
+    body = { to:, text:, "imageUrl" => image_url }.compact
+    response = self.class.post("/send-message", body:)
+    check_response!(response)
+    @message_last_sent_at = Time.current
+  end
+
+  sig { params(to: String, video_url: String, text: T.nilable(String)).void }
+  def send_video_message(to:, video_url:, text: nil)
+    unless perform_deliveries?
+      tag_logger do
+        logger.info("Skipping video message delivery to #{to}: #{video_url}")
+      end
+      return
+    end
+
+    wait_for_account_protection_period
+    body = { to:, text:, "videoUrl" => video_url }.compact
     response = self.class.post("/send-message", body:)
     check_response!(response)
     @message_last_sent_at = Time.current
@@ -63,7 +95,7 @@ class WaSenderApi
   def update_presence(jid:, type:)
     unless perform_deliveries?
       tag_logger do
-        Rails.logger.info("Skipping presence update for #{jid}: #{type}")
+        logger.info("Skipping presence update for #{jid}: #{type}")
       end
       return
     end
@@ -156,16 +188,17 @@ class WaSenderApi
     end
   end
 
+  sig { returns(T.any(ActiveSupport::Logger, ActiveSupport::BroadcastLogger)) }
+  def logger = Rails.logger
+
   sig { void }
-  def wait_for_account_protection
+  def wait_for_account_protection_period
     if @message_last_sent_at
       time_since_last_sent = Time.current - @message_last_sent_at
       if time_since_last_sent < ACCOUNT_PROTECTION_INTERVAL
         duration = ACCOUNT_PROTECTION_INTERVAL - time_since_last_sent
         tag_logger do
-          Rails.logger.info(
-            "Waiting #{duration} seconds for account protection...",
-          )
+          logger.info("Waiting #{duration} seconds for account protection...")
         end
         sleep(duration)
       end

@@ -25,6 +25,7 @@ class WhatsappGroupAgent < ApplicationAgent
     prompt(
       tools: [SEND_MESSAGE_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
       tool_choice: "required",
+      # response_format: :json_object,
     )
   end
 
@@ -34,6 +35,7 @@ class WhatsappGroupAgent < ApplicationAgent
     prompt(
       tools: [SEND_REPLY_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
       tool_choice: "required",
+      # response_format: :json_object,
     )
   end
 
@@ -82,11 +84,22 @@ class WhatsappGroupAgent < ApplicationAgent
     response = yield
     output = response.message.content
     tag_logger do
-      logger.info("Generation completed (#{response}): #{output.presence || "(empty output)"}")
+      logger.info("Generation completed: #{format_output_for_logging(output)}")
       if Rails.env.test?
-        logger.debug(response.messages)
+        logger.debug("Full thread: #{response.messages}")
       end
     end
     response
+  end
+
+  sig { params(output: String).returns(String) }
+  def format_output_for_logging(output)
+    if output.blank?
+      return "(empty output)"
+    end
+
+    JSON.parse(output).to_s
+  rescue JSON::ParserError
+    output
   end
 end

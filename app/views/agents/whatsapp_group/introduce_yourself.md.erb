@@ -13,5 +13,12 @@
    DO NOT output your message; you MUST use the provided tool.
 2. then, YOU MUST use the `send_message_history_link` tool to send the group's
    full message history URL.
-3. finally, YOU MUST output the number of tool calls you made.
 </ACTION_SEQUENCE>
+
+
+<OUTPUT_FORMAT>
+after using tools, you MUST output a JSON object with the following format:
+{
+  "tools_used": [...names of tools used during the session...]
+}
+</OUTPUT_FORMAT>

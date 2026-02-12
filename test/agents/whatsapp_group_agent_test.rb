@@ -69,29 +69,25 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
       .returns(T::Hash[Symbol, T::Array[T::Hash[Symbol, T.untyped]]])
   end
   def stub_tool_methods(*methods)
-    original_methods = T.let({}, T::Hash[Symbol, UnboundMethod])
     calls = T.let(
       methods.index_with { [] },
       T::Hash[Symbol, T::Array[T::Hash[Symbol, T.untyped]]],
     )
 
     methods.each do |method_name|
-      original_method = WhatsappGroupAgent.instance_method(method_name)
-      original_methods[method_name] = original_method
+      original_method_name = :"original_#{method_name}"
+      WhatsappGroupAgent.alias_method original_method_name, method_name
       WhatsappGroupAgent.define_method(method_name) do |**kwargs|
         calls.fetch(method_name) << kwargs
-        original_method.bind_call(self, **kwargs)
+        send(original_method_name, **kwargs)
       end
     end
 
     teardown do
       methods.each do |method_name|
-        WhatsappGroupAgent.remove_method(method_name)
-      end
-      original_methods.each do |method_name, original_method|
-        WhatsappGroupAgent.define_method(method_name) do |**kwargs|
-          original_method.bind_call(self, **kwargs)
-        end
+        original_method_name = :"original_#{method_name}"
+        WhatsappGroupAgent.alias_method original_method_name, method_name
+        WhatsappGroupAgent.undef_method original_method_name
       end
     end
 

@@ -31,7 +31,7 @@ class WaSenderApiController < ApplicationController
         message.save!
       rescue => error
         tag_logger(event) do
-          Rails.logger.warn(
+          logger.warn(
             "Couldn't create WhatsappMessage: #{error.message}",
           )
         end
@@ -48,7 +48,7 @@ class WaSenderApiController < ApplicationController
           group.import_memberships_later
         else
           tag_logger(event) do
-            Rails.logger.warn("Couldn't find WhatsappGroup: #{jid}")
+            logger.warn("Couldn't find WhatsappGroup: #{jid}")
           end
         end
       end

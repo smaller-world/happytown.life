@@ -34,7 +34,7 @@ class WhatsappGroupAgent
       if (embedded_mention = sender.phone_mention_token) &&
           mentioned_jids_in(text).exclude?(sender.lid)
         tag_logger do
-          Rails.logger.info(
+          logger.info(
             "Adding sender mention (#{embedded_mention}) to reply " \
               "message: #{text}",
           )

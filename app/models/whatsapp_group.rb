@@ -162,6 +162,11 @@ class WhatsappGroup < ApplicationRecord
       .perform_later(self, text, reply_to:)
   end
 
+  sig { params(video_url: String, text: T.nilable(String)).void }
+  def send_video_message(video_url:, text: nil)
+    wa_sender_api.send_video_message(to: jid, video_url:, text:)
+  end
+
   sig { void }
   def send_typing_indicator
     wa_sender_api.update_presence(jid:, type: "composing")
