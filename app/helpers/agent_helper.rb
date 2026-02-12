@@ -43,7 +43,7 @@ module AgentHelper
 
   sig { params(message: WhatsappMessage).returns(String) }
   def message_body_with_inlined_mentions(message)
-    body = message.body
+    body = message.body.dup
     message.mentioned_users.each do |user|
       lid = user.lid.delete_suffix("@lid")
       body.gsub!("@#{lid}", "@#{whatsapp_user_identity(user)}")
@@ -55,7 +55,7 @@ module AgentHelper
   def quoted_message_body_with_inlined_mentions(message)
     if (quoted_message = message.quoted_message)
       message_body_with_inlined_mentions(quoted_message)
-    elsif (body = message.quoted_message_body)
+    elsif (body = message.quoted_message_body&.dup)
       mentioned_users_in(
         body,
         scope: WhatsappUser

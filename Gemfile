@@ -94,6 +94,9 @@ gem "sentry-ruby"
 # Safer hash traversal with dig!
 gem "dig_bang"
 
+# Automated post-deploy tasks
+gem "after_party"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :windows], require: "debug/prelude"

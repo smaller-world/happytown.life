@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 # This rake task was added by annotate_rb gem.

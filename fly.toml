@@ -9,7 +9,7 @@ console_command = "./bin/rails console"
 
 [deploy]
   strategy = "bluegreen"
-  release_command = "./bin/rails db:prepare"
+  release_command = "./bin/prepare-deployment"
 
 [env]
   CANONICAL_HOST = "happytown.life"
