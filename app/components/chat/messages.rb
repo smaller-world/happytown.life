@@ -4,6 +4,8 @@
 class Components::Chat::Messages < Components::Base
   # == Configuration ==
 
+  register_value_helper :auto_link
+
   sig { params(messages: T::Array[WhatsappMessage]).void }
   def initialize(messages:)
     super()
@@ -33,7 +35,15 @@ class Components::Chat::Messages < Components::Base
         sender: ("you" if message.from_application_user?),
       },
     ) do
-      # image_tag(message.sender!.profile_picture_url, class: "size-12 rounded-full")
+      unless message.from_application_user?
+        if (src = message.sender!.profile_picture_url)
+          image_tag(src, class: "chat_avatar")
+        else
+          div(class: "chat_avatar chat_avatar-fallback") do
+            Icon("hero/user", variant: :solid, class: "size-4")
+          end
+        end
+      end
       div(class: "chat_message_body") do
         unless message.from_application_user?
           div(class: "text-accent font-semibold") do
@@ -65,30 +75,49 @@ class Components::Chat::Messages < Components::Base
 
   sig { params(message: WhatsappMessage).void }
   def render_body(message)
-    mentioned_users = message.mentioned_users.to_a
+    mentioned_users = message.mentioned_users.filter do |user|
+      user.phone_mention_token.present?
+    end
     if mentioned_users.empty?
-      plain(message.body)
+      render_body_text(message.body)
       return
     end
 
-    mentions_by_token = mentioned_users.index_by(&:embedded_mention)
+    mentions_by_token = T.let({}, T::Hash[String, WhatsappUser])
+    mentioned_users.each do |user|
+      user.mention_tokens.each do |token|
+        mentions_by_token[token] = user
+      end
+    end
     pattern = Regexp.union(mentions_by_token.keys)
     parts = message.body.split(/(#{pattern})/)
 
     parts.each do |part|
       if (user = mentions_by_token[part])
-        a(class: "link") do
-          plain("@")
-          plain(
-            user.display_name ||
-              user.phone&.international(true) ||
-              user.lid,
-          )
+        href = if (phone = user.phone)
+          "https://wa.me/#{phone.sanitized}"
+        end
+        a(class: "link font-bold", href:) do
+          span(class: "text-muted-foreground") { "@" }
+          if user.application_user?
+            plain(Rails.configuration.x.site_name)
+          else
+            plain(
+              user.display_name ||
+                user.phone&.international(true) ||
+                user.lid,
+            )
+          end
         end
       else
-        plain(part)
+        render_body_text(part)
       end
     end
+  end
+
+  sig { params(text: String).void }
+  def render_body_text(text)
+    raw(auto_link(text, html: { class: "link" })) # rubocop:disable Rails/OutputSafety
   end
 
   sig { params(message: WhatsappMessage).returns(String) }

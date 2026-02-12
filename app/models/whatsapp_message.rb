@@ -69,11 +69,11 @@ class WhatsappMessage < ApplicationRecord
   # == Handling ==
 
   scope :requiring_reply, -> {
-    sender_id = WhatsappUser.where(lid: application_user_jid).select(:id)
+    sender_id = WhatsappUser.where(lid: application_user_lid).select(:id)
     where(reply_sent_at: nil).where.not(sender_id:)
       .and(
-        where(quoted_participant_jid: application_user_jid).or(
-          where("? = ANY(mentioned_jids)", application_user_jid),
+        where(quoted_participant_jid: application_user_lid).or(
+          where("? = ANY(mentioned_jids)", application_user_lid),
         ),
       )
   }
@@ -84,8 +84,8 @@ class WhatsappMessage < ApplicationRecord
   sig { returns(T::Boolean) }
   def requires_reply?
     !reply_sent? && !from_application_user? && (
-      quoted_participant_jid == application_user_jid ||
-        mentioned_jids.include?(application_user_jid)
+      quoted_participant_jid == application_user_lid ||
+        mentioned_jids.include?(application_user_lid)
     )
   end
 
@@ -122,7 +122,7 @@ class WhatsappMessage < ApplicationRecord
 
   sig { returns(T::Boolean) }
   def from_application_user?
-    sender&.lid == application_user_jid
+    sender&.lid == application_user_lid
   end
 
   sig do
@@ -167,7 +167,7 @@ class WhatsappMessage < ApplicationRecord
       data = payload.fetch("data")
       key = data.fetch("key")
 
-      sender = WhatsappUser.find_or_initialize_by(lid: application_user_jid)
+      sender = WhatsappUser.find_or_initialize_by(lid: application_user_lid)
       group = WhatsappGroup.find_or_initialize_by(jid: key.fetch("remoteJid"))
       timestamp_value = payload.fetch("timestamp")
       message_data = data.fetch("message")
@@ -233,11 +233,16 @@ class WhatsappMessage < ApplicationRecord
   sig { params(error: Exception).void }
   def send_reply_failure_message(error)
     sender = sender!
-    group!.send_message(
-      text:
-        "#{sender.embedded_mention} ran into an error while replying to your " \
-        "message:\n\n#{error.message}",
-      mentioned_jids: [sender.lid],
-    )
+    text = <<~EOF.squish
+      **SYSTEM FAILURE!**
+      CRITICAL MALFUNCTION while responding to your message:
+      #{error.message}
+
+      the developer has been notified.
+    EOF
+    if (embedded_mention = sender.phone_mention_token)
+      text = "#{embedded_mention} #{text}"
+    end
+    group!.send_message(text: text, mentioned_jids: [sender.lid])
   end
 end

@@ -36,6 +36,9 @@ class WhatsappUser < ApplicationRecord
     end
   end
 
+  sig { returns(T::Boolean) }
+  def metadata_imported? = metadata_imported_at?
+
   # == Associations ==
 
   has_many :group_memberships,
@@ -62,14 +65,21 @@ class WhatsappUser < ApplicationRecord
 
   # == Mentions ==
 
-  sig { returns(String) }
-  def embedded_mention
-    "@" + (phone&.sanitized || cleaned_lid)
+  sig { returns(T.nilable(String)) }
+  def phone_mention_token
+    if (phone = self.phone)
+      "@" + phone.sanitized
+    end
   end
 
   sig { returns(String) }
-  def cleaned_lid
-    lid.delete_suffix("@lid")
+  def lid_mention_token
+    "@" + lid.delete_suffix("@lid")
+  end
+
+  sig { returns(T::Array[String]) }
+  def mention_tokens
+    [phone_mention_token, lid_mention_token].compact
   end
 
   # == Metadata ==
@@ -92,6 +102,13 @@ class WhatsappUser < ApplicationRecord
       .perform_later(self)
   end
 
+  # == Methods ==
+
+  sig { returns(T::Boolean) }
+  def application_user?
+    lid == application_user_lid
+  end
+
   # == Helpers ==
 
   sig { params(payload: T::Hash[String, T.untyped]).returns(WhatsappUser) }
@@ -103,7 +120,7 @@ class WhatsappUser < ApplicationRecord
       key = messages.fetch("key")
 
       lid = if key.fetch("fromMe")
-        application_user_jid
+        application_user_lid
       else
         key.fetch("participantLid")
       end

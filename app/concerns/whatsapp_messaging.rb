@@ -15,8 +15,8 @@ module WhatsappMessaging
     extend T::Sig
 
     sig { returns(String) }
-    def application_user_jid
-      Rails.configuration.x.whatsapp_user_jid
+    def application_user_lid
+      Rails.configuration.x.whatsapp_user_lid
     end
   end
 
