@@ -267,7 +267,7 @@ GEM
     phlex (2.4.1)
       refract (~> 1.0)
       zeitwerk (~> 2.7)
-    phlex-icons-huge (2.55.0)
+    phlex-icons (2.55.0)
       phlex (>= 1.11)
     phlex-rails (2.4.0)
       phlex (~> 2.4.0)
@@ -323,6 +323,10 @@ GEM
     rails-html-sanitizer (1.6.2)
       loofah (~> 2.21)
       nokogiri (>= 1.15.7, != 1.16.7, != 1.16.6, != 1.16.5, != 1.16.4, != 1.16.3, != 1.16.2, != 1.16.1, != 1.16.0.rc1, != 1.16.0)
+    rails_autolink (1.1.8)
+      actionview (> 3.1)
+      activesupport (> 3.1)
+      railties (> 3.1)
     railties (8.1.2)
       actionpack (= 8.1.2)
       activesupport (= 8.1.2)
@@ -538,7 +542,7 @@ DEPENDENCIES
   pg (~> 1.5)
   pg_query
   pg_search (~> 2.3)
-  phlex-icons-huge
+  phlex-icons
   phlex-rails (~> 2.4)
   phonelib (~> 0.10.16)
   propshaft
@@ -546,6 +550,7 @@ DEPENDENCIES
   puma (~> 7.1)
   rack-canonical-host (~> 1.3)
   rails (~> 8.1.2)
+  rails_autolink (~> 1.1)
   roadie-rails
   rubocop
   rubocop-capybara
@@ -671,7 +676,7 @@ CHECKSUMS
   pg_query (6.2.2) sha256=316c194160ccfac8af9a7aff55cdc5b2d13bdd8bd8734976c6bddc477e779b6f
   pg_search (2.3.7) sha256=27868941844961e593526b835da20e48995e9b846515e91856084c5bd9ab4f35
   phlex (2.4.1) sha256=e596717fbfe38b5271840266758779ebe75092e02629f0c170287e6290a70b12
-  phlex-icons-huge (2.55.0) sha256=5532852af43b7bd672853ce7d9e242709c6564b95e49f57a193a825e85d485f5
+  phlex-icons (2.55.0) sha256=aaeb9a3ea137ed7297c065e177541a3c646e621e76ce22d186d80912ea14457b
   phlex-rails (2.4.0) sha256=2bcddbd488681acb25753bab1887d3ac150e644244ff8ba307f2171a4d0195f5
   phonelib (0.10.16) sha256=719c4cc099cd2f356bdadb1a3bccbadd1c67fe332e96a9b3028525e44c425fea
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
@@ -692,6 +697,7 @@ CHECKSUMS
   rails (8.1.2) sha256=5069061b23dfa8706b9f0159ae8b9d35727359103178a26962b868a680ba7d95
   rails-dom-testing (2.3.0) sha256=8acc7953a7b911ca44588bf08737bc16719f431a1cc3091a292bca7317925c1d
   rails-html-sanitizer (1.6.2) sha256=35fce2ca8242da8775c83b6ba9c1bcaad6751d9eb73c1abaa8403475ab89a560
+  rails_autolink (1.1.8) sha256=fbcb9d2e5f2cea9435a32e5f12556c7a9b7ed6867889fb9cf5eac405049bfc3a
   railties (8.1.2) sha256=1289ece76b4f7668fc46d07e55cc992b5b8751f2ad85548b7da351b8c59f8055
   rainbow (3.1.1) sha256=039491aa3a89f42efa1d6dec2fc4e62ede96eb6acd95e52f1ad581182b79bc6a
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c

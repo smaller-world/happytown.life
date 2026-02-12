@@ -55,7 +55,7 @@ gem "roadie-rails"
 
 # Build views with Ruby
 gem "phlex-rails", "~> 2.4"
-gem "phlex-icons-huge"
+gem "phlex-icons"
 
 # Declare enum attributes with Enumerize
 gem "enumerize", "~> 2.8"
@@ -96,6 +96,9 @@ gem "dig_bang"
 
 # Automated post-deploy tasks
 gem "after_party"
+
+# Use the auto_link helper to automatically link URLs in text
+gem "rails_autolink", "~> 1.1"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
