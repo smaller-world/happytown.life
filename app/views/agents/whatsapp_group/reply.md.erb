@@ -6,6 +6,12 @@
 - **send_message_history_link** - sends a message to the group containing the
   group's full message history URL. YOU MUST USE THIS TO SEND THE LINK; DO NOT
   SEND THE LINK WITH `send_reply`.
+- **load_previous_messages** - loads a bounded window of previous messages from
+  the group's message history.
+  - takes a `before_message_id` parameter (string); messages before this
+    message ID will be loaded.
+  - takes a `limit` parameter (integer) containing the maximum number of
+    messages to load (max 50).
 </AVAILABLE_TOOLS>
 
 
@@ -19,7 +25,7 @@
 
 <%- end -%>
 ### MESSAGE <%= index + 1 %>:
-<%= render "agents/whatsapp_group/whatsapp_message", message:, index: -%>
+<%= render "agents/whatsapp_group/message", message:, index: -%>
 <%- end -%>
 <%- else -%>
 (no recent messages; may have just joined group, or group is new)
@@ -29,7 +35,7 @@
 
 <INPUT>
 ## THE INCOMING MESSAGE YOU MUST REPLY TO:
-<%= render "agents/whatsapp_group/whatsapp_message", message: @message -%>
+<%= render "agents/whatsapp_group/message", message: @message -%>
 </INPUT>
 
 

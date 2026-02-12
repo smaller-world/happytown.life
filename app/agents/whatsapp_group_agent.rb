@@ -6,6 +6,7 @@ class WhatsappGroupAgent < ApplicationAgent
   include SendMessageTool
   include SendReplyTool
   include SendMessageHistoryLinkTool
+  include LoadPreviousMessagesTool
 
   # == Configuration ==
 
@@ -33,7 +34,11 @@ class WhatsappGroupAgent < ApplicationAgent
   def reply
     @message = message!
     prompt(
-      tools: [SEND_REPLY_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
+      tools: [
+        SEND_REPLY_TOOL,
+        SEND_MESSAGE_HISTORY_LINK_TOOL,
+        LOAD_PREVIOUS_MESSAGES_TOOL,
+      ],
       tool_choice: "required",
       # response_format: :json_object,
     )
