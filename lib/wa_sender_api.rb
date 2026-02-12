@@ -127,10 +127,10 @@ class WaSenderApi
     response_data!(response)
   end
 
-  sig { params(lid: String).returns(String) }
+  sig { params(lid: String).returns(T.nilable(String)) }
   def phone_number_jid_for_user(lid:)
     response = self.class.get("/pn-from-lid/#{lid}")
-    response_data!(response).fetch("pn")
+    response_data!(response).fetch("pn").presence
   end
 
   sig { params(phone_number: String).returns(T.nilable(String)) }

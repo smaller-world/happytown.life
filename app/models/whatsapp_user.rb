@@ -87,8 +87,10 @@ class WhatsappUser < ApplicationRecord
   sig { void }
   def import_metadata
     phone_number_jid = wa_sender_api.phone_number_jid_for_user(lid:)
-    phone_number = phone_number_jid.delete_suffix("@s.whatsapp.net")
-    profile_picture_url = wa_sender_api.contact_profile_picture_url(phone_number:)
+    phone_number = phone_number_jid&.delete_suffix("@s.whatsapp.net")
+    profile_picture_url = if phone_number
+      wa_sender_api.contact_profile_picture_url(phone_number:)
+    end
     update!(phone_number:, phone_number_jid:, profile_picture_url:, metadata_imported_at: Time.current)
   end
 
