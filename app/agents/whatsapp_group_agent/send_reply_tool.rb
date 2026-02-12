@@ -32,7 +32,7 @@ class WhatsappGroupAgent
       if (mention_token = sender.phone_mention_token) &&
           mentioned_jids_in(text).exclude?(sender.lid)
         tag_logger do
-          logger.info(
+          logger.debug(
             "Adding sender mention (#{mention_token}) to reply message: #{text}",
           )
         end

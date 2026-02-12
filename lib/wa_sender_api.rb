@@ -54,6 +54,9 @@ class WaSenderApi
 
     wait_for_account_protection_period
     body = { to:, text:, mentions: mentioned_jids }.compact_blank
+    tag_logger do
+      logger.debug("Sending message: #{body}")
+    end
     response = self.class.post("/send-message", body:)
     check_response!(response)
     @message_last_sent_at = Time.current
@@ -70,6 +73,9 @@ class WaSenderApi
 
     wait_for_account_protection_period
     body = { to:, text:, "imageUrl" => image_url }.compact
+    tag_logger do
+      logger.debug("Sending image message: #{body}")
+    end
     response = self.class.post("/send-message", body:)
     check_response!(response)
     @message_last_sent_at = Time.current
@@ -86,6 +92,9 @@ class WaSenderApi
 
     wait_for_account_protection_period
     body = { to:, text:, "videoUrl" => video_url }.compact
+    tag_logger do
+      logger.debug("Sending video message: #{body}")
+    end
     response = self.class.post("/send-message", body:)
     check_response!(response)
     @message_last_sent_at = Time.current
@@ -101,6 +110,9 @@ class WaSenderApi
     end
 
     body = { jid:, type: }
+    tag_logger do
+      logger.debug("Sending presence update: #{body}")
+    end
     response = self.class.post("/send-presence-update", body:)
     check_response!(response)
   end
