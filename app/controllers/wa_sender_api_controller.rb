@@ -43,12 +43,13 @@ class WaSenderApiController < ApplicationController
       end
     when "group-participants.update"
       data = payload.fetch("data")
-      jid = data.fetch("jid")
-      if (group = WhatsappGroup.find_by(jid:))
-        group.import_memberships_later
-      else
-        tag_logger(event) do
-          Rails.logger.warn("Couldn't find WhatsappGroup: #{jid}")
+      if (jid = data["jid"])
+        if (group = WhatsappGroup.find_by(jid:))
+          group.import_memberships_later
+        else
+          tag_logger(event) do
+            Rails.logger.warn("Couldn't find WhatsappGroup: #{jid}")
+          end
         end
       end
     end
