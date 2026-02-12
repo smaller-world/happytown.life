@@ -6,7 +6,6 @@ class ApplicationAgent < ActiveAgent::Base
 
   include TaggedLogging
   include UrlHelpers
-  include ActionView::Helpers::AssetUrlHelper
 
   # == Consants ==
 

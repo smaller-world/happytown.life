@@ -24,21 +24,16 @@ class WhatsappGroupAgent
       jid = group.jid
       begin
         history_url = message_history_whatsapp_group_url(group)
-        tag_logger do
-          logger.info("Sending history link to group #{jid}: #{history_url}")
-        end
-        group!.send_message(text: "see older messages: #{history_url}")
-        tag_logger do
-          logger.info("Sending pin-message-instructions to group #{jid}")
-        end
-        text = <<~EOF.squish
-          you can pin that message so new group members can see past messages.
-          this video shows you how to do it.
-        EOF
-        group.send_video_message(
-          video_url: video_url("pin_message_instructions.mp4", host: root_url),
-          text:,
+        instructions_video_url = view_context.video_url(
+          "pin_message_instructions.mp4",
+          host: root_url,
         )
+        tag_logger do
+          logger.info(
+            "Sending message history link to group #{jid}: #{history_url}",
+          )
+        end
+        group.send_message_history_link(history_url:, instructions_video_url:)
         "OK"
       rescue => error
         tag_logger do

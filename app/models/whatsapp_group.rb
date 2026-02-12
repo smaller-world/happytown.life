@@ -162,9 +162,23 @@ class WhatsappGroup < ApplicationRecord
       .perform_later(self, text, reply_to:)
   end
 
-  sig { params(video_url: String, text: T.nilable(String)).void }
-  def send_video_message(video_url:, text: nil)
-    wa_sender_api.send_video_message(to: jid, video_url:, text:)
+  sig do
+    params(
+      history_url: String,
+      instructions_video_url: String,
+    ).void
+  end
+  def send_message_history_link(history_url:, instructions_video_url:)
+    send_message(text: "*see older messages:* #{history_url}")
+    instructions = <<~EOF.squish
+      you can pin that message so new group members can see past messages.
+      this video shows you how to do it.
+    EOF
+    wa_sender_api.send_video_message(
+      to: jid,
+      video_url: instructions_video_url,
+      text: instructions,
+    )
   end
 
   sig { void }
