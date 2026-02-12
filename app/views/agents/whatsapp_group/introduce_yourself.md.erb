@@ -1,17 +1,17 @@
-<tool-usage>
-## YOUR TOOLS:
+<AVAILABLE_TOOLS>
+## YOU MUST USE THESE TOOLS:
 - **send_message** - takes a `text` parameter (string) containing the text to
   send to the WhatsApp group. in your message you can mention users by their
   phone number, i.e. "@14153334444".
 - **send_message_history_link** - sends a message to the group containing the
   group's full message history URL.
-</tool-usage>
+</AVAILABLE_TOOLS>
 
 
-<command>
-YOU MUST introduce yourself to the group with `send_message`.
-
-
-then, YOU MUST use the `send_message_history_link` tool to send the group's full
-message history URL.
-</command>
+<ACTION_SEQUENCE>
+1. YOU MUST introduce yourself to the group with the `send_message` tool.
+   DO NOT output your message; you MUST use the provided tool.
+2. then, YOU MUST use the `send_message_history_link` tool to send the group's
+   full message history URL.
+3. finally, YOU MUST output the number of tool calls you made.
+</ACTION_SEQUENCE>

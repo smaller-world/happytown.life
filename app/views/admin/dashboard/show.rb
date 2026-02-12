@@ -19,7 +19,7 @@ class Views::Admin::Dashboard::Show < Views::Base
               link_to("webhook logs", [:admin, :webhook_messages], class: "link")
             end
             li do
-              link_to("mission control", [:mission_control, :jobs], class: "link")
+              link_to("background jobs", [:mission_control, :jobs], class: "link")
             end
           end
         end

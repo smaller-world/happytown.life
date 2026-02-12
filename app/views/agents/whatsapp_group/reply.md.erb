@@ -1,33 +1,39 @@
-<recent-message-history>
-<%- @message
-  .previous_messages(limit: 10)
-  .reverse_each
-  .each_with_index do |message, index| -%>
-<% if index > 0 %>
-
-
-<% end %>
-## MESSAGE <%= index + 1 %>:
-<%= render "agents/whatsapp_group/whatsapp_message", message:, index: -%>
-<%- end -%>
-</recent-message-history>
-
-
-<incoming-message>
-<%= render "agents/whatsapp_group/whatsapp_message", message: @message -%>
-</received-message>
-
-
-<tool-usage>
+<AVAILABLE_TOOLS>
 ## YOUR TOOLS:
 - **send_reply** - takes a `text` parameter (string) containing the text to
   reply with to the incoming message. in `text`, you can mention users by their
   phone number, i.e. "@14153334444".
 - **send_message_history_link** - sends a message to the group containing the
   group's full message history URL.
-</tool-usage>
+</AVAILABLE_TOOLS>
 
 
-<command>
-YOU MUST read the incoming message and use `send_reply` to respond.
-</command>
+<CONTEXT>
+## RECENT MESSAGE HISTORY FOR THIS GROUP:
+<%- recent_messages = @message.previous_messages(limit: 10) -%>
+<%- if recent_messages.any? -%>
+<%- recent_messages.reverse_each.each_with_index do |message, index| -%>
+<%- if index > 0 -%>
+
+
+<%- end -%>
+### MESSAGE <%= index + 1 %>:
+<%= render "agents/whatsapp_group/whatsapp_message", message:, index: -%>
+<%- end -%>
+<%- else -%>
+(no recent messages; may have just joined group, or group is new)
+<%- end -%>
+</CONTEXT>
+
+
+<INPUT>
+## THE INCOMING MESSAGE YOU MUST REPLY TO:
+<%= render "agents/whatsapp_group/whatsapp_message", message: @message -%>
+</INPUT>
+
+
+<ACTION_SEQUENCE>
+1. YOU MUST read the incoming message and use the `send_reply` tool to respond.
+   DO NOT output your message; you MUST use the provided tool.
+2. afterwards, YOU MUST output the number of tool calls you made.
+</ACTION_SEQUENCE>
