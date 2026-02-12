@@ -31,14 +31,15 @@ class WhatsappGroupAgent
     sig { params(text: String).returns(String) }
     def send_reply(text:)
       sender = message!.sender!
-      if mentioned_jids_in(text).exclude?(sender.lid)
+      if (embedded_mention = sender.phone_mention_token) &&
+          mentioned_jids_in(text).exclude?(sender.lid)
         tag_logger do
           Rails.logger.info(
-            "Adding sender mention (#{sender.embedded_mention}) to reply " \
+            "Adding sender mention (#{embedded_mention}) to reply " \
               "message: #{text}",
           )
         end
-        text = "#{sender.embedded_mention} #{text}"
+        text = "#{sender.phone_mention_token} #{text}"
       end
       send_message(text:)
     end
