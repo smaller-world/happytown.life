@@ -9,12 +9,14 @@ class WhatsappGroupAgent < ApplicationAgent
 
   # == Configuration ==
 
+  generate_with :open_router, instructions: true, temperature: 0
   helper_method :mentioned_jids_in
 
   # == Hooks ==
 
   before_action :set_instructions_context
   around_generation :send_typing_indicator_while
+  around_generation :log_completion_after
 
   # == Actions ==
 
@@ -22,7 +24,7 @@ class WhatsappGroupAgent < ApplicationAgent
   def introduce_yourself
     prompt(
       tools: [SEND_MESSAGE_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
-      tool_choice: "any",
+      tool_choice: "required",
     )
   end
 
@@ -31,7 +33,7 @@ class WhatsappGroupAgent < ApplicationAgent
     @message = message!
     prompt(
       tools: [SEND_REPLY_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
-      tool_choice: "any",
+      tool_choice: "required",
     )
   end
 
@@ -48,6 +50,8 @@ class WhatsappGroupAgent < ApplicationAgent
   def message!
     params.fetch(:message)
   end
+
+  # == Callbacks ==
 
   sig { void }
   def set_instructions_context
@@ -67,5 +71,22 @@ class WhatsappGroupAgent < ApplicationAgent
     yield
   ensure
     indicator_thread&.kill
+  end
+
+  sig do
+    params(block: T.proc.returns(
+      ActiveAgent::Providers::Common::Responses::Prompt,
+    )).void
+  end
+  def log_completion_after(&block)
+    response = yield
+    output = response.message.content
+    tag_logger do
+      logger.info("Generation completed (#{response}): #{output.presence || "(empty output)"}")
+      if Rails.env.test?
+        logger.debug(response.messages)
+      end
+    end
+    response
   end
 end

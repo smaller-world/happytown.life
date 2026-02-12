@@ -1,4 +1,4 @@
-# typed: false # rubocop:disable Sorbet/TrueSigil
+# typed: true
 # frozen_string_literal: true
 
 require "test_helper"
@@ -6,57 +6,93 @@ require "test_helper"
 class WhatsappGroupAgentTest < ActiveSupport::TestCase
   extend T::Sig
 
-  setup do
-    @group = whatsapp_groups(:hangout)
-    @message = whatsapp_messages(:hello_from_alice)
-  end
-
-  # == introduce_yourself ==
+  # == Action: `introduce_yourself' ==
 
   test "introduce_yourself calls required tools" do
-    calls = stub_tool_methods(:send_message, :send_message_history_link)
+    tool_method_calls = stub_tool_methods(
+      :send_message,
+      :send_message_history_link,
+    )
 
-    WhatsappGroupAgent.with(group: @group)
+    group = whatsapp_groups(:hangout)
+    WhatsappGroupAgent.with(group:)
       .introduce_yourself
       .generate_now
 
-    assert calls[:send_message].any?,
+    assert tool_method_calls.fetch(:send_message).any?,
            "Expected `send_message' to be called at least once"
     assert_equal 1,
-                 calls[:send_message_history_link].length,
-                 "Expected `send_message_history_link' to be called exactly once"
+                 tool_method_calls.fetch(:send_message_history_link).length,
+                 "Expected `send_message_history_link' to be called exactly " \
+                   "once"
   end
 
-  # == reply ==
+  # == Action: `reply' ==
 
   test "reply calls required tools" do
-    calls = stub_tool_methods(:send_reply, :send_message_history_link)
+    tool_method_calls = stub_tool_methods(
+      :send_reply, :send_message_history_link
+    )
 
-    WhatsappGroupAgent.with(group: @group, message: @message)
+    group = whatsapp_groups(:hangout)
+    message = whatsapp_messages(:hello_message)
+    WhatsappGroupAgent.with(group:, message:)
       .reply
       .generate_now
 
-    assert calls[:send_reply].any?,
+    assert tool_method_calls.fetch(:send_reply).any?,
            "Expected `send_reply' to be called at least once"
-    assert calls[:send_message_history_link].length <= 1,
-           "Expected `send_message_history_link' to be called at most once"
+    assert_equal 0,
+                 tool_method_calls.fetch(:send_message_history_link).length,
+                 "Expected no calls to `send_message_history_link'"
+  end
+
+  test "reply with message history link when requested" do
+    tool_method_calls = stub_tool_methods(:send_message_history_link)
+
+    group = whatsapp_groups(:hangout)
+    message = whatsapp_messages(:message_history_request_message)
+    WhatsappGroupAgent.with(group:, message:)
+      .reply
+      .generate_now
+
+    assert_equal 1,
+                 tool_method_calls.fetch(:send_message_history_link).length,
+                 "Expected `send_message_history_link' to be called exactly " \
+                   "once"
   end
 
   private
 
-  sig { params(methods: Symbol).returns(T::Hash[Symbol, T::Array[T::Hash[Symbol, T.untyped]]]) }
+  sig do
+    params(methods: Symbol)
+      .returns(T::Hash[Symbol, T::Array[T::Hash[Symbol, T.untyped]]])
+  end
   def stub_tool_methods(*methods)
-    calls = methods.index_with { [] }
+    original_methods = T.let({}, T::Hash[Symbol, UnboundMethod])
+    calls = T.let(
+      methods.index_with { [] },
+      T::Hash[Symbol, T::Array[T::Hash[Symbol, T.untyped]]],
+    )
 
     methods.each do |method_name|
+      original_method = WhatsappGroupAgent.instance_method(method_name)
+      original_methods[method_name] = original_method
       WhatsappGroupAgent.define_method(method_name) do |**kwargs|
-        calls[method_name] << kwargs
-        reply_with("OK")
+        calls.fetch(method_name) << kwargs
+        original_method.bind_call(self, **kwargs)
       end
     end
 
     teardown do
-      methods.each { |m| WhatsappGroupAgent.remove_method(m) }
+      methods.each do |method_name|
+        WhatsappGroupAgent.remove_method(method_name)
+      end
+      original_methods.each do |method_name, original_method|
+        WhatsappGroupAgent.define_method(method_name) do |**kwargs|
+          original_method.bind_call(self, **kwargs)
+        end
+      end
     end
 
     calls

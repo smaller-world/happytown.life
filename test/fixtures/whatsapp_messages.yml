@@ -32,11 +32,16 @@
 #  fk_rails_...  (sender_id => whatsapp_users.id)
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
-hello_from_alice:
-  whatsapp_id: msg_hello_alice
-  body: "hey @189971403149563 what can you do?"
+hello_message:
+  whatsapp_id: "123"
+  body: "hey! say hi back so i know you're working."
   group: hangout
   sender: alice
   timestamp: <%= 10.seconds.ago %>
-  mentioned_jids:
-    - "189971403149563@lid"
+
+message_history_request_message:
+  whatsapp_id: "234"
+  body: "how do i see the message history?"
+  group: hangout
+  sender: alice
+  timestamp: <%= 10.seconds.ago %>

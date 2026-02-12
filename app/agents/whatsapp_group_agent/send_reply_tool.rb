@@ -28,7 +28,7 @@ class WhatsappGroupAgent
       },
     }
 
-    sig { params(text: String).void }
+    sig { params(text: String).returns(String) }
     def send_reply(text:)
       sender = message!.sender!
       if mentioned_jids_in(text).exclude?(sender.lid)
