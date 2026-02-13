@@ -73,7 +73,7 @@ gem "rack-canonical-host", "~> 1.3"
 gem "mission_control-jobs"
 
 # OpenAI API client
-gem "openai", "~> 0.45.0"
+gem "openai", "~> 0.48.0"
 
 # Paginate with Pagy
 gem "pagy", "~> 43.2"
