@@ -268,7 +268,7 @@ GEM
     phlex (2.4.1)
       refract (~> 1.0)
       zeitwerk (~> 2.7)
-    phlex-icons (2.55.0)
+    phlex-icons (2.56.0)
       phlex (>= 1.11)
     phlex-rails (2.4.0)
       phlex (~> 2.4.0)
@@ -677,7 +677,7 @@ CHECKSUMS
   pg_query (6.2.2) sha256=316c194160ccfac8af9a7aff55cdc5b2d13bdd8bd8734976c6bddc477e779b6f
   pg_search (2.3.7) sha256=27868941844961e593526b835da20e48995e9b846515e91856084c5bd9ab4f35
   phlex (2.4.1) sha256=e596717fbfe38b5271840266758779ebe75092e02629f0c170287e6290a70b12
-  phlex-icons (2.55.0) sha256=aaeb9a3ea137ed7297c065e177541a3c646e621e76ce22d186d80912ea14457b
+  phlex-icons (2.56.0) sha256=83aa4dc223ffd3838f033cda1f67fd5c41341116d2d449865bafa24dae74f822
   phlex-rails (2.4.0) sha256=2bcddbd488681acb25753bab1887d3ac150e644244ff8ba307f2171a4d0195f5
   phonelib (0.10.16) sha256=719c4cc099cd2f356bdadb1a3bccbadd1c67fe332e96a9b3028525e44c425fea
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
