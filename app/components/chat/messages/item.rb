@@ -43,7 +43,7 @@ class Components::Chat::Messages::Item < Components::Base
             end
           end
           div(class: "chat_message_content") do
-            p(class: "wrap-break-word") { render_body(@message) }
+            p(class: "break-all") { render_body(@message) }
             local_time(
               @message.timestamp,
               format: "%l:%M %p",
