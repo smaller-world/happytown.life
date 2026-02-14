@@ -41,6 +41,24 @@ Rails.application.routes.draw do
     resources :whatsapp_messages, path: "/messages", only: :index
   end
 
+  # == Devtools ==
+  get "/fly" => redirect(
+    "https://fly.io/apps/happytown",
+    redirect: 307,
+  )
+  get "/logs" => redirect(
+    "https://fly-metrics.net/d/fly-logs/fly-logs?orgId=256205&var-app=happytown",
+    status: 307,
+  )
+  get "/metrics" => redirect(
+    "https://fly-metrics.net/d/fly-app/fly-app?orgId=256205&var-app=happytown",
+    status: 307,
+  )
+  get "/errors" => redirect(
+    "https://happytown.sentry.io/issues/?project=4510862952235008",
+    status: 307,
+  )
+
   # == Admin ==
 
   namespace :admin do
