@@ -16,13 +16,13 @@ production:
     schedule: every hour at minute 12
   truncate_webhook_messages:
     class: TruncateWebhookMessagesJob
-    schedule: at 4:04am America/Toronto every day
+    schedule: every day at 4:04am America/Toronto
   reconcile_whatsapp_group_metadata:
     class: ReconcileWhatsappGroupMetadataJob
-    schedule: at 4:34am America/Toronto every day
+    schedule: every day at 4:34am America/Toronto
   reconcile_whatsapp_group_memberships:
     class: ReconcileWhatsappGroupMembershipsJob
-    schedule: at 3:48am America/Toronto every day
+    schedule: every day at 3:48am America/Toronto
   reconcile_whatsapp_user_metadata:
     class: ReconcileWhatsappUserMetadataJob
-    schedule: at 4:18am America/Toronto every day
+    schedule: every day at 4:18am America/Toronto
