@@ -90,6 +90,13 @@ class Views::Pages::Landing < Views::Base
             ) do
               image_tag("landing/now-toronto.jpeg", alt: "Now Toronto")
             end
+            a(
+              href: "https://us.cnn.com/2026/02/17/travel/toronto-path-canada-underground-networks",
+              target: "_blank",
+              class: "w-24",
+            ) do
+              image_tag("landing/cnn.svg", alt: "CNN")
+            end
           end
         end
 
