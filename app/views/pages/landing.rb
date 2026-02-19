@@ -74,8 +74,8 @@ class Views::Pages::Landing < Views::Base
         class: "text-4xl sm:text-5xl font-bold sm:max-xl max-w-2xl mx-auto leading-[1.1]",
       ) { "a new kind of third space in toronto." }
       div(class: "flex flex-col sm:flex-row gap-4 justify-center items-center") do
-        a(href: "#gatherings", class: "landing_btn_primary") { "see upcoming gatherings" }
-        a(href: "#host", class: "landing_btn_secondary") { "host with us →" }
+        a(href: "#gatherings", class: "landing_btn", data: { variant: "primary" }) { "see upcoming gatherings" }
+        a(href: "#host", class: "landing_btn", data: { variant: "secondary" }) { "host with us →" }
       end
       image_tag(
         "banner.png",
@@ -187,7 +187,7 @@ class Views::Pages::Landing < Views::Base
 
   sig { void }
   def render_for_guests
-    section(class: "landing_outline_card border-landing-primary/10") do
+    section(class: "landing_feature_card", data: { variant: "primary" }) do
       h2 do
         plain("for guests ")
         span(
@@ -197,7 +197,7 @@ class Views::Pages::Landing < Views::Base
 
       div(class: "space-y-2") do
         p(class: "font-bold") { "you'll probably like happy town if you..." }
-        ul(class: "space-y-2 text-gray-600 *:pl-4 *:border-l-2 *:border-landing-primary/20") do
+        ul(class: "landing_feature_list", data: { variant: "primary" }) do
           li { "want new friends but hate \"networking energy\"" }
           li { "like long walks and wandering conversations" }
           li { "miss the feeling of a friendly regular spot" }
@@ -207,7 +207,7 @@ class Views::Pages::Landing < Views::Base
 
       div(class: "space-y-2") do
         p(class: "font-bold") { "what you won't have to do" }
-        ul(class: "space-y-2 text-gray-600 *:pl-4 *:border-l-2 *:border-landing-primary/20") do
+        ul(class: "landing_feature_list", data: { variant: "primary" }) do
           li { "pitch yourself" }
           li { "be extroverted on command" }
           li { "commit to a whole new identity" }
@@ -216,7 +216,8 @@ class Views::Pages::Landing < Views::Base
 
       a(
         href: "#gatherings",
-        class: "landing_cta_btn bg-landing-primary hover:bg-landing-primary/90 mt-2",
+        class: "landing_cta_btn mt-2",
+        data: { variant: "primary" },
       ) do
         span { "pick a gathering this week" }
         Icon("huge/arrow-right-02", class: "size-5")
@@ -228,27 +229,36 @@ class Views::Pages::Landing < Views::Base
   def render_for_hosts
     section(
       id: "host",
-      class: "landing_outline_card border-landing-secondary/10",
+      class: "landing_feature_card",
+      data: { variant: "secondary" },
     ) do
       h2 { "host with us." }
       div(class: "space-y-1") do
-        p(class: "text-lg font-bold") { "let's create a third space together :)" }
-        p(class: "text-gray-600") { "for those who like to create spaces where others feel at home." }
+        p(class: "text-lg font-bold") do
+          "let's create a third space together :)"
+        end
+        p(class: "text-gray-600") do
+          "for those who like to create spaces where others feel at home."
+        end
       end
 
       div(class: "space-y-2") do
         p(class: "font-bold") { "we're especially into hosts who love:" }
-        ul(class: "space-y-2 text-gray-600 *:pl-4 *:border-l-2 *:border-landing-secondary/20") do
+        ul(class: "landing_feature_list", data: { variant: "secondary" }) do
           li { "calm facilitation" }
           li { "playful prompts" }
-          li { "hobby tables (crafts, writing, sketching, reading hours, language corners, etc.)" }
+          li do
+            "hobby tables (crafts, writing, sketching, reading hours, " \
+              "language corners, etc.)"
+          end
           li { "small rituals that make strangers feel safe together" }
         end
       end
 
       a(
         href: "https://tally.so/r/81a9vr",
-        class: "landing_cta_btn bg-landing-secondary hover:bg-landing-secondary/90 mt-2",
+        class: "landing_cta_btn mt-2",
+        data: { variant: "secondary" },
       ) do
         span { "host with happy town" }
         Icon("huge/arrow-right-02", class: "size-5")
@@ -270,14 +280,14 @@ class Views::Pages::Landing < Views::Base
               class: "size-40 rounded-2xl object-cover",
             )
             div(
-              class: "bg-landing-primary/10 text-landing-primary px-3 py-1 rounded-full text-sm font-bold",
-            ) do
-              "walk with us"
-            end
+              class: "landing_gathering_badge",
+              data: { variant: "primary" },
+            ) { "walk with us" }
           end
           h3(class: "text-2xl font-bold mb-2") { "mindful miles" }
           p(class: "text-gray-500 mb-4 font-medium") do
-            "a winter PATH walk for wandering conversations. 10k-ish steps at 8am every saturday."
+            "a winter PATH walk for wandering conversations. 10k-ish steps " \
+              "at 8am every saturday."
           end
           render_gathering_button(
             "mindful miles",
@@ -294,14 +304,14 @@ class Views::Pages::Landing < Views::Base
               class: "size-40 rounded-2xl object-cover",
             )
             div(
-              class: "bg-landing-secondary/10 text-landing-secondary px-3 py-1 rounded-full text-sm font-bold",
-            ) do
-              "create with us"
-            end
+              class: "landing_gathering_badge",
+              data: { variant: "secondary" },
+            ) { "create with us" }
           end
           h3(class: "text-2xl font-bold mb-2") { "foodcourt fairgrounds" }
           p(class: "text-gray-500 mb-4 font-medium") do
-            "a cozy post-walk third-space hang: low-key activities in the aura concourse basement food court."
+            "a cozy post-walk third-space hang: low-key activities in the " \
+              "aura concourse basement food court."
           end
           render_gathering_button(
             "foodcourt fairgrounds",
@@ -334,7 +344,7 @@ class Views::Pages::Landing < Views::Base
 
   sig { void }
   def render_closing
-    section(class: "text-center space-y-8 py-16 bg-linear-to-b from-transparent to-landing-primary/5 rounded-3xl") do
+    section(class: "landing_closing") do
       div(class: "flex justify-center") do
         image_tag(
           "logo-text.png",
@@ -342,14 +352,29 @@ class Views::Pages::Landing < Views::Base
           class: "w-32 md:w-48",
         )
       end
-      h2(class: "text-4xl md:text-5xl font-bold") { "come claim a third space." }
+      h2(class: "text-4xl md:text-5xl font-bold") do
+        "come claim a third space."
+      end
       p(class: "text-xl text-gray-600") do
-        "find a gathering, show up, and make toronto feel a little more like home."
+        "find a gathering, show up, and make toronto feel a little more like " \
+          "home."
       end
 
-      div(class: "flex flex-col sm:flex-row gap-4 justify-center items-center") do
-        a(href: "#gatherings", class: "landing_btn_primary") { "see upcoming gatherings" }
-        a(href: "#host", class: "landing_btn_secondary") do
+      div(
+        class: "flex flex-col sm:flex-row gap-4 justify-center items-center",
+      ) do
+        a(
+          href: "#gatherings",
+          class: "landing_btn",
+          data: { variant: "primary" },
+        ) do
+          "see upcoming gatherings"
+        end
+        a(
+          href: "#host",
+          class: "landing_btn",
+          data: { variant: "secondary" },
+        ) do
           span { "host with us" }
           Icon("huge/arrow-right-02", class: "size-5")
         end
@@ -360,7 +385,9 @@ class Views::Pages::Landing < Views::Base
   sig { void }
   def render_footer
     footer(class: "text-center text-gray-400 text-sm pb-8 space-y-4") do
-      div(class: "flex justify-center gap-4 font-bold text-landing-secondary") do
+      div(
+        class: "flex justify-center gap-4 font-bold text-landing-secondary",
+      ) do
         a(
           href: "https://instagram.com/happytown.to",
           target: "_blank",
@@ -373,7 +400,9 @@ class Views::Pages::Landing < Views::Base
           class: "hover:underline w-20 text-start",
         ) { "tiktok" }
       end
-      p { "© 2026 happy town. all rights reserved (but share the vibe freely)." }
+      p do
+        "© 2026 happy town. all rights reserved (but share the vibe freely)."
+      end
     end
   end
 end
