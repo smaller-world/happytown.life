@@ -42,10 +42,6 @@
   .landing_feature_card {
     @apply space-y-6 rounded-3xl border-2 bg-white p-8 shadow-sm;
 
-    h2 {
-      @apply text-2xl font-bold text-landing-secondary;
-    }
-
     &[data-variant="primary"] {
       @apply border-landing-primary/10;
     }
@@ -53,20 +49,24 @@
     &[data-variant="secondary"] {
       @apply border-landing-secondary/10;
     }
+
+    h2 {
+      @apply text-2xl font-bold text-landing-secondary;
+    }
   }
 
   .landing_feature_list {
     @apply space-y-2 text-gray-600;
 
-    & > * {
+    > li {
       @apply border-l-2 pl-4;
     }
 
-    &[data-variant="primary"] > * {
+    &[data-variant="primary"] > li {
       @apply border-landing-primary/20;
     }
 
-    &[data-variant="secondary"] > * {
+    &[data-variant="secondary"] > li {
       @apply border-landing-secondary/20;
     }
   }
