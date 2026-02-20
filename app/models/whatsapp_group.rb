@@ -27,6 +27,7 @@
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappGroup < ApplicationRecord
   extend FriendlyId
+  include PgSearch::Model
 
   # == FriendlyId ==
 
@@ -84,6 +85,15 @@ class WhatsappGroup < ApplicationRecord
   after_create_commit :import_memberships_later
 
   # == Scopes ==
+
+  pg_search_scope :search,
+                  against: {
+                    subject: "A",
+                    description: "B",
+                  },
+                  using: {
+                    tsearch: {},
+                  }
 
   scope :by_recent_activity, -> {
     subquery = <<~SQL.squish
