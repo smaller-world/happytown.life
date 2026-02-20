@@ -10,7 +10,16 @@ class WhatsappGroupAgent < ApplicationAgent
 
   # == Configuration ==
 
-  generate_with :open_router, instructions: true, temperature: 0
+  # if Rails.env.production?
+  #   generate_with :openai,
+  #                 model: "gpt-5-nano",
+  #                 instructions: true
+  # else
+  generate_with :open_router,
+                model: "stepfun/step-3.5-flash:free",
+                instructions: true,
+                temperature: 0
+  # end
   helper_method :mentioned_jids_in
 
   # == Hooks ==
@@ -23,25 +32,31 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { void }
   def introduce_yourself
-    prompt(
+    options = {
       tools: [SEND_MESSAGE_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
       tool_choice: "required",
-      # response_format: :json_object,
-    )
+    }
+    if json_response_format_supported?
+      options[:response_format] = :json_object
+    end
+    prompt(**options)
   end
 
   sig { void }
   def reply
     @message = message!
-    prompt(
+    options = {
       tools: [
         SEND_REPLY_TOOL,
         SEND_MESSAGE_HISTORY_LINK_TOOL,
         *MESSAGE_LOADING_TOOLS,
       ],
       tool_choice: "required",
-      # response_format: :json_object,
-    )
+    }
+    if json_response_format_supported?
+      options[:response_format] = :json_object
+    end
+    prompt(**options)
   end
 
   private
@@ -59,6 +74,11 @@ class WhatsappGroupAgent < ApplicationAgent
   end
 
   # == Callbacks ==
+
+  sig { returns(T::Boolean) }
+  def json_response_format_supported?
+    prompt_options[:model] == "gpt-5-nano"
+  end
 
   sig { void }
   def set_instructions_context

@@ -118,14 +118,11 @@ class WhatsappGroupAgent
       },
     }
 
-    MESSAGE_LOADING_TOOLS = T.let(
-      [
-        LOAD_MESSAGES_BEFORE_TOOL,
-        LOAD_MESSAGES_AFTER_TOOL,
-        SEARCH_MESSAGES_TOOL,
-      ],
-      T::Array[Hash],
-    )
+    MESSAGE_LOADING_TOOLS = [
+      LOAD_MESSAGES_BEFORE_TOOL,
+      LOAD_MESSAGES_AFTER_TOOL,
+      SEARCH_MESSAGES_TOOL,
+    ]
 
     # == Execution ==
 

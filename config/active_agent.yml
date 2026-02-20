@@ -1,11 +1,8 @@
-open_router: &open_router
+open_router:
   service: OpenRouter
   access_token: <%= Rails.application.credentials.dig(:open_router, :api_key) %>
   model: stepfun/step-3.5-flash:free
-  # model: arcee-ai/trinity-large-preview:free
 
-development:
-  open_router: *open_router
-
-production:
-  open_router: *open_router
+openai:
+  service: OpenAI
+  access_token: <%= Rails.application.credentials.dig(:openai, :api_key) %>

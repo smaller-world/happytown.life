@@ -72,14 +72,12 @@ gem "rack-canonical-host", "~> 1.3"
 # Active Job dashboard
 gem "mission_control-jobs"
 
-# OpenAI API client
-gem "openai", "~> 0.45.0"
-
 # Paginate with Pagy
 gem "pagy", "~> 43.2"
 
 # Extend MVC to AI interactions
 gem "activeagent", "~> 1.0"
+gem "openai", "~> 0.45.0"
 
 # Parse and format phone numbers with phonelib
 gem "phonelib", "~> 0.10.16"

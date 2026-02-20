@@ -72,14 +72,14 @@ module HappyTown
       @wa_sender_api = WaSenderApi.new(api_key:)
     end
 
-    sig { returns(OpenRouter) }
-    def open_router
-      return @open_router if defined?(@open_router)
+    # sig { returns(OpenRouter) }
+    # def open_router
+    #   return @open_router if defined?(@open_router)
 
-      api_key = credentials.dig(:open_router, :api_key) or
-        raise "Missing OpenRouter API key"
-      @open_router = OpenRouter.new(api_key:)
-    end
+    #   api_key = credentials.dig(:open_router, :api_key) or
+    #     raise "Missing OpenRouter API key"
+    #   @open_router = OpenRouter.new(api_key:)
+    # end
   end
 
   sig { returns(HappyTown::Application) }

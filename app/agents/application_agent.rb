@@ -8,7 +8,7 @@ class ApplicationAgent < ActiveAgent::Base
   include TaggedLogging
   include UrlHelpers
 
-  # == Consants ==
+  # == Constants ==
 
   TOOL_CALL_INFO_RESPONSE_FORMAT = {
     type: "json_schema",
@@ -34,7 +34,7 @@ class ApplicationAgent < ActiveAgent::Base
 
   # == Configuration ==
 
-  generate_with :open_router, instructions: true
+  # generate_with :open_router, instructions: true
   helper AgentHelper
 
   # == URL Generation ==
