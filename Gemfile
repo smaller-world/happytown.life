@@ -131,6 +131,7 @@ group :development do
   gem "rubocop-rails", require: false
   gem "rubocop-sorbet", require: false
   gem "rubocop-shopify", require: false
+  gem "rubocop-minitest", require: false
   gem "ruby-lsp", require: false
 
   # Type checking with Sorbet

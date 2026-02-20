@@ -3,6 +3,7 @@ plugins:
   - rubocop-performance
   - rubocop-rails
   - rubocop-sorbet
+  - rubocop-minitest
 
 # Inherit Shopify's Rubocop configuration
 inherit_gem:

@@ -11,6 +11,7 @@ gem:
     - rubocop-rails
     - rubocop-sorbet
     - rubocop-shopify
+    - rubocop-minitest
     - ruby-lsp
     - listen
     - phlex-icons
