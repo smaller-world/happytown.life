@@ -14,7 +14,7 @@ class WhatsappGroupAgent
 
     SEND_REPLY_TOOL = {
       name: "send_reply",
-      description: "send a reply to the received message.",
+      description: "Send a reply to the received message.",
       parameters: {
         type: "object",
         properties: {

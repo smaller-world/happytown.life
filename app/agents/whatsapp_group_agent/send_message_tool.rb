@@ -14,7 +14,7 @@ class WhatsappGroupAgent
 
     SEND_MESSAGE_TOOL = {
       name: "send_message",
-      description: "send a message to everyone in the group.",
+      description: "Send a message to the group.",
       parameters: {
         type: "object",
         properties: {

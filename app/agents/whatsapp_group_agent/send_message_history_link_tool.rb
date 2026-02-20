@@ -15,7 +15,7 @@ class WhatsappGroupAgent
     SEND_MESSAGE_HISTORY_LINK_TOOL = {
       name: "send_message_history_link",
       description:
-        "send a message to containing the group's full message history URL.",
+        "Send a message to containing the group's full message history URL.",
     }
 
     # == Execution ==
