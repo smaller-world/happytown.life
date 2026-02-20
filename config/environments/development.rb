@@ -87,4 +87,7 @@ Rails.application.configure do
 
   # Allowed development hosts
   config.hosts += [/.+\.ngrok-free\.app/, "kaibook.itskai.me"]
+
+  # Use Solid Queue in development
+  config.active_job.queue_adapter = :solid_queue
 end
