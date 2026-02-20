@@ -30,4 +30,8 @@ class WhatsappGroupMembership < ApplicationRecord
 
   belongs_to :group, class_name: "WhatsappGroup"
   belongs_to :user, class_name: "WhatsappUser"
+
+  # == Validations ==
+
+  validates_associated :user
 end

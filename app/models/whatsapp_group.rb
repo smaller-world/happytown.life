@@ -129,7 +129,7 @@ class WhatsappGroup < ApplicationRecord
     participants = wa_sender_api.group_participants(jid:)
     transaction do
       self.memberships = participants.map do |data|
-        user = WhatsappUser.find_or_initialize_by(lid: data.fetch("id"))
+        user = WhatsappUser.find_or_create_by(lid: data.fetch("id"))
         WhatsappGroupMembership.new(user:, admin: data["admin"])
       end
     end
