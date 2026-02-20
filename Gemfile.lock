@@ -246,7 +246,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.0-x86_64-linux-gnu)
       racc (~> 1.4)
-    openai (0.45.0)
+    openai (0.49.0)
       base64
       cgi
       connection_pool
@@ -542,7 +542,7 @@ DEPENDENCIES
   minitest (~> 6.0.1)
   minitest-mock (~> 5.27)
   mission_control-jobs
-  openai (~> 0.45.0)
+  openai (~> 0.49.0)
   pagy (~> 43.2)
   pg (~> 1.5)
   pg_query
@@ -671,7 +671,7 @@ CHECKSUMS
   nokogiri (1.19.0-aarch64-linux-gnu) sha256=11a97ecc3c0e7e5edcf395720b10860ef493b768f6aa80c539573530bc933767
   nokogiri (1.19.0-arm64-darwin) sha256=0811dfd936d5f6dd3f6d32ef790568bf29b2b7bead9ba68866847b33c9cf5810
   nokogiri (1.19.0-x86_64-linux-gnu) sha256=f482b95c713d60031d48c44ce14562f8d2ce31e3a9e8dd0ccb131e9e5a68b58c
-  openai (0.45.0) sha256=33251b8aec461d1ae8ab429181966a55241fb8c6b4acd356d124313d25d98ff1
+  openai (0.49.0) sha256=2a18f41986f521b7180700e512cb00fb2becd0266c0605853559f60a8fd6f14e
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   pagy (43.2.9) sha256=6a167c8da72388883e8f4c8e29dc8f5577f9f934d8d0b704cb2f39d2cebd276e
   parallel (1.27.0) sha256=4ac151e1806b755fb4e2dc2332cbf0e54f2e24ba821ff2d3dcf86bf6dc4ae130

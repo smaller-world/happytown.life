@@ -77,7 +77,7 @@ gem "pagy", "~> 43.2"
 
 # Extend MVC to AI interactions
 gem "activeagent", "~> 1.0"
-gem "openai", "~> 0.45.0"
+gem "openai", "~> 0.49.0"
 
 # Parse and format phone numbers with phonelib
 gem "phonelib", "~> 0.10.16"
