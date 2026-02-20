@@ -25,6 +25,8 @@ class WaSenderApi
   end
 
   class TooManyRequests < Error; end
+  class RequestTimeout < Error; end
+  class Forbidden < Error; end
 
   # == Configuration ==
 
@@ -163,6 +165,10 @@ class WaSenderApi
   def check_response!(response)
     unless response.success?
       case response.code
+      when 408
+        raise RequestTimeout, response
+      when 422
+        raise Forbidden, response
       when 429
         raise TooManyRequests, response
       else

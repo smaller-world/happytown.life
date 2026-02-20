@@ -6,6 +6,8 @@ class ImportWhatsappGroupMetadataJob < ApplicationJob
 
   queue_as :default
   limits_concurrency key: ->(group) { group }, on_conflict: :discard
+  discard_on WaSenderApi::Forbidden
+  retry_on WaSenderApi::RequestTimeout, wait: :polynomially_longer
   retry_on WaSenderApi::TooManyRequests, wait: :polynomially_longer
 
   # == Job ==
