@@ -40,6 +40,35 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
                         "Expected no `send_message_history_link' tool usage"
   end
 
+  test "reply searches for messages" do
+    group = whatsapp_groups(:hangout)
+    message = whatsapp_messages(:who_talked_about_fries_message)
+
+    sent_replies = []
+    capture_reply = lambda do |text:, **|
+      sent_replies << text
+    end
+    response = group.stub(:send_message, capture_reply) do
+      WhatsappGroupAgent.with(group:, message:)
+        .reply
+        .generate_now
+    end
+    tool_calls = tool_calls_from_response(response)
+
+    assert_includes tool_calls,
+                    :search_messages,
+                    "Expected `search_messages' tool usage"
+    assert_includes tool_calls,
+                    :send_reply,
+                    "Expected `send_reply' tool usage"
+    assert_not_empty sent_replies, "Expected at least one reply to be sent"
+    assert_match(
+      /BOB/,
+      sent_replies.last,
+      "Expected reply to contain 'BOB'",
+    )
+  end
+
   test "reply with message history link when requested" do
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:message_history_request_message)

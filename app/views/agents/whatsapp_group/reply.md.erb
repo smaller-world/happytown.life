@@ -1,32 +1,50 @@
 <AVAILABLE_TOOLS>
-## YOUR TOOLS:
-- **send_reply** - takes a `text` parameter (string) containing the text to
-  reply with to the incoming message. in `text`, you can mention users by their
-  phone number, i.e. "@14153334444".
-- **send_message_history_link** - sends a message to the group containing the
-  group's full message history URL. YOU MUST USE THIS TO SEND THE LINK; DO NOT
-  SEND THE LINK WITH `send_reply`.
-- **load_previous_messages** - loads a bounded window of previous messages from
-  the group's message history.
-  - takes a `before_message_id` parameter (string); messages before this
-    message ID will be loaded.
-  - takes a `limit` parameter (integer) containing the maximum number of
-    messages to load (max 50).
+## YOUR TOOLS (USE THESE EXACTLY):
+
+- **send_reply** - use this to send your reply to the incoming message.
+  - takes `text` (string).
+  - in `text`, you can mention users by phone number (example: "@14153334444").
+  - DO NOT output plain text as your final answer; YOU MUST call this tool to
+    reply.
+
+- **send_message_history_link** - use this to send the full message history URL.
+  - sends a message containing the group's full message history URL.
+  - YOU MUST USE THIS TOOL TO SEND THE LINK.
+  - DO NOT send the history URL through `send_reply`.
+
+- **load_messages_before** - scroll upward from a known anchor message.
+  - takes `anchor_message_id` (string): the message ID to scroll from.
+  - takes `limit` (integer): maximum number of messages to load.
+
+- **load_messages_after** - scroll downwards from a known anchor message.
+  - takes `anchor_message_id` (string): the message ID to scroll from.
+  - takes `limit` (integer): maximum number of messages to load.
+
+- **search_messages** - search for messages in the group.
+  - takes `any_keywords` (array<string>): match if ANY keywords are present.
+  - takes `all_keywords` (array<string>): match if ALL keywords are present.
+  - `any_keywords` and `all_keywords` options are MUTUALLY EXCLUSIVE.
+  - takes `any_participants` (array<string>): match if ANY participant is
+    present (via LID, JID, or phone number).
+  - takes `date_range` (object):
+    - `from` (string): ISO-8601 range start date, i.e. "2026-01-01".
+    - `to` (string): ISO-8601 range end date, i.e. "2026-01-31".
 </AVAILABLE_TOOLS>
 
 
 <CONTEXT>
 ## RECENT MESSAGE HISTORY FOR THIS GROUP:
-<%- recent_messages = @message.previous_messages(limit: 10) -%>
+<%- recent_messages = @message.previous_messages(limit: 6) -%>
 <%- if recent_messages.any? -%>
-<%- recent_messages.reverse_each.each_with_index do |message, index| -%>
-<%- if index > 0 -%>
+  <%- recent_messages.reverse_each.each_with_index do |message, index| -%>
+    <%- if index > 0 -%>
 
 
-<%- end -%>
+    <%- end -%>
 ### MESSAGE <%= index + 1 %>:
-<%= render "agents/whatsapp_group/message", message:, index: -%>
-<%- end -%>
+
+<%= render "agents/whatsapp_group/message", message: -%>
+  <%- end -%>
 <%- else -%>
 (no recent messages; may have just joined group, or group is new)
 <%- end -%>

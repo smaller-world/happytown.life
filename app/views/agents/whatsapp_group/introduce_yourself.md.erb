@@ -1,10 +1,17 @@
 <AVAILABLE_TOOLS>
 ## YOU MUST USE THESE TOOLS:
-- **send_message** - takes a `text` parameter (string) containing the text to
-  send to the WhatsApp group. in your message you can mention users by their
-  phone number, i.e. "@14153334444".
-- **send_message_history_link** - sends a message to the group containing the
-  group's full message history URL.
+
+- **send_reply** - use this to send your reply to the incoming message.
+  - takes `text` (string).
+  - in `text`, you can mention users by phone number (example: "@14153334444").
+  - DO NOT output plain text as your final answer; YOU MUST call this tool to
+    reply.
+
+- **send_message_history_link** - use this to send the full message history URL.
+  - sends a message containing the group's full message history URL.
+  - YOU MUST USE THIS TOOL TO SEND THE LINK.
+  - DO NOT send the history URL through `send_reply`.
+
 </AVAILABLE_TOOLS>
 
 

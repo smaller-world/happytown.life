@@ -18,6 +18,8 @@ class WhatsappGroupAgent
         "send a message to containing the group's full message history URL.",
     }
 
+    # == Execution ==
+
     sig { returns(String) }
     def send_message_history_link
       group = group!

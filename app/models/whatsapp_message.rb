@@ -38,6 +38,7 @@
 class WhatsappMessage < ApplicationRecord
   include WhatsappMessaging
   include Turbo::Broadcastable
+  include PgSearch::Model
 
   # == Associations ==
 
@@ -78,6 +79,10 @@ class WhatsappMessage < ApplicationRecord
           where("? = ANY(mentioned_jids)", application_user_lid),
         ),
       )
+  }
+
+  pg_search_scope :search, against: [:body], using: {
+    tsearch: {},
   }
 
   sig { returns(T::Boolean) }
@@ -128,17 +133,25 @@ class WhatsappMessage < ApplicationRecord
   end
 
   sig do
-    params(limit: T.nilable(Integer))
-      .returns(WhatsappMessage::PrivateAssociationRelation)
+    params(limit: Integer).returns(WhatsappMessage::PrivateAssociationRelation)
   end
-  def previous_messages(limit: nil)
-    scope = group!.messages
+  def previous_messages(limit:)
+    group!.messages
       .where(timestamp: ...timestamp)
       .order(timestamp: :desc)
-    if limit
-      scope = scope.limit(limit)
-    end
-    scope.distinct
+      .limit(limit)
+      .distinct
+  end
+
+  sig do
+    params(limit: Integer).returns(WhatsappMessage::PrivateAssociationRelation)
+  end
+  def next_messages(limit:)
+    group!.messages
+      .where(timestamp: timestamp...)
+      .order(timestamp: :asc)
+      .limit(limit)
+      .distinct
   end
 
   # == Helpers ==

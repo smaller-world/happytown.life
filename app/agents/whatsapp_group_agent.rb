@@ -6,7 +6,7 @@ class WhatsappGroupAgent < ApplicationAgent
   include SendMessageTool
   include SendReplyTool
   include SendMessageHistoryLinkTool
-  include LoadPreviousMessagesTool
+  include MessageLoadingTools
 
   # == Configuration ==
 
@@ -37,7 +37,7 @@ class WhatsappGroupAgent < ApplicationAgent
       tools: [
         SEND_REPLY_TOOL,
         SEND_MESSAGE_HISTORY_LINK_TOOL,
-        LOAD_PREVIOUS_MESSAGES_TOOL,
+        *MESSAGE_LOADING_TOOLS,
       ],
       tool_choice: "required",
       # response_format: :json_object,

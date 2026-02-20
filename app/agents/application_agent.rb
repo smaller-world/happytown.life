@@ -4,6 +4,7 @@
 class ApplicationAgent < ActiveAgent::Base
   extend T::Sig
 
+  include Pagy::Method
   include TaggedLogging
   include UrlHelpers
 

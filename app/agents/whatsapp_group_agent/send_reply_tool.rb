@@ -26,6 +26,8 @@ class WhatsappGroupAgent
       },
     }
 
+    # == Execution ==
+
     sig { params(text: String).returns(String) }
     def send_reply(text:)
       sender = message!.sender!

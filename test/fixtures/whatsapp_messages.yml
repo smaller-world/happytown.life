@@ -37,11 +37,69 @@ hello_message:
   body: hey! say hi back so i know you're working.
   group: hangout
   sender: alice
-  timestamp: <%= 10.seconds.ago %>
+  timestamp: <%= (1.hour + 20.seconds).ago %>
 
 message_history_request_message:
   whatsapp_id: "234"
   body: send the message history link.
   group: hangout
   sender: alice
-  timestamp: <%= 10.seconds.ago %>
+  timestamp: <%= (1.hour + 10.seconds).ago %>
+
+french_fries_message:
+  whatsapp_id: "345"
+  body: "i just had the most incredible french fries at that new place downtown"
+  group: hangout
+  sender: bob
+  timestamp: <%= 1.hour.ago %>
+
+filler_message_1:
+  whatsapp_id: "f1"
+  body: "hey everyone, what's up?"
+  group: hangout
+  sender: alice
+  timestamp: <%= 50.minutes.ago %>
+
+filler_message_2:
+  whatsapp_id: "f2"
+  body: "not much, just working on some stuff"
+  group: hangout
+  sender: bob
+  timestamp: <%= 45.minutes.ago %>
+
+filler_message_3:
+  whatsapp_id: "f3"
+  body: "anyone want to hang out later today?"
+  group: hangout
+  sender: alice
+  timestamp: <%= 40.minutes.ago %>
+
+filler_message_4:
+  whatsapp_id: "f4"
+  body: "sure thing, where should we go?"
+  group: hangout
+  sender: bob
+  timestamp: <%= 35.minutes.ago %>
+
+filler_message_5:
+  whatsapp_id: "f5"
+  body: "maybe the park, the weather looks nice"
+  group: hangout
+  sender: alice
+  timestamp: <%= 30.minutes.ago %>
+
+filler_message_6:
+  whatsapp_id: "f6"
+  body: "sounds good, see you there"
+  group: hangout
+  sender: bob
+  timestamp: <%= 25.minutes.ago %>
+
+who_talked_about_fries_message:
+  whatsapp_id: "456"
+  body: >-
+    who recently talked about french fries? respond with JUST the name of the
+    user in ALL CAPS.
+  group: hangout
+  sender: alice
+  timestamp: <%= 5.seconds.ago %>

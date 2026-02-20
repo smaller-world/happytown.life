@@ -22,7 +22,19 @@ module GeneratedUrlHelpersModule
   def edit_session_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def errors_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def fly_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def logs_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def message_history_whatsapp_group_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def metrics_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def mission_control_jobs_url(*args); end
