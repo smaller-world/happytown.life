@@ -19,6 +19,7 @@
 #
 # Indexes
 #
+#  index_whatsapp_messages_on_body_tsearch       (to_tsvector('simple'::regconfig, COALESCE(body, ''::text))) USING gin
 #  index_whatsapp_messages_on_group_id           (group_id)
 #  index_whatsapp_messages_on_quoted_message_id  (quoted_message_id)
 #  index_whatsapp_messages_on_reply_sent_at      (reply_sent_at)

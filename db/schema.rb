@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_12_061130) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_204611) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -224,6 +224,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_061130) do
     t.timestamptz "timestamp", null: false
     t.datetime "updated_at", null: false
     t.string "whatsapp_id", null: false
+    t.index "to_tsvector('simple'::regconfig, COALESCE(body, ''::text))", name: "index_whatsapp_messages_on_body_tsearch", using: :gin
     t.index ["group_id"], name: "index_whatsapp_messages_on_group_id"
     t.index ["quoted_message_id"], name: "index_whatsapp_messages_on_quoted_message_id"
     t.index ["reply_sent_at"], name: "index_whatsapp_messages_on_reply_sent_at"
