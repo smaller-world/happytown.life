@@ -92,6 +92,9 @@ module OpenAI
     sig { returns(OpenAI::Resources::Responses) }
     attr_reader :responses
 
+    sig { returns(OpenAI::Resources::Skills) }
+    attr_reader :skills
+
     sig { returns(OpenAI::Resources::Uploads) }
     attr_reader :uploads
 
@@ -157,6 +160,7 @@ module OpenAI
   Conversations = OpenAI::Models::Conversations
   CreateEmbeddingResponse = OpenAI::Models::CreateEmbeddingResponse
   CustomToolInputFormat = OpenAI::Models::CustomToolInputFormat
+  DeletedSkill = OpenAI::Models::DeletedSkill
   Embedding = OpenAI::Models::Embedding
   EmbeddingCreateParams = OpenAI::Models::EmbeddingCreateParams
   EmbeddingModel = OpenAI::Models::EmbeddingModel
@@ -2432,7 +2436,7 @@ module OpenAI
 
       JSONL_CONTENT = T.let(%r{^application/(:?x-(?:n|l)djson)|(:?(?:x-)?jsonl)}, Regexp)
 
-      JSON_CONTENT = T.let(%r{^application/(?:vnd(?:\.[^.]+)*\+)?json(?!l)}, Regexp)
+      JSON_CONTENT = T.let(%r{^application/(?:[a-zA-Z0-9.-]+\+)?json(?!l)}, Regexp)
 
       ParsedUri = T.type_alias do
           {
@@ -5279,9 +5283,9 @@ module OpenAI
 
       # The endpoint to be used for all requests in the batch. Currently
       # `/v1/responses`, `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`,
-      # and `/v1/moderations` are supported. Note that `/v1/embeddings` batches are also
-      # restricted to a maximum of 50,000 embedding inputs across all requests in the
-      # batch.
+      # `/v1/moderations`, `/v1/images/generations`, and `/v1/images/edits` are
+      # supported. Note that `/v1/embeddings` batches are also restricted to a maximum
+      # of 50,000 embedding inputs across all requests in the batch.
       sig { returns(OpenAI::BatchCreateParams::Endpoint::OrSymbol) }
       attr_accessor :endpoint
 
@@ -5344,9 +5348,9 @@ module OpenAI
                               # is supported.
           endpoint:, # The endpoint to be used for all requests in the batch. Currently
                      # `/v1/responses`, `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`,
-                     # and `/v1/moderations` are supported. Note that `/v1/embeddings` batches are also
-                     # restricted to a maximum of 50,000 embedding inputs across all requests in the
-                     # batch.
+                     # `/v1/moderations`, `/v1/images/generations`, and `/v1/images/edits` are
+                     # supported. Note that `/v1/embeddings` batches are also restricted to a maximum
+                     # of 50,000 embedding inputs across all requests in the batch.
           input_file_id:, # The ID of an uploaded file that contains requests for the new batch.
                           # See [upload file](https://platform.openai.com/docs/api-reference/files/create)
                           # for how to upload a file.
@@ -5389,9 +5393,9 @@ module OpenAI
 
       # The endpoint to be used for all requests in the batch. Currently
       # `/v1/responses`, `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`,
-      # and `/v1/moderations` are supported. Note that `/v1/embeddings` batches are also
-      # restricted to a maximum of 50,000 embedding inputs across all requests in the
-      # batch.
+      # `/v1/moderations`, `/v1/images/generations`, and `/v1/images/edits` are
+      # supported. Note that `/v1/embeddings` batches are also restricted to a maximum
+      # of 50,000 embedding inputs across all requests in the batch.
       module Endpoint
         extend OpenAI::Internal::Type::Enum
 
@@ -5416,6 +5420,16 @@ module OpenAI
 
         V1_EMBEDDINGS = T.let(
             :"/v1/embeddings",
+            OpenAI::BatchCreateParams::Endpoint::TaggedSymbol
+          )
+
+        V1_IMAGES_EDITS = T.let(
+            :"/v1/images/edits",
+            OpenAI::BatchCreateParams::Endpoint::TaggedSymbol
+          )
+
+        V1_IMAGES_GENERATIONS = T.let(
+            :"/v1/images/generations",
             OpenAI::BatchCreateParams::Endpoint::TaggedSymbol
           )
 
@@ -27019,12 +27033,9 @@ module OpenAI
         sig { params(limit: Integer).void }
         attr_writer :limit
 
-        # Set of 16 key-value pairs that can be attached to an object. This can be useful
-        # for storing additional information about the object in a structured format, and
-        # querying for objects via API or the dashboard.
+        # A list of metadata keys to filter the Chat Completions by. Example:
         #
-        # Keys are strings with a maximum length of 64 characters. Values are strings with
-        # a maximum length of 512 characters.
+        # `metadata[key1]=value1&metadata[key2]=value2`
         sig { returns(T.nilable(T::Hash[Symbol, String])) }
         attr_accessor :metadata
 
@@ -27070,11 +27081,8 @@ module OpenAI
           def new(
             after: nil, # Identifier for the last chat completion from the previous pagination request.
             limit: nil, # Number of Chat Completions to retrieve.
-            metadata: nil, # Set of 16 key-value pairs that can be attached to an object. This can be useful
-                           # for storing additional information about the object in a structured format, and
-                           # querying for objects via API or the dashboard.
-                           # Keys are strings with a maximum length of 64 characters. Values are strings with
-                           # a maximum length of 512 characters.
+            metadata: nil, # A list of metadata keys to filter the Chat Completions by. Example:
+                           # `metadata[key1]=value1&metadata[key2]=value2`
             model: nil, # The model used to generate the Chat Completions.
             order: nil, # Sort order for Chat Completions by timestamp. Use `asc` for ascending order or
                         # `desc` for descending order. Defaults to `asc`.
@@ -28497,6 +28505,52 @@ module OpenAI
       sig { returns(String) }
       attr_accessor :name
 
+      # Network access policy for the container.
+      sig do
+        returns(T.nilable(
+            T.any(
+              OpenAI::Responses::ContainerNetworkPolicyDisabled,
+              OpenAI::Responses::ContainerNetworkPolicyAllowlist
+            )
+          ))
+      end
+      attr_reader :network_policy
+
+      sig do
+        params(
+          network_policy: T.any(
+              OpenAI::Responses::ContainerNetworkPolicyDisabled::OrHash,
+              OpenAI::Responses::ContainerNetworkPolicyAllowlist::OrHash
+            )
+        ).void
+      end
+      attr_writer :network_policy
+
+      # An optional list of skills referenced by id or inline data.
+      sig do
+        returns(T.nilable(
+            T::Array[
+              T.any(
+                OpenAI::Responses::SkillReference,
+                OpenAI::Responses::InlineSkill
+              )
+            ]
+          ))
+      end
+      attr_reader :skills
+
+      sig do
+        params(
+          skills: T::Array[
+              T.any(
+                OpenAI::Responses::SkillReference::OrHash,
+                OpenAI::Responses::InlineSkill::OrHash
+              )
+            ]
+        ).void
+      end
+      attr_writer :skills
+
       sig do
         override
           .returns({
@@ -28504,6 +28558,18 @@ module OpenAI
             expires_after: OpenAI::ContainerCreateParams::ExpiresAfter,
             file_ids: T::Array[String],
             memory_limit: OpenAI::ContainerCreateParams::MemoryLimit::OrSymbol,
+            network_policy:
+              T.any(
+                OpenAI::Responses::ContainerNetworkPolicyDisabled,
+                OpenAI::Responses::ContainerNetworkPolicyAllowlist
+              ),
+            skills:
+              T::Array[
+                T.any(
+                  OpenAI::Responses::SkillReference,
+                  OpenAI::Responses::InlineSkill
+                )
+              ],
             request_options: OpenAI::RequestOptions
           })
       end
@@ -28516,6 +28582,16 @@ module OpenAI
             expires_after: OpenAI::ContainerCreateParams::ExpiresAfter::OrHash,
             file_ids: T::Array[String],
             memory_limit: OpenAI::ContainerCreateParams::MemoryLimit::OrSymbol,
+            network_policy: T.any(
+              OpenAI::Responses::ContainerNetworkPolicyDisabled::OrHash,
+              OpenAI::Responses::ContainerNetworkPolicyAllowlist::OrHash
+            ),
+            skills: T::Array[
+              T.any(
+                OpenAI::Responses::SkillReference::OrHash,
+                OpenAI::Responses::InlineSkill::OrHash
+              )
+            ],
             request_options: OpenAI::RequestOptions::OrHash
           ).returns(T.attached_class)
         end
@@ -28524,6 +28600,8 @@ module OpenAI
           expires_after: nil, # Container expiration time in seconds relative to the 'anchor' time.
           file_ids: nil, # IDs of files to copy to the container.
           memory_limit: nil, # Optional memory limit for the container. Defaults to "1g".
+          network_policy: nil, # Network access policy for the container.
+          skills: nil, # An optional list of skills referenced by id or inline data.
           request_options: {}
 ); end
       end
@@ -28627,9 +28705,42 @@ module OpenAI
           end
       end
 
+      # Network access policy for the container.
+      module NetworkPolicy
+        extend OpenAI::Internal::Type::Union
+
+        class << self
+          sig { override.returns(T::Array[OpenAI::ContainerCreateParams::NetworkPolicy::Variants]) }
+          def variants; end
+        end
+
+        Variants = T.type_alias do
+            T.any(
+              OpenAI::Responses::ContainerNetworkPolicyDisabled,
+              OpenAI::Responses::ContainerNetworkPolicyAllowlist
+            )
+          end
+      end
+
       OrHash = T.type_alias do
           T.any(OpenAI::ContainerCreateParams, OpenAI::Internal::AnyHash)
         end
+
+      module Skill
+        extend OpenAI::Internal::Type::Union
+
+        class << self
+          sig { override.returns(T::Array[OpenAI::ContainerCreateParams::Skill::Variants]) }
+          def variants; end
+        end
+
+        Variants = T.type_alias do
+            T.any(
+              OpenAI::Responses::SkillReference,
+              OpenAI::Responses::InlineSkill
+            )
+          end
+      end
     end
 
     class ContainerCreateResponse < OpenAI::Internal::Type::BaseModel
@@ -28672,6 +28783,13 @@ module OpenAI
       sig { returns(String) }
       attr_accessor :name
 
+      # Network access policy for the container.
+      sig { returns(T.nilable(OpenAI::Models::ContainerCreateResponse::NetworkPolicy)) }
+      attr_reader :network_policy
+
+      sig { params(network_policy: OpenAI::Models::ContainerCreateResponse::NetworkPolicy::OrHash).void }
+      attr_writer :network_policy
+
       # The type of this object.
       sig { returns(String) }
       attr_accessor :object
@@ -28692,7 +28810,9 @@ module OpenAI
               OpenAI::Models::ContainerCreateResponse::ExpiresAfter,
             last_active_at: Integer,
             memory_limit:
-              OpenAI::Models::ContainerCreateResponse::MemoryLimit::TaggedSymbol
+              OpenAI::Models::ContainerCreateResponse::MemoryLimit::TaggedSymbol,
+            network_policy:
+              OpenAI::Models::ContainerCreateResponse::NetworkPolicy
           })
       end
       def to_hash; end
@@ -28707,7 +28827,8 @@ module OpenAI
             status: String,
             expires_after: OpenAI::Models::ContainerCreateResponse::ExpiresAfter::OrHash,
             last_active_at: Integer,
-            memory_limit: OpenAI::Models::ContainerCreateResponse::MemoryLimit::OrSymbol
+            memory_limit: OpenAI::Models::ContainerCreateResponse::MemoryLimit::OrSymbol,
+            network_policy: OpenAI::Models::ContainerCreateResponse::NetworkPolicy::OrHash
           ).returns(T.attached_class)
         end
         def new(
@@ -28720,7 +28841,8 @@ module OpenAI
                               # point for the expiration. The minutes is the number of minutes after the anchor
                               # before the container expires.
           last_active_at: nil, # Unix timestamp (in seconds) when the container was last active.
-          memory_limit: nil # The memory limit configured for the container.
+          memory_limit: nil, # The memory limit configured for the container.
+          network_policy: nil # Network access policy for the container.
 ); end
       end
 
@@ -28847,6 +28969,84 @@ module OpenAI
           end
       end
 
+      class NetworkPolicy < OpenAI::Internal::Type::BaseModel
+        # Allowed outbound domains when `type` is `allowlist`.
+        sig { returns(T.nilable(T::Array[String])) }
+        attr_reader :allowed_domains
+
+        sig { params(allowed_domains: T::Array[String]).void }
+        attr_writer :allowed_domains
+
+        # The network policy mode.
+        sig { returns(OpenAI::Models::ContainerCreateResponse::NetworkPolicy::Type::TaggedSymbol) }
+        attr_accessor :type
+
+        sig do
+          override
+            .returns({
+              type:
+                OpenAI::Models::ContainerCreateResponse::NetworkPolicy::Type::TaggedSymbol,
+              allowed_domains: T::Array[String]
+            })
+        end
+        def to_hash; end
+
+        class << self
+          # Network access policy for the container.
+          sig do
+            params(
+              type: OpenAI::Models::ContainerCreateResponse::NetworkPolicy::Type::OrSymbol,
+              allowed_domains: T::Array[String]
+            ).returns(T.attached_class)
+          end
+          def new(
+            type:, # The network policy mode.
+            allowed_domains: nil # Allowed outbound domains when `type` is `allowlist`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Models::ContainerCreateResponse::NetworkPolicy,
+              OpenAI::Internal::AnyHash
+            )
+          end
+
+        # The network policy mode.
+        module Type
+          extend OpenAI::Internal::Type::Enum
+
+          class << self
+            sig do
+              override
+                .returns(T::Array[
+                OpenAI::Models::ContainerCreateResponse::NetworkPolicy::Type::TaggedSymbol
+              ])
+            end
+            def values; end
+          end
+
+          ALLOWLIST = T.let(
+              :allowlist,
+              OpenAI::Models::ContainerCreateResponse::NetworkPolicy::Type::TaggedSymbol
+            )
+
+          DISABLED = T.let(
+              :disabled,
+              OpenAI::Models::ContainerCreateResponse::NetworkPolicy::Type::TaggedSymbol
+            )
+
+          OrSymbol = T.type_alias { T.any(Symbol, String) }
+
+          TaggedSymbol = T.type_alias do
+              T.all(
+                Symbol,
+                OpenAI::Models::ContainerCreateResponse::NetworkPolicy::Type
+              )
+            end
+        end
+      end
+
       OrHash = T.type_alias do
           T.any(
             OpenAI::Models::ContainerCreateResponse,
@@ -28894,6 +29094,13 @@ module OpenAI
       sig { params(limit: Integer).void }
       attr_writer :limit
 
+      # Filter results by container name.
+      sig { returns(T.nilable(String)) }
+      attr_reader :name
+
+      sig { params(name: String).void }
+      attr_writer :name
+
       # Sort order by the `created_at` timestamp of the objects. `asc` for ascending
       # order and `desc` for descending order.
       sig { returns(T.nilable(OpenAI::ContainerListParams::Order::OrSymbol)) }
@@ -28907,6 +29114,7 @@ module OpenAI
           .returns({
             after: String,
             limit: Integer,
+            name: String,
             order: OpenAI::ContainerListParams::Order::OrSymbol,
             request_options: OpenAI::RequestOptions
           })
@@ -28918,6 +29126,7 @@ module OpenAI
           params(
             after: String,
             limit: Integer,
+            name: String,
             order: OpenAI::ContainerListParams::Order::OrSymbol,
             request_options: OpenAI::RequestOptions::OrHash
           ).returns(T.attached_class)
@@ -28929,6 +29138,7 @@ module OpenAI
                       # fetch the next page of the list.
           limit: nil, # A limit on the number of objects to be returned. Limit can range between 1 and
                       # 100, and the default is 20.
+          name: nil, # Filter results by container name.
           order: nil, # Sort order by the `created_at` timestamp of the objects. `asc` for ascending
                       # order and `desc` for descending order.
           request_options: {}
@@ -28997,6 +29207,13 @@ module OpenAI
       sig { returns(String) }
       attr_accessor :name
 
+      # Network access policy for the container.
+      sig { returns(T.nilable(OpenAI::Models::ContainerListResponse::NetworkPolicy)) }
+      attr_reader :network_policy
+
+      sig { params(network_policy: OpenAI::Models::ContainerListResponse::NetworkPolicy::OrHash).void }
+      attr_writer :network_policy
+
       # The type of this object.
       sig { returns(String) }
       attr_accessor :object
@@ -29016,7 +29233,8 @@ module OpenAI
             expires_after: OpenAI::Models::ContainerListResponse::ExpiresAfter,
             last_active_at: Integer,
             memory_limit:
-              OpenAI::Models::ContainerListResponse::MemoryLimit::TaggedSymbol
+              OpenAI::Models::ContainerListResponse::MemoryLimit::TaggedSymbol,
+            network_policy: OpenAI::Models::ContainerListResponse::NetworkPolicy
           })
       end
       def to_hash; end
@@ -29031,7 +29249,8 @@ module OpenAI
             status: String,
             expires_after: OpenAI::Models::ContainerListResponse::ExpiresAfter::OrHash,
             last_active_at: Integer,
-            memory_limit: OpenAI::Models::ContainerListResponse::MemoryLimit::OrSymbol
+            memory_limit: OpenAI::Models::ContainerListResponse::MemoryLimit::OrSymbol,
+            network_policy: OpenAI::Models::ContainerListResponse::NetworkPolicy::OrHash
           ).returns(T.attached_class)
         end
         def new(
@@ -29044,7 +29263,8 @@ module OpenAI
                               # point for the expiration. The minutes is the number of minutes after the anchor
                               # before the container expires.
           last_active_at: nil, # Unix timestamp (in seconds) when the container was last active.
-          memory_limit: nil # The memory limit configured for the container.
+          memory_limit: nil, # The memory limit configured for the container.
+          network_policy: nil # Network access policy for the container.
 ); end
       end
 
@@ -29171,6 +29391,84 @@ module OpenAI
           end
       end
 
+      class NetworkPolicy < OpenAI::Internal::Type::BaseModel
+        # Allowed outbound domains when `type` is `allowlist`.
+        sig { returns(T.nilable(T::Array[String])) }
+        attr_reader :allowed_domains
+
+        sig { params(allowed_domains: T::Array[String]).void }
+        attr_writer :allowed_domains
+
+        # The network policy mode.
+        sig { returns(OpenAI::Models::ContainerListResponse::NetworkPolicy::Type::TaggedSymbol) }
+        attr_accessor :type
+
+        sig do
+          override
+            .returns({
+              type:
+                OpenAI::Models::ContainerListResponse::NetworkPolicy::Type::TaggedSymbol,
+              allowed_domains: T::Array[String]
+            })
+        end
+        def to_hash; end
+
+        class << self
+          # Network access policy for the container.
+          sig do
+            params(
+              type: OpenAI::Models::ContainerListResponse::NetworkPolicy::Type::OrSymbol,
+              allowed_domains: T::Array[String]
+            ).returns(T.attached_class)
+          end
+          def new(
+            type:, # The network policy mode.
+            allowed_domains: nil # Allowed outbound domains when `type` is `allowlist`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Models::ContainerListResponse::NetworkPolicy,
+              OpenAI::Internal::AnyHash
+            )
+          end
+
+        # The network policy mode.
+        module Type
+          extend OpenAI::Internal::Type::Enum
+
+          class << self
+            sig do
+              override
+                .returns(T::Array[
+                OpenAI::Models::ContainerListResponse::NetworkPolicy::Type::TaggedSymbol
+              ])
+            end
+            def values; end
+          end
+
+          ALLOWLIST = T.let(
+              :allowlist,
+              OpenAI::Models::ContainerListResponse::NetworkPolicy::Type::TaggedSymbol
+            )
+
+          DISABLED = T.let(
+              :disabled,
+              OpenAI::Models::ContainerListResponse::NetworkPolicy::Type::TaggedSymbol
+            )
+
+          OrSymbol = T.type_alias { T.any(Symbol, String) }
+
+          TaggedSymbol = T.type_alias do
+              T.all(
+                Symbol,
+                OpenAI::Models::ContainerListResponse::NetworkPolicy::Type
+              )
+            end
+        end
+      end
+
       OrHash = T.type_alias do
           T.any(
             OpenAI::Models::ContainerListResponse,
@@ -29236,6 +29534,13 @@ module OpenAI
       sig { returns(String) }
       attr_accessor :name
 
+      # Network access policy for the container.
+      sig { returns(T.nilable(OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy)) }
+      attr_reader :network_policy
+
+      sig { params(network_policy: OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::OrHash).void }
+      attr_writer :network_policy
+
       # The type of this object.
       sig { returns(String) }
       attr_accessor :object
@@ -29256,7 +29561,9 @@ module OpenAI
               OpenAI::Models::ContainerRetrieveResponse::ExpiresAfter,
             last_active_at: Integer,
             memory_limit:
-              OpenAI::Models::ContainerRetrieveResponse::MemoryLimit::TaggedSymbol
+              OpenAI::Models::ContainerRetrieveResponse::MemoryLimit::TaggedSymbol,
+            network_policy:
+              OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy
           })
       end
       def to_hash; end
@@ -29271,7 +29578,8 @@ module OpenAI
             status: String,
             expires_after: OpenAI::Models::ContainerRetrieveResponse::ExpiresAfter::OrHash,
             last_active_at: Integer,
-            memory_limit: OpenAI::Models::ContainerRetrieveResponse::MemoryLimit::OrSymbol
+            memory_limit: OpenAI::Models::ContainerRetrieveResponse::MemoryLimit::OrSymbol,
+            network_policy: OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::OrHash
           ).returns(T.attached_class)
         end
         def new(
@@ -29284,7 +29592,8 @@ module OpenAI
                               # point for the expiration. The minutes is the number of minutes after the anchor
                               # before the container expires.
           last_active_at: nil, # Unix timestamp (in seconds) when the container was last active.
-          memory_limit: nil # The memory limit configured for the container.
+          memory_limit: nil, # The memory limit configured for the container.
+          network_policy: nil # Network access policy for the container.
 ); end
       end
 
@@ -29412,6 +29721,84 @@ module OpenAI
               OpenAI::Models::ContainerRetrieveResponse::MemoryLimit
             )
           end
+      end
+
+      class NetworkPolicy < OpenAI::Internal::Type::BaseModel
+        # Allowed outbound domains when `type` is `allowlist`.
+        sig { returns(T.nilable(T::Array[String])) }
+        attr_reader :allowed_domains
+
+        sig { params(allowed_domains: T::Array[String]).void }
+        attr_writer :allowed_domains
+
+        # The network policy mode.
+        sig { returns(OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::Type::TaggedSymbol) }
+        attr_accessor :type
+
+        sig do
+          override
+            .returns({
+              type:
+                OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::Type::TaggedSymbol,
+              allowed_domains: T::Array[String]
+            })
+        end
+        def to_hash; end
+
+        class << self
+          # Network access policy for the container.
+          sig do
+            params(
+              type: OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::Type::OrSymbol,
+              allowed_domains: T::Array[String]
+            ).returns(T.attached_class)
+          end
+          def new(
+            type:, # The network policy mode.
+            allowed_domains: nil # Allowed outbound domains when `type` is `allowlist`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy,
+              OpenAI::Internal::AnyHash
+            )
+          end
+
+        # The network policy mode.
+        module Type
+          extend OpenAI::Internal::Type::Enum
+
+          class << self
+            sig do
+              override
+                .returns(T::Array[
+                OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::Type::TaggedSymbol
+              ])
+            end
+            def values; end
+          end
+
+          ALLOWLIST = T.let(
+              :allowlist,
+              OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::Type::TaggedSymbol
+            )
+
+          DISABLED = T.let(
+              :disabled,
+              OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::Type::TaggedSymbol
+            )
+
+          OrSymbol = T.type_alias { T.any(Symbol, String) }
+
+          TaggedSymbol = T.type_alias do
+              T.all(
+                Symbol,
+                OpenAI::Models::ContainerRetrieveResponse::NetworkPolicy::Type
+              )
+            end
+        end
       end
 
       OrHash = T.type_alias do
@@ -32006,6 +32393,27 @@ module OpenAI
             OpenAI::CustomToolInputFormat::Grammar
           )
         end
+    end
+
+    class DeletedSkill < OpenAI::Internal::Type::BaseModel
+      sig { returns(T::Boolean) }
+      attr_accessor :deleted
+
+      sig { returns(String) }
+      attr_accessor :id
+
+      sig { returns(Symbol) }
+      attr_accessor :object
+
+      sig { override.returns({ id: String, deleted: T::Boolean, object: Symbol }) }
+      def to_hash; end
+
+      class << self
+        sig { params(id: String, deleted: T::Boolean, object: Symbol).returns(T.attached_class) }
+        def new(id:, deleted:, object: :"skill.deleted"); end
+      end
+
+      OrHash = T.type_alias { T.any(OpenAI::DeletedSkill, OpenAI::Internal::AnyHash) }
     end
 
     class Embedding < OpenAI::Internal::Type::BaseModel
@@ -49512,7 +49920,8 @@ module OpenAI
       #
       # For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and
       # `gpt-image-1.5`), each image should be a `png`, `webp`, or `jpg` file less than
-      # 50MB. You can provide up to 16 images.
+      # 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows the same
+      # input constraints as GPT image models.
       #
       # For `dall-e-2`, you can only provide one image, and it should be a square `png`
       # file less than 4MB.
@@ -49521,8 +49930,8 @@ module OpenAI
 
       # Control how much effort the model will exert to match the style and features,
       # especially facial features, of input images. This parameter is only supported
-      # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-      # `low`. Defaults to `low`.
+      # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+      # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
       sig { returns(T.nilable(OpenAI::ImageEditParams::InputFidelity::OrSymbol)) }
       attr_accessor :input_fidelity
 
@@ -49536,9 +49945,7 @@ module OpenAI
       sig { params(mask: OpenAI::Internal::FileInput).void }
       attr_writer :mask
 
-      # The model to use for image generation. Only `dall-e-2` and the GPT image models
-      # are supported. Defaults to `dall-e-2` unless a parameter specific to the GPT
-      # image models is used.
+      # The model to use for image generation. Defaults to `gpt-image-1.5`.
       sig { returns(T.nilable(T.any(String, OpenAI::ImageModel::OrSymbol))) }
       attr_accessor :model
 
@@ -49572,16 +49979,15 @@ module OpenAI
       sig { returns(String) }
       attr_accessor :prompt
 
-      # The quality of the image that will be generated. `high`, `medium` and `low` are
-      # only supported for the GPT image models. `dall-e-2` only supports `standard`
-      # quality. Defaults to `auto`.
+      # The quality of the image that will be generated for GPT image models. Defaults
+      # to `auto`.
       sig { returns(T.nilable(OpenAI::ImageEditParams::Quality::OrSymbol)) }
       attr_accessor :quality
 
       # The format in which the generated images are returned. Must be one of `url` or
       # `b64_json`. URLs are only valid for 60 minutes after the image has been
-      # generated. This parameter is only supported for `dall-e-2`, as the GPT image
-      # models always return base64-encoded images.
+      # generated. This parameter is only supported for `dall-e-2` (default is `url` for
+      # `dall-e-2`), as GPT image models always return base64-encoded images.
       sig { returns(T.nilable(OpenAI::ImageEditParams::ResponseFormat::OrSymbol)) }
       attr_accessor :response_format
 
@@ -49650,7 +50056,8 @@ module OpenAI
           image:, # The image(s) to edit. Must be a supported image file or an array of images.
                   # For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and
                   # `gpt-image-1.5`), each image should be a `png`, `webp`, or `jpg` file less than
-                  # 50MB. You can provide up to 16 images.
+                  # 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows the same
+                  # input constraints as GPT image models.
                   # For `dall-e-2`, you can only provide one image, and it should be a square `png`
                   # file less than 4MB.
           prompt:, # A text description of the desired image(s). The maximum length is 1000
@@ -49663,15 +50070,13 @@ module OpenAI
                            # be set to either `png` (default value) or `webp`.
           input_fidelity: nil, # Control how much effort the model will exert to match the style and features,
                                # especially facial features, of input images. This parameter is only supported
-                               # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-                               # `low`. Defaults to `low`.
+                               # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+                               # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
           mask: nil, # An additional image whose fully transparent areas (e.g. where alpha is zero)
                      # indicate where `image` should be edited. If there are multiple images provided,
                      # the mask will be applied on the first image. Must be a valid PNG file, less than
                      # 4MB, and have the same dimensions as `image`.
-          model: nil, # The model to use for image generation. Only `dall-e-2` and the GPT image models
-                      # are supported. Defaults to `dall-e-2` unless a parameter specific to the GPT
-                      # image models is used.
+          model: nil, # The model to use for image generation. Defaults to `gpt-image-1.5`.
           n: nil, # The number of images to generate. Must be between 1 and 10.
           output_compression: nil, # The compression level (0-100%) for the generated images. This parameter is only
                                    # supported for the GPT image models with the `webp` or `jpeg` output formats, and
@@ -49684,13 +50089,12 @@ module OpenAI
                                # 0, the response will be a single image sent in one streaming event.
                                # Note that the final image may be sent before the full number of partial images
                                # are generated if the full image is generated more quickly.
-          quality: nil, # The quality of the image that will be generated. `high`, `medium` and `low` are
-                        # only supported for the GPT image models. `dall-e-2` only supports `standard`
-                        # quality. Defaults to `auto`.
+          quality: nil, # The quality of the image that will be generated for GPT image models. Defaults
+                        # to `auto`.
           response_format: nil, # The format in which the generated images are returned. Must be one of `url` or
                                 # `b64_json`. URLs are only valid for 60 minutes after the image has been
-                                # generated. This parameter is only supported for `dall-e-2`, as the GPT image
-                                # models always return base64-encoded images.
+                                # generated. This parameter is only supported for `dall-e-2` (default is `url` for
+                                # `dall-e-2`), as GPT image models always return base64-encoded images.
           size: nil, # The size of the generated images. Must be one of `1024x1024`, `1536x1024`
                      # (landscape), `1024x1536` (portrait), or `auto` (default value) for the GPT image
                      # models, and one of `256x256`, `512x512`, or `1024x1024` for `dall-e-2`.
@@ -49731,7 +50135,8 @@ module OpenAI
       #
       # For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and
       # `gpt-image-1.5`), each image should be a `png`, `webp`, or `jpg` file less than
-      # 50MB. You can provide up to 16 images.
+      # 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows the same
+      # input constraints as GPT image models.
       #
       # For `dall-e-2`, you can only provide one image, and it should be a square `png`
       # file less than 4MB.
@@ -49753,8 +50158,8 @@ module OpenAI
 
       # Control how much effort the model will exert to match the style and features,
       # especially facial features, of input images. This parameter is only supported
-      # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-      # `low`. Defaults to `low`.
+      # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+      # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
       module InputFidelity
         extend OpenAI::Internal::Type::Enum
 
@@ -49771,9 +50176,7 @@ module OpenAI
         TaggedSymbol = T.type_alias { T.all(Symbol, OpenAI::ImageEditParams::InputFidelity) }
       end
 
-      # The model to use for image generation. Only `dall-e-2` and the GPT image models
-      # are supported. Defaults to `dall-e-2` unless a parameter specific to the GPT
-      # image models is used.
+      # The model to use for image generation. Defaults to `gpt-image-1.5`.
       module Model
         extend OpenAI::Internal::Type::Union
 
@@ -49809,9 +50212,8 @@ module OpenAI
         WEBP = T.let(:webp, OpenAI::ImageEditParams::OutputFormat::TaggedSymbol)
       end
 
-      # The quality of the image that will be generated. `high`, `medium` and `low` are
-      # only supported for the GPT image models. `dall-e-2` only supports `standard`
-      # quality. Defaults to `auto`.
+      # The quality of the image that will be generated for GPT image models. Defaults
+      # to `auto`.
       module Quality
         extend OpenAI::Internal::Type::Enum
 
@@ -49833,8 +50235,8 @@ module OpenAI
 
       # The format in which the generated images are returned. Must be one of `url` or
       # `b64_json`. URLs are only valid for 60 minutes after the image has been
-      # generated. This parameter is only supported for `dall-e-2`, as the GPT image
-      # models always return base64-encoded images.
+      # generated. This parameter is only supported for `dall-e-2` (default is `url` for
+      # `dall-e-2`), as GPT image models always return base64-encoded images.
       module ResponseFormat
         extend OpenAI::Internal::Type::Enum
 
@@ -70009,6 +70411,352 @@ module OpenAI
           end
       end
 
+      class ContainerAuto < OpenAI::Internal::Type::BaseModel
+        # An optional list of uploaded files to make available to your code.
+        sig { returns(T.nilable(T::Array[String])) }
+        attr_reader :file_ids
+
+        sig { params(file_ids: T::Array[String]).void }
+        attr_writer :file_ids
+
+        # The memory limit for the container.
+        sig { returns(T.nilable(OpenAI::Responses::ContainerAuto::MemoryLimit::OrSymbol)) }
+        attr_accessor :memory_limit
+
+        # Network access policy for the container.
+        sig do
+          returns(T.nilable(
+              T.any(
+                OpenAI::Responses::ContainerNetworkPolicyDisabled,
+                OpenAI::Responses::ContainerNetworkPolicyAllowlist
+              )
+            ))
+        end
+        attr_reader :network_policy
+
+        sig do
+          params(
+            network_policy: T.any(
+                OpenAI::Responses::ContainerNetworkPolicyDisabled::OrHash,
+                OpenAI::Responses::ContainerNetworkPolicyAllowlist::OrHash
+              )
+          ).void
+        end
+        attr_writer :network_policy
+
+        # An optional list of skills referenced by id or inline data.
+        sig do
+          returns(T.nilable(
+              T::Array[
+                T.any(
+                  OpenAI::Responses::SkillReference,
+                  OpenAI::Responses::InlineSkill
+                )
+              ]
+            ))
+        end
+        attr_reader :skills
+
+        sig do
+          params(
+            skills: T::Array[
+                T.any(
+                  OpenAI::Responses::SkillReference::OrHash,
+                  OpenAI::Responses::InlineSkill::OrHash
+                )
+              ]
+          ).void
+        end
+        attr_writer :skills
+
+        # Automatically creates a container for this request
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig do
+          override
+            .returns({
+              type: Symbol,
+              file_ids: T::Array[String],
+              memory_limit:
+                T.nilable(
+                  OpenAI::Responses::ContainerAuto::MemoryLimit::OrSymbol
+                ),
+              network_policy:
+                T.any(
+                  OpenAI::Responses::ContainerNetworkPolicyDisabled,
+                  OpenAI::Responses::ContainerNetworkPolicyAllowlist
+                ),
+              skills:
+                T::Array[
+                  T.any(
+                    OpenAI::Responses::SkillReference,
+                    OpenAI::Responses::InlineSkill
+                  )
+                ]
+            })
+        end
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              file_ids: T::Array[String],
+              memory_limit: T.nilable(
+                OpenAI::Responses::ContainerAuto::MemoryLimit::OrSymbol
+              ),
+              network_policy: T.any(
+                OpenAI::Responses::ContainerNetworkPolicyDisabled::OrHash,
+                OpenAI::Responses::ContainerNetworkPolicyAllowlist::OrHash
+              ),
+              skills: T::Array[
+                T.any(
+                  OpenAI::Responses::SkillReference::OrHash,
+                  OpenAI::Responses::InlineSkill::OrHash
+                )
+              ],
+              type: Symbol
+            ).returns(T.attached_class)
+          end
+          def new(
+            file_ids: nil, # An optional list of uploaded files to make available to your code.
+            memory_limit: nil, # The memory limit for the container.
+            network_policy: nil, # Network access policy for the container.
+            skills: nil, # An optional list of skills referenced by id or inline data.
+            type: :container_auto # Automatically creates a container for this request
+); end
+        end
+
+        # The memory limit for the container.
+        module MemoryLimit
+          extend OpenAI::Internal::Type::Enum
+
+          class << self
+            sig do
+              override
+                .returns(T::Array[
+                OpenAI::Responses::ContainerAuto::MemoryLimit::TaggedSymbol
+              ])
+            end
+            def values; end
+          end
+
+          MEMORY_LIMIT_16G = T.let(
+              :"16g",
+              OpenAI::Responses::ContainerAuto::MemoryLimit::TaggedSymbol
+            )
+
+          MEMORY_LIMIT_1G = T.let(
+              :"1g",
+              OpenAI::Responses::ContainerAuto::MemoryLimit::TaggedSymbol
+            )
+
+          MEMORY_LIMIT_4G = T.let(
+              :"4g",
+              OpenAI::Responses::ContainerAuto::MemoryLimit::TaggedSymbol
+            )
+
+          MEMORY_LIMIT_64G = T.let(
+              :"64g",
+              OpenAI::Responses::ContainerAuto::MemoryLimit::TaggedSymbol
+            )
+
+          OrSymbol = T.type_alias { T.any(Symbol, String) }
+
+          TaggedSymbol = T.type_alias do
+              T.all(Symbol, OpenAI::Responses::ContainerAuto::MemoryLimit)
+            end
+        end
+
+        # Network access policy for the container.
+        module NetworkPolicy
+          extend OpenAI::Internal::Type::Union
+
+          class << self
+            sig do
+              override
+                .returns(T::Array[
+                OpenAI::Responses::ContainerAuto::NetworkPolicy::Variants
+              ])
+            end
+            def variants; end
+          end
+
+          Variants = T.type_alias do
+              T.any(
+                OpenAI::Responses::ContainerNetworkPolicyDisabled,
+                OpenAI::Responses::ContainerNetworkPolicyAllowlist
+              )
+            end
+        end
+
+        OrHash = T.type_alias do
+            T.any(OpenAI::Responses::ContainerAuto, OpenAI::Internal::AnyHash)
+          end
+
+        module Skill
+          extend OpenAI::Internal::Type::Union
+
+          class << self
+            sig { override.returns(T::Array[OpenAI::Responses::ContainerAuto::Skill::Variants]) }
+            def variants; end
+          end
+
+          Variants = T.type_alias do
+              T.any(
+                OpenAI::Responses::SkillReference,
+                OpenAI::Responses::InlineSkill
+              )
+            end
+        end
+      end
+
+      class ContainerNetworkPolicyAllowlist < OpenAI::Internal::Type::BaseModel
+        # A list of allowed domains when type is `allowlist`.
+        sig { returns(T::Array[String]) }
+        attr_accessor :allowed_domains
+
+        # Optional domain-scoped secrets for allowlisted domains.
+        sig do
+          returns(T.nilable(
+              T::Array[OpenAI::Responses::ContainerNetworkPolicyDomainSecret]
+            ))
+        end
+        attr_reader :domain_secrets
+
+        sig do
+          params(
+            domain_secrets: T::Array[
+                OpenAI::Responses::ContainerNetworkPolicyDomainSecret::OrHash
+              ]
+          ).void
+        end
+        attr_writer :domain_secrets
+
+        # Allow outbound network access only to specified domains. Always `allowlist`.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig do
+          override
+            .returns({
+              allowed_domains: T::Array[String],
+              type: Symbol,
+              domain_secrets:
+                T::Array[OpenAI::Responses::ContainerNetworkPolicyDomainSecret]
+            })
+        end
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              allowed_domains: T::Array[String],
+              domain_secrets: T::Array[
+                OpenAI::Responses::ContainerNetworkPolicyDomainSecret::OrHash
+              ],
+              type: Symbol
+            ).returns(T.attached_class)
+          end
+          def new(
+            allowed_domains:, # A list of allowed domains when type is `allowlist`.
+            domain_secrets: nil, # Optional domain-scoped secrets for allowlisted domains.
+            type: :allowlist # Allow outbound network access only to specified domains. Always `allowlist`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::ContainerNetworkPolicyAllowlist,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class ContainerNetworkPolicyDisabled < OpenAI::Internal::Type::BaseModel
+        # Disable outbound network access. Always `disabled`.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig { override.returns({ type: Symbol }) }
+        def to_hash; end
+
+        class << self
+          sig { params(type: Symbol).returns(T.attached_class) }
+          def new(
+            type: :disabled # Disable outbound network access. Always `disabled`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::ContainerNetworkPolicyDisabled,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class ContainerNetworkPolicyDomainSecret < OpenAI::Internal::Type::BaseModel
+        # The domain associated with the secret.
+        sig { returns(String) }
+        attr_accessor :domain
+
+        # The name of the secret to inject for the domain.
+        sig { returns(String) }
+        attr_accessor :name
+
+        # The secret value to inject for the domain.
+        sig { returns(String) }
+        attr_accessor :value
+
+        sig { override.returns({ domain: String, name: String, value: String }) }
+        def to_hash; end
+
+        class << self
+          sig { params(domain: String, name: String, value: String).returns(T.attached_class) }
+          def new(
+            domain:, # The domain associated with the secret.
+            name:, # The name of the secret to inject for the domain.
+            value: # The secret value to inject for the domain.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::ContainerNetworkPolicyDomainSecret,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class ContainerReference < OpenAI::Internal::Type::BaseModel
+        # The ID of the referenced container.
+        sig { returns(String) }
+        attr_accessor :container_id
+
+        # References a container created with the /v1/containers endpoint
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig { override.returns({ container_id: String, type: Symbol }) }
+        def to_hash; end
+
+        class << self
+          sig { params(container_id: String, type: Symbol).returns(T.attached_class) }
+          def new(
+            container_id:, # The ID of the referenced container.
+            type: :container_reference # References a container created with the /v1/containers endpoint
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::ContainerReference,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
       class CustomTool < OpenAI::Internal::Type::BaseModel
         # Optional description of the custom tool, used to provide more context.
         sig { returns(T.nilable(String)) }
@@ -70449,19 +71197,77 @@ module OpenAI
       end
 
       class FunctionShellTool < OpenAI::Internal::Type::BaseModel
+        sig do
+          returns(T.nilable(
+              T.any(
+                OpenAI::Responses::ContainerAuto,
+                OpenAI::Responses::LocalEnvironment,
+                OpenAI::Responses::ContainerReference
+              )
+            ))
+        end
+        attr_accessor :environment
+
         # The type of the shell tool. Always `shell`.
         sig { returns(Symbol) }
         attr_accessor :type
 
-        sig { override.returns({ type: Symbol }) }
+        sig do
+          override
+            .returns({
+              type: Symbol,
+              environment:
+                T.nilable(
+                  T.any(
+                    OpenAI::Responses::ContainerAuto,
+                    OpenAI::Responses::LocalEnvironment,
+                    OpenAI::Responses::ContainerReference
+                  )
+                )
+            })
+        end
         def to_hash; end
 
         class << self
           # A tool that allows the model to execute shell commands.
-          sig { params(type: Symbol).returns(T.attached_class) }
+          sig do
+            params(
+              environment: T.nilable(
+                T.any(
+                  OpenAI::Responses::ContainerAuto::OrHash,
+                  OpenAI::Responses::LocalEnvironment::OrHash,
+                  OpenAI::Responses::ContainerReference::OrHash
+                )
+              ),
+              type: Symbol
+            ).returns(T.attached_class)
+          end
           def new(
+            environment: nil,
             type: :shell # The type of the shell tool. Always `shell`.
 ); end
+        end
+
+        module Environment
+          extend OpenAI::Internal::Type::Union
+
+          class << self
+            sig do
+              override
+                .returns(T::Array[
+                OpenAI::Responses::FunctionShellTool::Environment::Variants
+              ])
+            end
+            def variants; end
+          end
+
+          Variants = T.type_alias do
+              T.any(
+                OpenAI::Responses::ContainerAuto,
+                OpenAI::Responses::LocalEnvironment,
+                OpenAI::Responses::ContainerReference
+              )
+            end
         end
 
         OrHash = T.type_alias do
@@ -70531,6 +71337,93 @@ module OpenAI
 
         OrHash = T.type_alias do
             T.any(OpenAI::Responses::FunctionTool, OpenAI::Internal::AnyHash)
+          end
+      end
+
+      class InlineSkill < OpenAI::Internal::Type::BaseModel
+        # The description of the skill.
+        sig { returns(String) }
+        attr_accessor :description
+
+        # The name of the skill.
+        sig { returns(String) }
+        attr_accessor :name
+
+        # Inline skill payload
+        sig { returns(OpenAI::Responses::InlineSkillSource) }
+        attr_reader :source
+
+        sig { params(source: OpenAI::Responses::InlineSkillSource::OrHash).void }
+        attr_writer :source
+
+        # Defines an inline skill for this request.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig do
+          override
+            .returns({
+              description: String,
+              name: String,
+              source: OpenAI::Responses::InlineSkillSource,
+              type: Symbol
+            })
+        end
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              description: String,
+              name: String,
+              source: OpenAI::Responses::InlineSkillSource::OrHash,
+              type: Symbol
+            ).returns(T.attached_class)
+          end
+          def new(
+            description:, # The description of the skill.
+            name:, # The name of the skill.
+            source:, # Inline skill payload
+            type: :inline # Defines an inline skill for this request.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(OpenAI::Responses::InlineSkill, OpenAI::Internal::AnyHash)
+          end
+      end
+
+      class InlineSkillSource < OpenAI::Internal::Type::BaseModel
+        # Base64-encoded skill zip bundle.
+        sig { returns(String) }
+        attr_accessor :data
+
+        # The media type of the inline skill payload. Must be `application/zip`.
+        sig { returns(Symbol) }
+        attr_accessor :media_type
+
+        # The type of the inline skill source. Must be `base64`.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig { override.returns({ data: String, media_type: Symbol, type: Symbol }) }
+        def to_hash; end
+
+        class << self
+          # Inline skill payload
+          sig { params(data: String, media_type: Symbol, type: Symbol).returns(T.attached_class) }
+          def new(
+            data:, # Base64-encoded skill zip bundle.
+            media_type: :"application/zip", # The media type of the inline skill payload. Must be `application/zip`.
+            type: :base64 # The type of the inline skill source. Must be `base64`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::InlineSkillSource,
+              OpenAI::Internal::AnyHash
+            )
           end
       end
 
@@ -71206,6 +72099,72 @@ module OpenAI
               OpenAI::Models::Responses::InputTokenCountResponse,
               OpenAI::Internal::AnyHash
             )
+          end
+      end
+
+      class LocalEnvironment < OpenAI::Internal::Type::BaseModel
+        # An optional list of skills.
+        sig { returns(T.nilable(T::Array[OpenAI::Responses::LocalSkill])) }
+        attr_reader :skills
+
+        sig { params(skills: T::Array[OpenAI::Responses::LocalSkill::OrHash]).void }
+        attr_writer :skills
+
+        # Use a local computer environment.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig { override.returns({ type: Symbol, skills: T::Array[OpenAI::Responses::LocalSkill] }) }
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              skills: T::Array[OpenAI::Responses::LocalSkill::OrHash],
+              type: Symbol
+            ).returns(T.attached_class)
+          end
+          def new(
+            skills: nil, # An optional list of skills.
+            type: :local # Use a local computer environment.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::LocalEnvironment,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class LocalSkill < OpenAI::Internal::Type::BaseModel
+        # The description of the skill.
+        sig { returns(String) }
+        attr_accessor :description
+
+        # The name of the skill.
+        sig { returns(String) }
+        attr_accessor :name
+
+        # The path to the directory containing the skill.
+        sig { returns(String) }
+        attr_accessor :path
+
+        sig { override.returns({ description: String, name: String, path: String }) }
+        def to_hash; end
+
+        class << self
+          sig { params(description: String, name: String, path: String).returns(T.attached_class) }
+          def new(
+            description:, # The description of the skill.
+            name:, # The name of the skill.
+            path: # The path to the directory containing the skill.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(OpenAI::Responses::LocalSkill, OpenAI::Internal::AnyHash)
           end
       end
 
@@ -74686,6 +75645,34 @@ module OpenAI
           end
       end
 
+      class ResponseContainerReference < OpenAI::Internal::Type::BaseModel
+        sig { returns(String) }
+        attr_accessor :container_id
+
+        # The environment type. Always `container_reference`.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig { override.returns({ container_id: String, type: Symbol }) }
+        def to_hash; end
+
+        class << self
+          # Represents a container created with /v1/containers.
+          sig { params(container_id: String, type: Symbol).returns(T.attached_class) }
+          def new(
+            container_id:,
+            type: :container_reference # The environment type. Always `container_reference`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::ResponseContainerReference,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
       # Multi-modal input and output contents.
       module ResponseContent
         extend OpenAI::Internal::Type::Union
@@ -75018,6 +76005,16 @@ module OpenAI
         # [Learn more](https://platform.openai.com/docs/guides/background).
         sig { returns(T.nilable(T::Boolean)) }
         attr_accessor :background
+
+        # Context management configuration for this request.
+        sig do
+          returns(T.nilable(
+              T::Array[
+                OpenAI::Responses::ResponseCreateParams::ContextManagement
+              ]
+            ))
+        end
+        attr_accessor :context_management
 
         # The conversation that this response belongs to. Items from this conversation are
         # prepended to `input_items` for this response request. Input items and output
@@ -75388,6 +76385,12 @@ module OpenAI
           override
             .returns({
               background: T.nilable(T::Boolean),
+              context_management:
+                T.nilable(
+                  T::Array[
+                    OpenAI::Responses::ResponseCreateParams::ContextManagement
+                  ]
+                ),
               conversation:
                 T.nilable(
                   T.any(String, OpenAI::Responses::ResponseConversationParam)
@@ -75472,6 +76475,11 @@ module OpenAI
           sig do
             params(
               background: T.nilable(T::Boolean),
+              context_management: T.nilable(
+                T::Array[
+                  OpenAI::Responses::ResponseCreateParams::ContextManagement::OrHash
+                ]
+              ),
               conversation: T.nilable(
                 T.any(
                   String,
@@ -75547,6 +76555,7 @@ module OpenAI
           def new(
             background: nil, # Whether to run the model response in the background.
                              # [Learn more](https://platform.openai.com/docs/guides/background).
+            context_management: nil, # Context management configuration for this request.
             conversation: nil, # The conversation that this response belongs to. Items from this conversation are
                                # prepended to `input_items` for this response request. Input items and output
                                # items from this response are automatically added to this conversation after this
@@ -75681,6 +76690,34 @@ module OpenAI
                        # [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
             request_options: {}
 ); end
+        end
+
+        class ContextManagement < OpenAI::Internal::Type::BaseModel
+          # Token threshold at which compaction should be triggered for this entry.
+          sig { returns(T.nilable(Integer)) }
+          attr_accessor :compact_threshold
+
+          # The context management entry type. Currently only 'compaction' is supported.
+          sig { returns(String) }
+          attr_accessor :type
+
+          sig { override.returns({ type: String, compact_threshold: T.nilable(Integer) }) }
+          def to_hash; end
+
+          class << self
+            sig { params(type: String, compact_threshold: T.nilable(Integer)).returns(T.attached_class) }
+            def new(
+              type:, # The context management entry type. Currently only 'compaction' is supported.
+              compact_threshold: nil # Token threshold at which compaction should be triggered for this entry.
+); end
+          end
+
+          OrHash = T.type_alias do
+              T.any(
+                OpenAI::Responses::ResponseCreateParams::ContextManagement,
+                OpenAI::Internal::AnyHash
+              )
+            end
         end
 
         # The conversation that this response belongs to. Items from this conversation are
@@ -77395,6 +78432,14 @@ module OpenAI
         sig { params(created_by: String).void }
         attr_writer :created_by
 
+        # Represents the use of a local environment to perform shell actions.
+        sig do
+          returns(T.nilable(
+              OpenAI::Responses::ResponseFunctionShellToolCall::Environment::Variants
+            ))
+        end
+        attr_accessor :environment
+
         # The unique ID of the shell tool call. Populated when this item is returned via
         # API.
         sig { returns(String) }
@@ -77415,6 +78460,10 @@ module OpenAI
               id: String,
               action: OpenAI::Responses::ResponseFunctionShellToolCall::Action,
               call_id: String,
+              environment:
+                T.nilable(
+                  OpenAI::Responses::ResponseFunctionShellToolCall::Environment::Variants
+                ),
               status:
                 OpenAI::Responses::ResponseFunctionShellToolCall::Status::TaggedSymbol,
               type: Symbol,
@@ -77430,6 +78479,12 @@ module OpenAI
               id: String,
               action: OpenAI::Responses::ResponseFunctionShellToolCall::Action::OrHash,
               call_id: String,
+              environment: T.nilable(
+                T.any(
+                  OpenAI::Responses::ResponseLocalEnvironment::OrHash,
+                  OpenAI::Responses::ResponseContainerReference::OrHash
+                )
+              ),
               status: OpenAI::Responses::ResponseFunctionShellToolCall::Status::OrSymbol,
               created_by: String,
               type: Symbol
@@ -77440,6 +78495,7 @@ module OpenAI
                  # API.
             action:, # The shell commands and limits that describe how to run the tool call.
             call_id:, # The unique ID of the shell tool call generated by the model.
+            environment:, # Represents the use of a local environment to perform shell actions.
             status:, # The status of the shell call. One of `in_progress`, `completed`, or
                      # `incomplete`.
             created_by: nil, # The ID of the entity that created this tool call.
@@ -77489,6 +78545,28 @@ module OpenAI
               T.any(
                 OpenAI::Responses::ResponseFunctionShellToolCall::Action,
                 OpenAI::Internal::AnyHash
+              )
+            end
+        end
+
+        # Represents the use of a local environment to perform shell actions.
+        module Environment
+          extend OpenAI::Internal::Type::Union
+
+          class << self
+            sig do
+              override
+                .returns(T::Array[
+                OpenAI::Responses::ResponseFunctionShellToolCall::Environment::Variants
+              ])
+            end
+            def variants; end
+          end
+
+          Variants = T.type_alias do
+              T.any(
+                OpenAI::Responses::ResponseLocalEnvironment,
+                OpenAI::Responses::ResponseContainerReference
               )
             end
         end
@@ -81060,6 +82138,17 @@ module OpenAI
           sig { returns(String) }
           attr_accessor :call_id
 
+          # The environment to execute the shell commands in.
+          sig do
+            returns(T.nilable(
+                T.any(
+                  OpenAI::Responses::LocalEnvironment,
+                  OpenAI::Responses::ContainerReference
+                )
+              ))
+          end
+          attr_accessor :environment
+
           # The unique ID of the shell tool call. Populated when this item is returned via
           # API.
           sig { returns(T.nilable(String)) }
@@ -81085,6 +82174,13 @@ module OpenAI
                 call_id: String,
                 type: Symbol,
                 id: T.nilable(String),
+                environment:
+                  T.nilable(
+                    T.any(
+                      OpenAI::Responses::LocalEnvironment,
+                      OpenAI::Responses::ContainerReference
+                    )
+                  ),
                 status:
                   T.nilable(
                     OpenAI::Responses::ResponseInputItem::ShellCall::Status::OrSymbol
@@ -81100,6 +82196,12 @@ module OpenAI
                 action: OpenAI::Responses::ResponseInputItem::ShellCall::Action::OrHash,
                 call_id: String,
                 id: T.nilable(String),
+                environment: T.nilable(
+                  T.any(
+                    OpenAI::Responses::LocalEnvironment::OrHash,
+                    OpenAI::Responses::ContainerReference::OrHash
+                  )
+                ),
                 status: T.nilable(
                   OpenAI::Responses::ResponseInputItem::ShellCall::Status::OrSymbol
                 ),
@@ -81111,6 +82213,7 @@ module OpenAI
               call_id:, # The unique ID of the shell tool call generated by the model.
               id: nil, # The unique ID of the shell tool call. Populated when this item is returned via
                        # API.
+              environment: nil, # The environment to execute the shell commands in.
               status: nil, # The status of the shell call. One of `in_progress`, `completed`, or
                            # `incomplete`.
               type: :shell_call # The type of the item. Always `shell_call`.
@@ -81162,6 +82265,28 @@ module OpenAI
                 T.any(
                   OpenAI::Responses::ResponseInputItem::ShellCall::Action,
                   OpenAI::Internal::AnyHash
+                )
+              end
+          end
+
+          # The environment to execute the shell commands in.
+          module Environment
+            extend OpenAI::Internal::Type::Union
+
+            class << self
+              sig do
+                override
+                  .returns(T::Array[
+                  OpenAI::Responses::ResponseInputItem::ShellCall::Environment::Variants
+                ])
+              end
+              def variants; end
+            end
+
+            Variants = T.type_alias do
+                T.any(
+                  OpenAI::Responses::LocalEnvironment,
+                  OpenAI::Responses::ContainerReference
                 )
               end
           end
@@ -82506,6 +83631,30 @@ module OpenAI
         OrHash = T.type_alias do
             T.any(
               OpenAI::Responses::ResponseItemList,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class ResponseLocalEnvironment < OpenAI::Internal::Type::BaseModel
+        # The environment type. Always `local`.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        sig { override.returns({ type: Symbol }) }
+        def to_hash; end
+
+        class << self
+          # Represents the use of a local environment to perform shell actions.
+          sig { params(type: Symbol).returns(T.attached_class) }
+          def new(
+            type: :local # The environment type. Always `local`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Responses::ResponseLocalEnvironment,
               OpenAI::Internal::AnyHash
             )
           end
@@ -86337,6 +87486,39 @@ module OpenAI
           end
       end
 
+      class SkillReference < OpenAI::Internal::Type::BaseModel
+        # The ID of the referenced skill.
+        sig { returns(String) }
+        attr_accessor :skill_id
+
+        # References a skill created with the /v1/skills endpoint.
+        sig { returns(Symbol) }
+        attr_accessor :type
+
+        # Optional skill version. Use a positive integer or 'latest'. Omit for default.
+        sig { returns(T.nilable(String)) }
+        attr_reader :version
+
+        sig { params(version: String).void }
+        attr_writer :version
+
+        sig { override.returns({ skill_id: String, type: Symbol, version: String }) }
+        def to_hash; end
+
+        class << self
+          sig { params(skill_id: String, version: String, type: Symbol).returns(T.attached_class) }
+          def new(
+            skill_id:, # The ID of the referenced skill.
+            version: nil, # Optional skill version. Use a positive integer or 'latest'. Omit for default.
+            type: :skill_reference # References a skill created with the /v1/skills endpoint.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(OpenAI::Responses::SkillReference, OpenAI::Internal::AnyHash)
+          end
+      end
+
       # A tool that can be used to generate a response.
       module Tool
         extend OpenAI::Internal::Type::Union
@@ -86426,6 +87608,27 @@ module OpenAI
               end
               attr_accessor :memory_limit
 
+              # Network access policy for the container.
+              sig do
+                returns(T.nilable(
+                    T.any(
+                      OpenAI::Responses::ContainerNetworkPolicyDisabled,
+                      OpenAI::Responses::ContainerNetworkPolicyAllowlist
+                    )
+                  ))
+              end
+              attr_reader :network_policy
+
+              sig do
+                params(
+                  network_policy: T.any(
+                      OpenAI::Responses::ContainerNetworkPolicyDisabled::OrHash,
+                      OpenAI::Responses::ContainerNetworkPolicyAllowlist::OrHash
+                    )
+                ).void
+              end
+              attr_writer :network_policy
+
               # Always `auto`.
               sig { returns(Symbol) }
               attr_accessor :type
@@ -86438,6 +87641,11 @@ module OpenAI
                     memory_limit:
                       T.nilable(
                         OpenAI::Responses::Tool::CodeInterpreter::Container::CodeInterpreterToolAuto::MemoryLimit::OrSymbol
+                      ),
+                    network_policy:
+                      T.any(
+                        OpenAI::Responses::ContainerNetworkPolicyDisabled,
+                        OpenAI::Responses::ContainerNetworkPolicyAllowlist
                       )
                   })
               end
@@ -86452,12 +87660,17 @@ module OpenAI
                     memory_limit: T.nilable(
                       OpenAI::Responses::Tool::CodeInterpreter::Container::CodeInterpreterToolAuto::MemoryLimit::OrSymbol
                     ),
+                    network_policy: T.any(
+                      OpenAI::Responses::ContainerNetworkPolicyDisabled::OrHash,
+                      OpenAI::Responses::ContainerNetworkPolicyAllowlist::OrHash
+                    ),
                     type: Symbol
                   ).returns(T.attached_class)
                 end
                 def new(
                   file_ids: nil, # An optional list of uploaded files to make available to your code.
                   memory_limit: nil, # The memory limit for the code interpreter container.
+                  network_policy: nil, # Network access policy for the container.
                   type: :auto # Always `auto`.
 ); end
               end
@@ -86502,6 +87715,28 @@ module OpenAI
                     T.all(
                       Symbol,
                       OpenAI::Responses::Tool::CodeInterpreter::Container::CodeInterpreterToolAuto::MemoryLimit
+                    )
+                  end
+              end
+
+              # Network access policy for the container.
+              module NetworkPolicy
+                extend OpenAI::Internal::Type::Union
+
+                class << self
+                  sig do
+                    override
+                      .returns(T::Array[
+                      OpenAI::Responses::Tool::CodeInterpreter::Container::CodeInterpreterToolAuto::NetworkPolicy::Variants
+                    ])
+                  end
+                  def variants; end
+                end
+
+                Variants = T.type_alias do
+                    T.any(
+                      OpenAI::Responses::ContainerNetworkPolicyDisabled,
+                      OpenAI::Responses::ContainerNetworkPolicyAllowlist
                     )
                   end
               end
@@ -86556,8 +87791,8 @@ module OpenAI
 
           # Control how much effort the model will exert to match the style and features,
           # especially facial features, of input images. This parameter is only supported
-          # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-          # `low`. Defaults to `low`.
+          # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+          # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
           sig do
             returns(T.nilable(
                 OpenAI::Responses::Tool::ImageGeneration::InputFidelity::OrSymbol
@@ -86725,8 +87960,8 @@ module OpenAI
                                # `auto`. Default: `auto`.
               input_fidelity: nil, # Control how much effort the model will exert to match the style and features,
                                    # especially facial features, of input images. This parameter is only supported
-                                   # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-                                   # `low`. Defaults to `low`.
+                                   # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+                                   # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
               input_image_mask: nil, # Optional mask for inpainting. Contains `image_url` (string, optional) and
                                      # `file_id` (string, optional).
               model: nil, # The image generation model to use. Default: `gpt-image-1`.
@@ -86822,8 +88057,8 @@ module OpenAI
 
           # Control how much effort the model will exert to match the style and features,
           # especially facial features, of input images. This parameter is only supported
-          # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-          # `low`. Defaults to `low`.
+          # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+          # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
           module InputFidelity
             extend OpenAI::Internal::Type::Enum
 
@@ -88592,6 +89827,732 @@ module OpenAI
     end
 
     ScoreModelGrader = Graders::ScoreModelGrader
+
+    class Skill < OpenAI::Internal::Type::BaseModel
+      # Unix timestamp (seconds) for when the skill was created.
+      sig { returns(Integer) }
+      attr_accessor :created_at
+
+      # Default version for the skill.
+      sig { returns(String) }
+      attr_accessor :default_version
+
+      # Description of the skill.
+      sig { returns(String) }
+      attr_accessor :description
+
+      # Unique identifier for the skill.
+      sig { returns(String) }
+      attr_accessor :id
+
+      # Latest version for the skill.
+      sig { returns(String) }
+      attr_accessor :latest_version
+
+      # Name of the skill.
+      sig { returns(String) }
+      attr_accessor :name
+
+      # The object type, which is `skill`.
+      sig { returns(Symbol) }
+      attr_accessor :object
+
+      sig do
+        override
+          .returns({
+            id: String,
+            created_at: Integer,
+            default_version: String,
+            description: String,
+            latest_version: String,
+            name: String,
+            object: Symbol
+          })
+      end
+      def to_hash; end
+
+      class << self
+        sig do
+          params(
+            id: String,
+            created_at: Integer,
+            default_version: String,
+            description: String,
+            latest_version: String,
+            name: String,
+            object: Symbol
+          ).returns(T.attached_class)
+        end
+        def new(
+          id:, # Unique identifier for the skill.
+          created_at:, # Unix timestamp (seconds) for when the skill was created.
+          default_version:, # Default version for the skill.
+          description:, # Description of the skill.
+          latest_version:, # Latest version for the skill.
+          name:, # Name of the skill.
+          object: :skill # The object type, which is `skill`.
+); end
+      end
+
+      OrHash = T.type_alias { T.any(OpenAI::Skill, OpenAI::Internal::AnyHash) }
+    end
+
+    class SkillCreateParams < OpenAI::Internal::Type::BaseModel
+      extend OpenAI::Internal::Type::RequestParameters::Converter
+      include OpenAI::Internal::Type::RequestParameters
+
+      # Skill files to upload (directory upload) or a single zip file.
+      sig { returns(T.nilable(OpenAI::SkillCreateParams::Files::Variants)) }
+      attr_reader :files
+
+      sig { params(files: OpenAI::SkillCreateParams::Files::Variants).void }
+      attr_writer :files
+
+      sig do
+        override
+          .returns({
+            files: OpenAI::SkillCreateParams::Files::Variants,
+            request_options: OpenAI::RequestOptions
+          })
+      end
+      def to_hash; end
+
+      class << self
+        sig do
+          params(
+            files: OpenAI::SkillCreateParams::Files::Variants,
+            request_options: OpenAI::RequestOptions::OrHash
+          ).returns(T.attached_class)
+        end
+        def new(
+          files: nil, # Skill files to upload (directory upload) or a single zip file.
+          request_options: {}
+); end
+      end
+
+      # Skill files to upload (directory upload) or a single zip file.
+      module Files
+        extend OpenAI::Internal::Type::Union
+
+        class << self
+          sig { override.returns(T::Array[OpenAI::SkillCreateParams::Files::Variants]) }
+          def variants; end
+        end
+
+        StringArray = T.let(
+            OpenAI::Internal::Type::ArrayOf[OpenAI::Internal::Type::FileInput],
+            OpenAI::Internal::Type::Converter
+          )
+
+        Variants = T.type_alias { T.any(T::Array[StringIO], StringIO) }
+      end
+
+      OrHash = T.type_alias do
+          T.any(OpenAI::SkillCreateParams, OpenAI::Internal::AnyHash)
+        end
+    end
+
+    class SkillDeleteParams < OpenAI::Internal::Type::BaseModel
+      extend OpenAI::Internal::Type::RequestParameters::Converter
+      include OpenAI::Internal::Type::RequestParameters
+
+      sig { override.returns({ request_options: OpenAI::RequestOptions }) }
+      def to_hash; end
+
+      class << self
+        sig { params(request_options: OpenAI::RequestOptions::OrHash).returns(T.attached_class) }
+        def new(request_options: {}); end
+      end
+
+      OrHash = T.type_alias do
+          T.any(OpenAI::SkillDeleteParams, OpenAI::Internal::AnyHash)
+        end
+    end
+
+    class SkillList < OpenAI::Internal::Type::BaseModel
+      # A list of items
+      sig { returns(T::Array[OpenAI::Skill]) }
+      attr_accessor :data
+
+      # The ID of the first item in the list.
+      sig { returns(T.nilable(String)) }
+      attr_accessor :first_id
+
+      # Whether there are more items available.
+      sig { returns(T::Boolean) }
+      attr_accessor :has_more
+
+      # The ID of the last item in the list.
+      sig { returns(T.nilable(String)) }
+      attr_accessor :last_id
+
+      # The type of object returned, must be `list`.
+      sig { returns(Symbol) }
+      attr_accessor :object
+
+      sig do
+        override
+          .returns({
+            data: T::Array[OpenAI::Skill],
+            first_id: T.nilable(String),
+            has_more: T::Boolean,
+            last_id: T.nilable(String),
+            object: Symbol
+          })
+      end
+      def to_hash; end
+
+      class << self
+        sig do
+          params(
+            data: T::Array[OpenAI::Skill::OrHash],
+            first_id: T.nilable(String),
+            has_more: T::Boolean,
+            last_id: T.nilable(String),
+            object: Symbol
+          ).returns(T.attached_class)
+        end
+        def new(
+          data:, # A list of items
+          first_id:, # The ID of the first item in the list.
+          has_more:, # Whether there are more items available.
+          last_id:, # The ID of the last item in the list.
+          object: :list # The type of object returned, must be `list`.
+); end
+      end
+
+      OrHash = T.type_alias { T.any(OpenAI::SkillList, OpenAI::Internal::AnyHash) }
+    end
+
+    class SkillListParams < OpenAI::Internal::Type::BaseModel
+      extend OpenAI::Internal::Type::RequestParameters::Converter
+      include OpenAI::Internal::Type::RequestParameters
+
+      # Identifier for the last item from the previous pagination request
+      sig { returns(T.nilable(String)) }
+      attr_reader :after
+
+      sig { params(after: String).void }
+      attr_writer :after
+
+      # Number of items to retrieve
+      sig { returns(T.nilable(Integer)) }
+      attr_reader :limit
+
+      sig { params(limit: Integer).void }
+      attr_writer :limit
+
+      # Sort order of results by timestamp. Use `asc` for ascending order or `desc` for
+      # descending order.
+      sig { returns(T.nilable(OpenAI::SkillListParams::Order::OrSymbol)) }
+      attr_reader :order
+
+      sig { params(order: OpenAI::SkillListParams::Order::OrSymbol).void }
+      attr_writer :order
+
+      sig do
+        override
+          .returns({
+            after: String,
+            limit: Integer,
+            order: OpenAI::SkillListParams::Order::OrSymbol,
+            request_options: OpenAI::RequestOptions
+          })
+      end
+      def to_hash; end
+
+      class << self
+        sig do
+          params(
+            after: String,
+            limit: Integer,
+            order: OpenAI::SkillListParams::Order::OrSymbol,
+            request_options: OpenAI::RequestOptions::OrHash
+          ).returns(T.attached_class)
+        end
+        def new(
+          after: nil, # Identifier for the last item from the previous pagination request
+          limit: nil, # Number of items to retrieve
+          order: nil, # Sort order of results by timestamp. Use `asc` for ascending order or `desc` for
+                      # descending order.
+          request_options: {}
+); end
+      end
+
+      OrHash = T.type_alias do
+          T.any(OpenAI::SkillListParams, OpenAI::Internal::AnyHash)
+        end
+
+      # Sort order of results by timestamp. Use `asc` for ascending order or `desc` for
+      # descending order.
+      module Order
+        extend OpenAI::Internal::Type::Enum
+
+        class << self
+          sig { override.returns(T::Array[OpenAI::SkillListParams::Order::TaggedSymbol]) }
+          def values; end
+        end
+
+        ASC = T.let(:asc, OpenAI::SkillListParams::Order::TaggedSymbol)
+        DESC = T.let(:desc, OpenAI::SkillListParams::Order::TaggedSymbol)
+        OrSymbol = T.type_alias { T.any(Symbol, String) }
+
+        TaggedSymbol = T.type_alias { T.all(Symbol, OpenAI::SkillListParams::Order) }
+      end
+    end
+
+    class SkillRetrieveParams < OpenAI::Internal::Type::BaseModel
+      extend OpenAI::Internal::Type::RequestParameters::Converter
+      include OpenAI::Internal::Type::RequestParameters
+
+      sig { override.returns({ request_options: OpenAI::RequestOptions }) }
+      def to_hash; end
+
+      class << self
+        sig { params(request_options: OpenAI::RequestOptions::OrHash).returns(T.attached_class) }
+        def new(request_options: {}); end
+      end
+
+      OrHash = T.type_alias do
+          T.any(OpenAI::SkillRetrieveParams, OpenAI::Internal::AnyHash)
+        end
+    end
+
+    class SkillUpdateParams < OpenAI::Internal::Type::BaseModel
+      extend OpenAI::Internal::Type::RequestParameters::Converter
+      include OpenAI::Internal::Type::RequestParameters
+
+      # The skill version number to set as default.
+      sig { returns(String) }
+      attr_accessor :default_version
+
+      sig { override.returns({ default_version: String, request_options: OpenAI::RequestOptions }) }
+      def to_hash; end
+
+      class << self
+        sig do
+          params(
+            default_version: String,
+            request_options: OpenAI::RequestOptions::OrHash
+          ).returns(T.attached_class)
+        end
+        def new(
+          default_version:, # The skill version number to set as default.
+          request_options: {}
+); end
+      end
+
+      OrHash = T.type_alias do
+          T.any(OpenAI::SkillUpdateParams, OpenAI::Internal::AnyHash)
+        end
+    end
+
+    SkillVersion = Skills::SkillVersion
+    SkillVersionList = Skills::SkillVersionList
+
+    module Skills
+      class ContentRetrieveParams < OpenAI::Internal::Type::BaseModel
+        extend OpenAI::Internal::Type::RequestParameters::Converter
+        include OpenAI::Internal::Type::RequestParameters
+
+        sig { override.returns({ request_options: OpenAI::RequestOptions }) }
+        def to_hash; end
+
+        class << self
+          sig { params(request_options: OpenAI::RequestOptions::OrHash).returns(T.attached_class) }
+          def new(request_options: {}); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Skills::ContentRetrieveParams,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class DeletedSkillVersion < OpenAI::Internal::Type::BaseModel
+        sig { returns(T::Boolean) }
+        attr_accessor :deleted
+
+        sig { returns(String) }
+        attr_accessor :id
+
+        sig { returns(Symbol) }
+        attr_accessor :object
+
+        # The deleted skill version.
+        sig { returns(String) }
+        attr_accessor :version
+
+        sig { override.returns({ id: String, deleted: T::Boolean, object: Symbol, version: String }) }
+        def to_hash; end
+
+        class << self
+          sig { params(id: String, deleted: T::Boolean, version: String, object: Symbol).returns(T.attached_class) }
+          def new(
+            id:,
+            deleted:,
+            version:, # The deleted skill version.
+            object: :"skill.version.deleted"
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Skills::DeletedSkillVersion,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class SkillVersion < OpenAI::Internal::Type::BaseModel
+        # Unix timestamp (seconds) for when the version was created.
+        sig { returns(Integer) }
+        attr_accessor :created_at
+
+        # Description of the skill version.
+        sig { returns(String) }
+        attr_accessor :description
+
+        # Unique identifier for the skill version.
+        sig { returns(String) }
+        attr_accessor :id
+
+        # Name of the skill version.
+        sig { returns(String) }
+        attr_accessor :name
+
+        # The object type, which is `skill.version`.
+        sig { returns(Symbol) }
+        attr_accessor :object
+
+        # Identifier of the skill for this version.
+        sig { returns(String) }
+        attr_accessor :skill_id
+
+        # Version number for this skill.
+        sig { returns(String) }
+        attr_accessor :version
+
+        sig do
+          override
+            .returns({
+              id: String,
+              created_at: Integer,
+              description: String,
+              name: String,
+              object: Symbol,
+              skill_id: String,
+              version: String
+            })
+        end
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              id: String,
+              created_at: Integer,
+              description: String,
+              name: String,
+              skill_id: String,
+              version: String,
+              object: Symbol
+            ).returns(T.attached_class)
+          end
+          def new(
+            id:, # Unique identifier for the skill version.
+            created_at:, # Unix timestamp (seconds) for when the version was created.
+            description:, # Description of the skill version.
+            name:, # Name of the skill version.
+            skill_id:, # Identifier of the skill for this version.
+            version:, # Version number for this skill.
+            object: :"skill.version" # The object type, which is `skill.version`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(OpenAI::Skills::SkillVersion, OpenAI::Internal::AnyHash)
+          end
+      end
+
+      class SkillVersionList < OpenAI::Internal::Type::BaseModel
+        # A list of items
+        sig { returns(T::Array[OpenAI::Skills::SkillVersion]) }
+        attr_accessor :data
+
+        # The ID of the first item in the list.
+        sig { returns(T.nilable(String)) }
+        attr_accessor :first_id
+
+        # Whether there are more items available.
+        sig { returns(T::Boolean) }
+        attr_accessor :has_more
+
+        # The ID of the last item in the list.
+        sig { returns(T.nilable(String)) }
+        attr_accessor :last_id
+
+        # The type of object returned, must be `list`.
+        sig { returns(Symbol) }
+        attr_accessor :object
+
+        sig do
+          override
+            .returns({
+              data: T::Array[OpenAI::Skills::SkillVersion],
+              first_id: T.nilable(String),
+              has_more: T::Boolean,
+              last_id: T.nilable(String),
+              object: Symbol
+            })
+        end
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              data: T::Array[OpenAI::Skills::SkillVersion::OrHash],
+              first_id: T.nilable(String),
+              has_more: T::Boolean,
+              last_id: T.nilable(String),
+              object: Symbol
+            ).returns(T.attached_class)
+          end
+          def new(
+            data:, # A list of items
+            first_id:, # The ID of the first item in the list.
+            has_more:, # Whether there are more items available.
+            last_id:, # The ID of the last item in the list.
+            object: :list # The type of object returned, must be `list`.
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(OpenAI::Skills::SkillVersionList, OpenAI::Internal::AnyHash)
+          end
+      end
+
+      class VersionCreateParams < OpenAI::Internal::Type::BaseModel
+        extend OpenAI::Internal::Type::RequestParameters::Converter
+        include OpenAI::Internal::Type::RequestParameters
+
+        # Whether to set this version as the default.
+        sig { returns(T.nilable(T::Boolean)) }
+        attr_reader :default
+
+        sig { params(default: T::Boolean).void }
+        attr_writer :default
+
+        # Skill files to upload (directory upload) or a single zip file.
+        sig { returns(T.nilable(OpenAI::Skills::VersionCreateParams::Files::Variants)) }
+        attr_reader :files
+
+        sig { params(files: OpenAI::Skills::VersionCreateParams::Files::Variants).void }
+        attr_writer :files
+
+        sig do
+          override
+            .returns({
+              default: T::Boolean,
+              files: OpenAI::Skills::VersionCreateParams::Files::Variants,
+              request_options: OpenAI::RequestOptions
+            })
+        end
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              default: T::Boolean,
+              files: OpenAI::Skills::VersionCreateParams::Files::Variants,
+              request_options: OpenAI::RequestOptions::OrHash
+            ).returns(T.attached_class)
+          end
+          def new(
+            default: nil, # Whether to set this version as the default.
+            files: nil, # Skill files to upload (directory upload) or a single zip file.
+            request_options: {}
+); end
+        end
+
+        # Skill files to upload (directory upload) or a single zip file.
+        module Files
+          extend OpenAI::Internal::Type::Union
+
+          class << self
+            sig { override.returns(T::Array[OpenAI::Skills::VersionCreateParams::Files::Variants]) }
+            def variants; end
+          end
+
+          StringArray = T.let(
+              OpenAI::Internal::Type::ArrayOf[
+                OpenAI::Internal::Type::FileInput
+              ],
+              OpenAI::Internal::Type::Converter
+            )
+
+          Variants = T.type_alias { T.any(T::Array[StringIO], StringIO) }
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Skills::VersionCreateParams,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class VersionDeleteParams < OpenAI::Internal::Type::BaseModel
+        extend OpenAI::Internal::Type::RequestParameters::Converter
+        include OpenAI::Internal::Type::RequestParameters
+
+        sig { returns(String) }
+        attr_accessor :skill_id
+
+        sig { override.returns({ skill_id: String, request_options: OpenAI::RequestOptions }) }
+        def to_hash; end
+
+        class << self
+          sig { params(skill_id: String, request_options: OpenAI::RequestOptions::OrHash).returns(T.attached_class) }
+          def new(skill_id:, request_options: {}); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Skills::VersionDeleteParams,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      class VersionListParams < OpenAI::Internal::Type::BaseModel
+        extend OpenAI::Internal::Type::RequestParameters::Converter
+        include OpenAI::Internal::Type::RequestParameters
+
+        # The skill version ID to start after.
+        sig { returns(T.nilable(String)) }
+        attr_reader :after
+
+        sig { params(after: String).void }
+        attr_writer :after
+
+        # Number of versions to retrieve.
+        sig { returns(T.nilable(Integer)) }
+        attr_reader :limit
+
+        sig { params(limit: Integer).void }
+        attr_writer :limit
+
+        # Sort order of results by version number.
+        sig { returns(T.nilable(OpenAI::Skills::VersionListParams::Order::OrSymbol)) }
+        attr_reader :order
+
+        sig { params(order: OpenAI::Skills::VersionListParams::Order::OrSymbol).void }
+        attr_writer :order
+
+        sig do
+          override
+            .returns({
+              after: String,
+              limit: Integer,
+              order: OpenAI::Skills::VersionListParams::Order::OrSymbol,
+              request_options: OpenAI::RequestOptions
+            })
+        end
+        def to_hash; end
+
+        class << self
+          sig do
+            params(
+              after: String,
+              limit: Integer,
+              order: OpenAI::Skills::VersionListParams::Order::OrSymbol,
+              request_options: OpenAI::RequestOptions::OrHash
+            ).returns(T.attached_class)
+          end
+          def new(
+            after: nil, # The skill version ID to start after.
+            limit: nil, # Number of versions to retrieve.
+            order: nil, # Sort order of results by version number.
+            request_options: {}
+); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(OpenAI::Skills::VersionListParams, OpenAI::Internal::AnyHash)
+          end
+
+        # Sort order of results by version number.
+        module Order
+          extend OpenAI::Internal::Type::Enum
+
+          class << self
+            sig { override.returns(T::Array[OpenAI::Skills::VersionListParams::Order::TaggedSymbol]) }
+            def values; end
+          end
+
+          ASC = T.let(:asc, OpenAI::Skills::VersionListParams::Order::TaggedSymbol)
+
+          DESC = T.let(:desc, OpenAI::Skills::VersionListParams::Order::TaggedSymbol)
+
+          OrSymbol = T.type_alias { T.any(Symbol, String) }
+
+          TaggedSymbol = T.type_alias do
+              T.all(Symbol, OpenAI::Skills::VersionListParams::Order)
+            end
+        end
+      end
+
+      class VersionRetrieveParams < OpenAI::Internal::Type::BaseModel
+        extend OpenAI::Internal::Type::RequestParameters::Converter
+        include OpenAI::Internal::Type::RequestParameters
+
+        sig { returns(String) }
+        attr_accessor :skill_id
+
+        sig { override.returns({ skill_id: String, request_options: OpenAI::RequestOptions }) }
+        def to_hash; end
+
+        class << self
+          sig { params(skill_id: String, request_options: OpenAI::RequestOptions::OrHash).returns(T.attached_class) }
+          def new(skill_id:, request_options: {}); end
+        end
+
+        OrHash = T.type_alias do
+            T.any(
+              OpenAI::Skills::VersionRetrieveParams,
+              OpenAI::Internal::AnyHash
+            )
+          end
+      end
+
+      module Versions
+        class ContentRetrieveParams < OpenAI::Internal::Type::BaseModel
+          extend OpenAI::Internal::Type::RequestParameters::Converter
+          include OpenAI::Internal::Type::RequestParameters
+
+          sig { returns(String) }
+          attr_accessor :skill_id
+
+          sig { override.returns({ skill_id: String, request_options: OpenAI::RequestOptions }) }
+          def to_hash; end
+
+          class << self
+            sig { params(skill_id: String, request_options: OpenAI::RequestOptions::OrHash).returns(T.attached_class) }
+            def new(skill_id:, request_options: {}); end
+          end
+
+          OrHash = T.type_alias do
+              T.any(
+                OpenAI::Skills::Versions::ContentRetrieveParams,
+                OpenAI::Internal::AnyHash
+              )
+            end
+        end
+      end
+    end
 
     class StaticFileChunkingStrategy < OpenAI::Internal::Type::BaseModel
       # The number of tokens that overlap between chunks. The default value is `400`.
@@ -94461,9 +96422,9 @@ module OpenAI
                             # is supported.
         endpoint:, # The endpoint to be used for all requests in the batch. Currently
                    # `/v1/responses`, `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`,
-                   # and `/v1/moderations` are supported. Note that `/v1/embeddings` batches are also
-                   # restricted to a maximum of 50,000 embedding inputs across all requests in the
-                   # batch.
+                   # `/v1/moderations`, `/v1/images/generations`, and `/v1/images/edits` are
+                   # supported. Note that `/v1/embeddings` batches are also restricted to a maximum
+                   # of 50,000 embedding inputs across all requests in the batch.
         input_file_id:, # The ID of an uploaded file that contains requests for the new batch.
                         # See [upload file](https://platform.openai.com/docs/api-reference/files/create)
                         # for how to upload a file.
@@ -96209,11 +98170,8 @@ module OpenAI
         def list(
           after: nil, # Identifier for the last chat completion from the previous pagination request.
           limit: nil, # Number of Chat Completions to retrieve.
-          metadata: nil, # Set of 16 key-value pairs that can be attached to an object. This can be useful
-                         # for storing additional information about the object in a structured format, and
-                         # querying for objects via API or the dashboard.
-                         # Keys are strings with a maximum length of 64 characters. Values are strings with
-                         # a maximum length of 512 characters.
+          metadata: nil, # A list of metadata keys to filter the Chat Completions by. Example:
+                         # `metadata[key1]=value1&metadata[key2]=value2`
           model: nil, # The model used to generate the Chat Completions.
           order: nil, # Sort order for Chat Completions by timestamp. Use `asc` for ascending order or
                       # `desc` for descending order. Defaults to `asc`.
@@ -96783,6 +98741,16 @@ module OpenAI
           expires_after: OpenAI::ContainerCreateParams::ExpiresAfter::OrHash,
           file_ids: T::Array[String],
           memory_limit: OpenAI::ContainerCreateParams::MemoryLimit::OrSymbol,
+          network_policy: T.any(
+              OpenAI::Responses::ContainerNetworkPolicyDisabled::OrHash,
+              OpenAI::Responses::ContainerNetworkPolicyAllowlist::OrHash
+            ),
+          skills: T::Array[
+              T.any(
+                OpenAI::Responses::SkillReference::OrHash,
+                OpenAI::Responses::InlineSkill::OrHash
+              )
+            ],
           request_options: OpenAI::RequestOptions::OrHash
         ).returns(OpenAI::Models::ContainerCreateResponse)
       end
@@ -96791,6 +98759,8 @@ module OpenAI
         expires_after: nil, # Container expiration time in seconds relative to the 'anchor' time.
         file_ids: nil, # IDs of files to copy to the container.
         memory_limit: nil, # Optional memory limit for the container. Defaults to "1g".
+        network_policy: nil, # Network access policy for the container.
+        skills: nil, # An optional list of skills referenced by id or inline data.
         request_options: {}
 ); end
 
@@ -96806,6 +98776,7 @@ module OpenAI
         params(
           after: String,
           limit: Integer,
+          name: String,
           order: OpenAI::ContainerListParams::Order::OrSymbol,
           request_options: OpenAI::RequestOptions::OrHash
         ).returns(OpenAI::Internal::CursorPage[OpenAI::Models::ContainerListResponse])
@@ -96817,6 +98788,7 @@ module OpenAI
                     # fetch the next page of the list.
         limit: nil, # A limit on the number of objects to be returned. Limit can range between 1 and
                     # 100, and the default is 20.
+        name: nil, # Filter results by container name.
         order: nil, # Sort order by the `created_at` timestamp of the objects. `asc` for ascending
                     # order and `desc` for descending order.
         request_options: {}
@@ -97989,7 +99961,7 @@ module OpenAI
       #
       # Creates an edited or extended image given one or more source images and a
       # prompt. This endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`,
-      # and `gpt-image-1-mini`) and `dall-e-2`.
+      # `gpt-image-1-mini`, and `chatgpt-image-latest`) and `dall-e-2`.
       sig do
         params(
           image: OpenAI::ImageEditParams::Image::Variants,
@@ -98014,7 +99986,8 @@ module OpenAI
         image:, # The image(s) to edit. Must be a supported image file or an array of images.
                 # For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and
                 # `gpt-image-1.5`), each image should be a `png`, `webp`, or `jpg` file less than
-                # 50MB. You can provide up to 16 images.
+                # 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows the same
+                # input constraints as GPT image models.
                 # For `dall-e-2`, you can only provide one image, and it should be a square `png`
                 # file less than 4MB.
         prompt:, # A text description of the desired image(s). The maximum length is 1000
@@ -98027,15 +100000,13 @@ module OpenAI
                          # be set to either `png` (default value) or `webp`.
         input_fidelity: nil, # Control how much effort the model will exert to match the style and features,
                              # especially facial features, of input images. This parameter is only supported
-                             # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-                             # `low`. Defaults to `low`.
+                             # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+                             # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
         mask: nil, # An additional image whose fully transparent areas (e.g. where alpha is zero)
                    # indicate where `image` should be edited. If there are multiple images provided,
                    # the mask will be applied on the first image. Must be a valid PNG file, less than
                    # 4MB, and have the same dimensions as `image`.
-        model: nil, # The model to use for image generation. Only `dall-e-2` and the GPT image models
-                    # are supported. Defaults to `dall-e-2` unless a parameter specific to the GPT
-                    # image models is used.
+        model: nil, # The model to use for image generation. Defaults to `gpt-image-1.5`.
         n: nil, # The number of images to generate. Must be between 1 and 10.
         output_compression: nil, # The compression level (0-100%) for the generated images. This parameter is only
                                  # supported for the GPT image models with the `webp` or `jpeg` output formats, and
@@ -98048,13 +100019,12 @@ module OpenAI
                              # 0, the response will be a single image sent in one streaming event.
                              # Note that the final image may be sent before the full number of partial images
                              # are generated if the full image is generated more quickly.
-        quality: nil, # The quality of the image that will be generated. `high`, `medium` and `low` are
-                      # only supported for the GPT image models. `dall-e-2` only supports `standard`
-                      # quality. Defaults to `auto`.
+        quality: nil, # The quality of the image that will be generated for GPT image models. Defaults
+                      # to `auto`.
         response_format: nil, # The format in which the generated images are returned. Must be one of `url` or
                               # `b64_json`. URLs are only valid for 60 minutes after the image has been
-                              # generated. This parameter is only supported for `dall-e-2`, as the GPT image
-                              # models always return base64-encoded images.
+                              # generated. This parameter is only supported for `dall-e-2` (default is `url` for
+                              # `dall-e-2`), as GPT image models always return base64-encoded images.
         size: nil, # The size of the generated images. Must be one of `1024x1024`, `1536x1024`
                    # (landscape), `1024x1536` (portrait), or `auto` (default value) for the GPT image
                    # models, and one of `256x256`, `512x512`, or `1024x1024` for `dall-e-2`.
@@ -98070,7 +100040,7 @@ module OpenAI
       #
       # Creates an edited or extended image given one or more source images and a
       # prompt. This endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`,
-      # and `gpt-image-1-mini`) and `dall-e-2`.
+      # `gpt-image-1-mini`, and `chatgpt-image-latest`) and `dall-e-2`.
       sig do
         params(
           image: OpenAI::ImageEditParams::Image::Variants,
@@ -98095,7 +100065,8 @@ module OpenAI
         image:, # The image(s) to edit. Must be a supported image file or an array of images.
                 # For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and
                 # `gpt-image-1.5`), each image should be a `png`, `webp`, or `jpg` file less than
-                # 50MB. You can provide up to 16 images.
+                # 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows the same
+                # input constraints as GPT image models.
                 # For `dall-e-2`, you can only provide one image, and it should be a square `png`
                 # file less than 4MB.
         prompt:, # A text description of the desired image(s). The maximum length is 1000
@@ -98108,15 +100079,13 @@ module OpenAI
                          # be set to either `png` (default value) or `webp`.
         input_fidelity: nil, # Control how much effort the model will exert to match the style and features,
                              # especially facial features, of input images. This parameter is only supported
-                             # for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and
-                             # `low`. Defaults to `low`.
+                             # for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
+                             # `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
         mask: nil, # An additional image whose fully transparent areas (e.g. where alpha is zero)
                    # indicate where `image` should be edited. If there are multiple images provided,
                    # the mask will be applied on the first image. Must be a valid PNG file, less than
                    # 4MB, and have the same dimensions as `image`.
-        model: nil, # The model to use for image generation. Only `dall-e-2` and the GPT image models
-                    # are supported. Defaults to `dall-e-2` unless a parameter specific to the GPT
-                    # image models is used.
+        model: nil, # The model to use for image generation. Defaults to `gpt-image-1.5`.
         n: nil, # The number of images to generate. Must be between 1 and 10.
         output_compression: nil, # The compression level (0-100%) for the generated images. This parameter is only
                                  # supported for the GPT image models with the `webp` or `jpeg` output formats, and
@@ -98129,13 +100098,12 @@ module OpenAI
                              # 0, the response will be a single image sent in one streaming event.
                              # Note that the final image may be sent before the full number of partial images
                              # are generated if the full image is generated more quickly.
-        quality: nil, # The quality of the image that will be generated. `high`, `medium` and `low` are
-                      # only supported for the GPT image models. `dall-e-2` only supports `standard`
-                      # quality. Defaults to `auto`.
+        quality: nil, # The quality of the image that will be generated for GPT image models. Defaults
+                      # to `auto`.
         response_format: nil, # The format in which the generated images are returned. Must be one of `url` or
                               # `b64_json`. URLs are only valid for 60 minutes after the image has been
-                              # generated. This parameter is only supported for `dall-e-2`, as the GPT image
-                              # models always return base64-encoded images.
+                              # generated. This parameter is only supported for `dall-e-2` (default is `url` for
+                              # `dall-e-2`), as GPT image models always return base64-encoded images.
         size: nil, # The size of the generated images. Must be one of `1024x1024`, `1536x1024`
                    # (landscape), `1024x1536` (portrait), or `auto` (default value) for the GPT image
                    # models, and one of `256x256`, `512x512`, or `1024x1024` for `dall-e-2`.
@@ -98619,6 +100587,11 @@ module OpenAI
       sig do
         params(
           background: T.nilable(T::Boolean),
+          context_management: T.nilable(
+              T::Array[
+                OpenAI::Responses::ResponseCreateParams::ContextManagement::OrHash
+              ]
+            ),
           conversation: T.nilable(
               T.any(
                 String,
@@ -98698,6 +100671,7 @@ module OpenAI
       def create(
         background: nil, # Whether to run the model response in the background.
                          # [Learn more](https://platform.openai.com/docs/guides/background).
+        context_management: nil, # Context management configuration for this request.
         conversation: nil, # The conversation that this response belongs to. Items from this conversation are
                            # prepended to `input_items` for this response request. Input items and output
                            # items from this response are automatically added to this conversation after this
@@ -99127,6 +101101,11 @@ module OpenAI
       sig do
         params(
           background: T.nilable(T::Boolean),
+          context_management: T.nilable(
+              T::Array[
+                OpenAI::Responses::ResponseCreateParams::ContextManagement::OrHash
+              ]
+            ),
           conversation: T.nilable(
               T.any(
                 String,
@@ -99210,6 +101189,7 @@ module OpenAI
       def stream_raw(
         background: nil, # Whether to run the model response in the background.
                          # [Learn more](https://platform.openai.com/docs/guides/background).
+        context_management: nil, # Context management configuration for this request.
         conversation: nil, # The conversation that this response belongs to. Items from this conversation are
                            # prepended to `input_items` for this response request. Input items and output
                            # items from this response are automatically added to this conversation after this
@@ -99481,6 +101461,187 @@ module OpenAI
           # @api private
           sig { params(client: OpenAI::Client).returns(T.attached_class) }
           def new(client:); end
+        end
+      end
+    end
+
+    class Skills
+      sig { returns(OpenAI::Resources::Skills::Content) }
+      attr_reader :content
+
+      sig { returns(OpenAI::Resources::Skills::Versions) }
+      attr_reader :versions
+
+      # Create Skill
+      sig do
+        params(
+          files: OpenAI::SkillCreateParams::Files::Variants,
+          request_options: OpenAI::RequestOptions::OrHash
+        ).returns(OpenAI::Skill)
+      end
+      def create(
+        files: nil, # Skill files to upload (directory upload) or a single zip file.
+        request_options: {}
+); end
+
+      # Delete Skill
+      sig { params(skill_id: String, request_options: OpenAI::RequestOptions::OrHash).returns(OpenAI::DeletedSkill) }
+      def delete(
+        skill_id, # The identifier of the skill to delete.
+        request_options: {}
+); end
+
+      # List Skills
+      sig do
+        params(
+          after: String,
+          limit: Integer,
+          order: OpenAI::SkillListParams::Order::OrSymbol,
+          request_options: OpenAI::RequestOptions::OrHash
+        ).returns(OpenAI::Internal::CursorPage[OpenAI::Skill])
+      end
+      def list(
+        after: nil, # Identifier for the last item from the previous pagination request
+        limit: nil, # Number of items to retrieve
+        order: nil, # Sort order of results by timestamp. Use `asc` for ascending order or `desc` for
+                    # descending order.
+        request_options: {}
+); end
+
+      # Get Skill
+      sig { params(skill_id: String, request_options: OpenAI::RequestOptions::OrHash).returns(OpenAI::Skill) }
+      def retrieve(
+        skill_id, # The identifier of the skill to retrieve.
+        request_options: {}
+); end
+
+      # Update Skill Default Version
+      sig do
+        params(
+          skill_id: String,
+          default_version: String,
+          request_options: OpenAI::RequestOptions::OrHash
+        ).returns(OpenAI::Skill)
+      end
+      def update(
+        skill_id, # The identifier of the skill.
+        default_version:, # The skill version number to set as default.
+        request_options: {}
+); end
+
+      class << self
+        # @api private
+        sig { params(client: OpenAI::Client).returns(T.attached_class) }
+        def new(client:); end
+      end
+
+      class Content
+        # Get Skill Content
+        sig { params(skill_id: String, request_options: OpenAI::RequestOptions::OrHash).returns(StringIO) }
+        def retrieve(
+          skill_id, # The identifier of the skill to download.
+          request_options: {}
+); end
+
+        class << self
+          # @api private
+          sig { params(client: OpenAI::Client).returns(T.attached_class) }
+          def new(client:); end
+        end
+      end
+
+      class Versions
+        sig { returns(OpenAI::Resources::Skills::Versions::Content) }
+        attr_reader :content
+
+        # Create Skill Version
+        sig do
+          params(
+            skill_id: String,
+            default: T::Boolean,
+            files: OpenAI::Skills::VersionCreateParams::Files::Variants,
+            request_options: OpenAI::RequestOptions::OrHash
+          ).returns(OpenAI::Skills::SkillVersion)
+        end
+        def create(
+          skill_id, # The identifier of the skill to version.
+          default: nil, # Whether to set this version as the default.
+          files: nil, # Skill files to upload (directory upload) or a single zip file.
+          request_options: {}
+); end
+
+        # Delete Skill Version
+        sig do
+          params(
+            version: String,
+            skill_id: String,
+            request_options: OpenAI::RequestOptions::OrHash
+          ).returns(OpenAI::Skills::DeletedSkillVersion)
+        end
+        def delete(
+          version, # The skill version number.
+          skill_id:, # The identifier of the skill.
+          request_options: {}
+); end
+
+        # List Skill Versions
+        sig do
+          params(
+            skill_id: String,
+            after: String,
+            limit: Integer,
+            order: OpenAI::Skills::VersionListParams::Order::OrSymbol,
+            request_options: OpenAI::RequestOptions::OrHash
+          ).returns(OpenAI::Internal::CursorPage[OpenAI::Skills::SkillVersion])
+        end
+        def list(
+          skill_id, # The identifier of the skill.
+          after: nil, # The skill version ID to start after.
+          limit: nil, # Number of versions to retrieve.
+          order: nil, # Sort order of results by version number.
+          request_options: {}
+); end
+
+        # Get Skill Version
+        sig do
+          params(
+            version: String,
+            skill_id: String,
+            request_options: OpenAI::RequestOptions::OrHash
+          ).returns(OpenAI::Skills::SkillVersion)
+        end
+        def retrieve(
+          version, # The version number to retrieve.
+          skill_id:, # The identifier of the skill.
+          request_options: {}
+); end
+
+        class << self
+          # @api private
+          sig { params(client: OpenAI::Client).returns(T.attached_class) }
+          def new(client:); end
+        end
+
+        class Content
+          # Get Skill Version Content
+          sig do
+            params(
+              version: String,
+              skill_id: String,
+              request_options: OpenAI::RequestOptions::OrHash
+            ).returns(StringIO)
+          end
+          def retrieve(
+            version, # The skill version number.
+            skill_id:, # The identifier of the skill.
+            request_options: {}
+); end
+
+          class << self
+            # @api private
+            sig { params(client: OpenAI::Client).returns(T.attached_class) }
+            def new(client:); end
+          end
         end
       end
     end
@@ -100165,6 +102326,14 @@ module OpenAI
   ResponseFormatTextPython = OpenAI::Models::ResponseFormatTextPython
   Responses = OpenAI::Models::Responses
   ResponsesModel = OpenAI::Models::ResponsesModel
+  Skill = OpenAI::Models::Skill
+  SkillCreateParams = OpenAI::Models::SkillCreateParams
+  SkillDeleteParams = OpenAI::Models::SkillDeleteParams
+  SkillList = OpenAI::Models::SkillList
+  SkillListParams = OpenAI::Models::SkillListParams
+  SkillRetrieveParams = OpenAI::Models::SkillRetrieveParams
+  SkillUpdateParams = OpenAI::Models::SkillUpdateParams
+  Skills = OpenAI::Models::Skills
   StaticFileChunkingStrategy = OpenAI::Models::StaticFileChunkingStrategy
 
   StaticFileChunkingStrategyObject = OpenAI::Models::StaticFileChunkingStrategyObject
