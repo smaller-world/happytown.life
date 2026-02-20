@@ -36,14 +36,14 @@ class WhatsappGroupAgent
           )
         end
         group.send_message_history_link(history_url:, instructions_video_url:)
-        "OK"
+        JSON.pretty_generate({ success: true })
       rescue => error
         tag_logger do
           logger.error(
             "Failed to send message history link to group #{jid}: #{error}",
           )
         end
-        "ERROR: #{error}"
+        JSON.pretty_generate({ error: error.message })
       end
     end
   end

@@ -35,12 +35,12 @@ class WhatsappGroupAgent
       end
       mentioned_jids = mentioned_jids_in(text)
       group.send_message(text:, mentioned_jids:)
-      "OK"
+      JSON.pretty_generate({ success: true })
     rescue => error
       tag_logger do
         logger.error("Failed to send message to group #{jid}: #{error}")
       end
-      "ERROR: #{error}"
+      JSON.pretty_generate({ error: error.message })
     end
 
     private

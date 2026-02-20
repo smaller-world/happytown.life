@@ -379,7 +379,7 @@ class WhatsappGroupAgent
             "Failed to load messages in group #{group.jid}: #{error}",
           )
         end
-        "ERROR: #{error}"
+        JSON.pretty_generate({ error: error.message })
       end
     end
   end
