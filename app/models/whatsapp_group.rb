@@ -85,18 +85,20 @@ class WhatsappGroup < ApplicationRecord
 
   # == Scopes ==
 
-  scope :with_recent_activity, -> {
-    recent_messages = WhatsappMessage.where("timestamp > ?", 1.day.ago)
-    ordering_subquery = <<~SQL.squish
+  scope :by_recent_activity, -> {
+    subquery = <<~SQL.squish
       (
         SELECT MAX(whatsapp_messages.timestamp)
         FROM whatsapp_messages
         WHERE whatsapp_messages.group_id = whatsapp_groups.id
       ) DESC
     SQL
-    where(id: recent_messages.select(:group_id))
-      .order(Arel.sql(ordering_subquery))
+    order(Arel.sql(subquery))
   }
+  # scope :with_recent_activity, -> {
+  #   recent_messages = WhatsappMessage.where("timestamp > ?", 1.day.ago)
+  #   where(id: recent_messages.select(:group_id)).by_recent_activity
+  # }
 
   # == Metadata ==
 

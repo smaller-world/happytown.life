@@ -5,8 +5,8 @@
       "type": "http"
     },
     "happytown_supabase": {
-      "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=ysiwerjzufsrkyqjftal&read_only=true&features=docs%2Cdatabase"
+      "url": "https://mcp.supabase.com/mcp?project_ref=ysiwerjzufsrkyqjftal&read_only=true&features=docs%2Cdatabase",
+      "type": "http"
     }
   }
 }

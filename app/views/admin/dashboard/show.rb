@@ -27,10 +27,10 @@ class Views::Admin::Dashboard::Show < Views::Base
 
         div(class: "flex flex-col gap-y-1") do
           h2(class: "text-xl font-semibold") do
-            "whatsapp groups with recent activity"
+            "recently active whatsapp groups"
           end
           ul(class: "list-disc ml-6 space-y-0.5") do
-            WhatsappGroup.with_recent_activity.limit(100).each do |group|
+            WhatsappGroup.by_recent_activity.limit(100).each do |group|
               li do
                 link_to(
                   group.subject || group.jid,

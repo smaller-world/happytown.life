@@ -43,11 +43,16 @@ class Components::Chat::Messages::Item < Components::Base
             end
           end
           div(class: "chat_message_content") do
-            p(class: "break-all") { render_body(@message) }
+            p { render_body(@message) }
             local_time(
               @message.timestamp,
               format: "%l:%M %p",
-              class: "cursor-pointer",
+              class: "float-right invisible",
+            )
+            local_time(
+              @message.timestamp,
+              format: "%l:%M %p",
+              class: "absolute bottom-1 right-2 cursor-pointer",
               data: {
                 controller: "clipboard tooltip",
                 action: class_names(

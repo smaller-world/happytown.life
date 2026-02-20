@@ -47,7 +47,8 @@
 }
 
 .chat_message_body {
-  @apply max-w-96 min-w-0 rounded-lg border p-1 text-sm;
+  @apply relative max-w-96 min-w-0 rounded-lg border p-1;
+  @apply text-sm;
   @apply bg-background group-data-[sender=you]/message:bg-sender-message;
 }
 
@@ -61,10 +62,14 @@
 }
 
 .chat_message_content {
-  @apply flex items-end gap-x-2 px-1;
+  @apply gap-x-2 px-1 align-baseline;
+
+  p {
+    @apply inline whitespace-pre-wrap;
+  }
 
   time {
-    @apply shrink-0 text-xs text-muted-foreground lowercase;
+    @apply text-xs text-muted-foreground lowercase;
   }
 }
 
