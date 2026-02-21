@@ -20,8 +20,13 @@ require "test_helper"
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class UserTest < ActiveSupport::TestCase
+  extend T::Sig
+
+  # == Tests ==
+
   test "downcases and strips email_address" do
     user = User.new(email_address: " DOWNCASED@EXAMPLE.COM ")
+
     assert_equal("downcased@example.com", user.email_address)
   end
 end

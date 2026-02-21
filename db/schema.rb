@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_204611) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_213000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -196,6 +196,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_204611) do
     t.string "profile_picture_url"
     t.string "subject"
     t.datetime "updated_at", null: false
+    t.index "((setweight(to_tsvector('simple'::regconfig, (COALESCE(subject, ''::character varying))::text), 'A'::\"char\") || setweight(to_tsvector('simple'::regconfig, COALESCE(description, ''::text)), 'B'::\"char\")))", name: "index_whatsapp_groups_on_subject_description_tsearch", using: :gin
     t.index ["intro_sent_at"], name: "index_whatsapp_groups_on_intro_sent_at"
     t.index ["jid"], name: "index_whatsapp_groups_on_jid", unique: true
     t.index ["memberships_imported_at"], name: "index_whatsapp_groups_on_memberships_imported_at"

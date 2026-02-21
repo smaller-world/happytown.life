@@ -40,7 +40,7 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
                         "Expected no `send_message_history_link' tool usage"
   end
 
-  test "reply searches for messages" do
+  test "reply searches for messages" do # rubocop:disable Minitest/MultipleAssertions
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:who_talked_about_fries_message)
 
@@ -92,11 +92,13 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   end
   def tool_calls_from_response(response)
     content = response.message.content
+
     assert_not_empty content,
                      "Expected agent to respond with tool usage details"
 
     begin
       tools_used = JSON.parse(content).fetch("tools_used")
+
       assert_kind_of Array,
                      tools_used,
                      "Expected 'tools_used' to be an array"

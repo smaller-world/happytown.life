@@ -16,10 +16,11 @@
 #
 # Indexes
 #
-#  index_whatsapp_groups_on_intro_sent_at            (intro_sent_at)
-#  index_whatsapp_groups_on_jid                      (jid) UNIQUE
-#  index_whatsapp_groups_on_memberships_imported_at  (memberships_imported_at)
-#  index_whatsapp_groups_on_metadata_imported_at     (metadata_imported_at)
+#  index_whatsapp_groups_on_intro_sent_at                (intro_sent_at)
+#  index_whatsapp_groups_on_jid                          (jid) UNIQUE
+#  index_whatsapp_groups_on_memberships_imported_at      (memberships_imported_at)
+#  index_whatsapp_groups_on_metadata_imported_at         (metadata_imported_at)
+#  index_whatsapp_groups_on_subject_description_tsearch  (((setweight(to_tsvector('simple'::regconfig, (COALESCE(subject, ''::character varying))::text), 'A'::"char") || setweight(to_tsvector('simple'::regconfig, COALESCE(description, ''::text)), 'B'::"char")))) USING gin
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 hangout:
