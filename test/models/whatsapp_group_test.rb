@@ -21,14 +21,29 @@ require "test_helper"
 #
 # Indexes
 #
-#  index_whatsapp_groups_on_intro_sent_at            (intro_sent_at)
-#  index_whatsapp_groups_on_jid                      (jid) UNIQUE
-#  index_whatsapp_groups_on_memberships_imported_at  (memberships_imported_at)
-#  index_whatsapp_groups_on_metadata_imported_at     (metadata_imported_at)
+#  index_whatsapp_groups_on_intro_sent_at                (intro_sent_at)
+#  index_whatsapp_groups_on_jid                          (jid) UNIQUE
+#  index_whatsapp_groups_on_memberships_imported_at      (memberships_imported_at)
+#  index_whatsapp_groups_on_metadata_imported_at         (metadata_imported_at)
+#  index_whatsapp_groups_on_subject_description_tsearch  (((setweight(to_tsvector('simple'::regconfig, (COALESCE(subject, ''::character varying))::text), 'A'::"char") || setweight(to_tsvector('simple'::regconfig, COALESCE(description, ''::text)), 'B'::"char")))) USING gin
 #
 # rubocop:enable Layout/LineLength, Lint/RedundantCopDisableDirective
 class WhatsappGroupTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  extend T::Sig
+
+  # == Tests ==
+
+  test "search scope uses the subject and description tsearch index" do # rubocop:disable Minitest/MultipleAssertions
+    indexes = ActiveRecord::Base.connection.indexes(:whatsapp_groups)
+
+    assert_includes indexes.map(&:name),
+                    "index_whatsapp_groups_on_subject_description_tsearch"
+
+    sql = WhatsappGroup.search("hangout").to_sql
+
+    assert_match(/@@/, sql)
+    assert_match(/setweight\(to_tsvector\('simple'/, sql)
+    assert_match(/subject/, sql)
+    assert_match(/description/, sql)
+  end
 end

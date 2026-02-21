@@ -39,7 +39,20 @@
 require "test_helper"
 
 class WhatsappMessageTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  extend T::Sig
+
+  # == Tests ==
+
+  test "search scope uses the body tsearch index" do # rubocop:disable Minitest/MultipleAssertions
+    indexes = ActiveRecord::Base.connection.indexes(:whatsapp_messages)
+
+    assert_includes indexes.map(&:name),
+                    "index_whatsapp_messages_on_body_tsearch"
+
+    sql = WhatsappMessage.search("fries").to_sql
+
+    assert_match(/@@/, sql)
+    assert_match(/to_tsvector\('simple'/, sql)
+    assert_match(/coalesce\(/i, sql)
+  end
 end
