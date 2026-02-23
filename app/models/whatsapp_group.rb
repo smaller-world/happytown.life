@@ -102,7 +102,7 @@ class WhatsappGroup < ApplicationRecord
         SELECT MAX(whatsapp_messages.timestamp)
         FROM whatsapp_messages
         WHERE whatsapp_messages.group_id = whatsapp_groups.id
-      ) DESC
+      ) DESC NULLS LAST
     SQL
     order(Arel.sql(subquery))
   }
