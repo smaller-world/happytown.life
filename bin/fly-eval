@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
-fly ssh console -C "bin/rails runner 'puts $@'"
+set -e
+
+ARGS="$*"
+ESCAPED_ARGS=${ARGS//\"/\\\"}
+
+fly ssh console -C "bin/rails runner \"pp ${ESCAPED_ARGS}\""
