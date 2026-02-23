@@ -31,15 +31,15 @@ class Components::Chat::Messages::Item < Components::Base
           end
         end
         div(class: "chat_message_body") do
-          div(class: "chat_message_sender") do
+          div(class: "chat_message_sender px-1") do
             sender_label(@message)
           end
           if (quoted_message = @message.quoted_message)
             div(class: "chat_message_quote") do
               div(class: "chat_message_sender") do
-                sender_label(@message)
+                sender_label(quoted_message)
               end
-              render_body(quoted_message)
+              p { render_body(quoted_message) }
             end
           end
           div(class: "chat_message_content") do
@@ -47,12 +47,12 @@ class Components::Chat::Messages::Item < Components::Base
             local_time(
               @message.timestamp,
               format: "%l:%M %p",
-              class: "float-right invisible",
+              class: "float-right invisible pl-1",
             )
             local_time(
               @message.timestamp,
               format: "%l:%M %p",
-              class: "absolute bottom-1 right-2 cursor-pointer",
+              class: "absolute bottom-1 right-1.5 cursor-pointer",
               data: {
                 controller: "clipboard tooltip",
                 action: class_names(
