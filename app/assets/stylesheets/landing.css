@@ -1,4 +1,33 @@
 @layer components {
+  .landing_main {
+    @apply mx-auto max-w-4xl space-y-24 px-6 py-12;
+    @apply text-gray-800 antialiased;
+    @apply selection:bg-landing-primary/20 selection:text-landing-primary;
+  }
+
+  .landing_features_grid {
+    @apply grid gap-8 md:grid-cols-2 md:gap-12;
+  }
+
+  .landing_featured_in_container {
+    @apply mx-auto max-w-92;
+    @apply flex flex-wrap items-center justify-center gap-x-5 gap-y-4;
+    @apply sm:max-w-none sm:flex-nowrap sm:gap-8;
+  }
+
+  .landing_logo_container {
+    @apply flex flex-col items-center gap-y-4;
+  }
+
+  .landing_logo_socials {
+    @apply flex justify-center gap-x-4;
+    @apply font-bold text-landing-secondary;
+
+    > a {
+      @apply hover:underline;
+    }
+  }
+
   .landing_btn {
     @apply rounded-full px-7.5 py-2.5 text-lg font-bold;
     @apply flex items-center gap-x-2;
@@ -87,5 +116,26 @@
     @apply space-y-8 rounded-3xl py-16;
     @apply bg-linear-to-b from-transparent to-landing-primary/5;
     @apply text-center;
+  }
+
+  .landing_how_it_works_list {
+    @apply grid gap-x-6 gap-y-3 md:grid-cols-2;
+
+    > li {
+      @apply flex gap-3;
+
+      > [data-slot="marker"] {
+        @apply text-xl text-landing-secondary;
+      }
+    }
+  }
+
+  .landing_cta {
+    @apply mx-auto mb-8 max-w-3xl space-y-8 text-center;
+
+    h2 {
+      @apply mx-auto max-w-2xl text-4xl leading-[1.1] font-bold;
+      @apply sm:max-w-xl sm:text-5xl;
+    }
   }
 }

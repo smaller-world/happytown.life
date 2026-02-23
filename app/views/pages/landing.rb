@@ -7,19 +7,15 @@ class Views::Pages::Landing < Views::Base
   sig { override.void }
   def view_template
     Components::Layout(site_title:, body_class: "no-dark bg-[#fdfdfd]") do
-      main(class: [
-        "max-w-4xl mx-auto px-6 py-12 space-y-24",
-        "antialiased text-gray-800",
-        "selection:bg-landing-primary/20 selection:text-landing-primary",
-      ]) do
+      main(class: "landing_main") do
         render_hero
         render_cta
         render_featured_in
         render_how_it_works
 
-        div(class: "grid md:grid-cols-2 gap-8 md:gap-12") do
-          render_for_guests
-          render_for_hosts
+        div(class: "landing_features_grid") do
+          render_guest_features
+          render_host_features
         end
 
         render_gatherings
@@ -41,26 +37,22 @@ class Views::Pages::Landing < Views::Base
 
   sig { void }
   def render_hero
-    section(class: "text-center space-y-8 sm:pt-12 mb-8") do
-      div(class: "flex flex-col items-center gap-y-4") do
-        div(class: "flex justify-center") do
-          image_tag(
-            "logo-text.png",
-            alt: "happy town logo",
-            class: "w-50",
-          )
-        end
-        div(class: "flex gap-4 font-bold text-landing-secondary") do
+    section(class: [
+      "space-y-8 mb-8 text-center",
+      "sm:pt-12",
+    ]) do
+      div(class: "landing_logo_container") do
+        image_tag("logo-text.png", alt: "happy town logo", class: "w-50")
+        div(class: "landing_logo_socials") do
           a(
             href: "https://instagram.com/happytown.to",
             target: "_blank",
-            class: "hover:underline w-20 text-end",
           ) { "instagram" }
           span(class: "text-gray-300") { "•" }
           a(
             href: "https://tiktok.com/@adamdriversbod",
             target: "_blank",
-            class: "hover:underline w-20 text-start",
+            class: "w-14 text-start",
           ) { "tiktok" }
         end
       end
@@ -69,13 +61,28 @@ class Views::Pages::Landing < Views::Base
 
   sig { void }
   def render_cta
-    section(class: "max-w-3xl mx-auto text-center space-y-8 mb-8") do
-      h2(
-        class: "text-4xl sm:text-5xl font-bold sm:max-xl max-w-2xl mx-auto leading-[1.1]",
-      ) { "a new kind of third space in toronto." }
-      div(class: "flex flex-col sm:flex-row gap-4 justify-center items-center") do
-        a(href: "#gatherings", class: "landing_btn", data: { variant: "primary" }) { "see upcoming gatherings" }
-        a(href: "#host", class: "landing_btn", data: { variant: "secondary" }) { "host with us →" }
+    section(class: "landing_cta") do
+      h2 do
+        "a new kind of third space in toronto."
+      end
+      div(
+        class: "flex flex-col sm:flex-row gap-4 justify-center items-center",
+      ) do
+        a(
+          href: "#gatherings",
+          class: "landing_btn",
+          data: { variant: "primary" },
+        ) do
+          "see upcoming gatherings"
+        end
+        a(
+          href: "#host",
+          class: "landing_btn",
+          data: { variant: "secondary" },
+        ) do
+          span { "host with us" }
+          Icon("huge/arrow-right-02", class: "size-6")
+        end
       end
       image_tag(
         "banner.png",
@@ -90,7 +97,7 @@ class Views::Pages::Landing < Views::Base
     section(class: "space-y-2") do
       h2(class: "text-2xl font-bold text-center text-gray-500") { "featured in" }
       div(
-        class: "flex flex-wrap max-w-92 sm:max-w-none sm:flex-nowrap justify-center mx-auto items-center gap-x-5 gap-y-4 sm:gap-8",
+        class: "landing_featured_in_container",
       ) do
         a(
           href: "https://globalnews.ca/news/11610040/toronto-community-meetups-in-path/",
@@ -142,42 +149,53 @@ class Views::Pages::Landing < Views::Base
   def render_how_it_works
     section(class: "space-y-6") do
       h2(class: "text-3xl font-bold text-center") { "how this works" }
-      div(class: "bg-landing-secondary/5 p-8 md:p-12 rounded-3xl space-y-5") do
+      div(
+        class: "bg-landing-secondary/5 p-8 md:p-12 rounded-3xl space-y-5",
+      ) do
         div(class: "space-y-2") do
           p(class: "text-xl font-medium") do
-            "find a gathering, show up, and make toronto feel a little more like home."
+            "find a gathering, show up, and make toronto feel a little more " \
+              "like home."
           end
           p(class: "text-xl font-medium") do
-            "we host recurring events in low-traffic spaces where you can enjoy spending time with others."
+            "we host recurring events in low-traffic spaces where you can " \
+              "enjoy spending time with others."
           end
         end
-        ul(class: "grid md:grid-cols-2 gap-x-6 gap-y-3") do
-          li(class: "flex gap-3") do
-            span(class: "text-landing-secondary text-xl") { "✦" }
+        ul(class: "landing_how_it_works_list") do
+          li do
+            span(data: { slot: "marker" }) { "✦" }
             span do
               strong { "low cost to free:" }
-              plain(" making it so hanging out doesn't stretch your budget.")
+              whitespace
+              plain("making it so hanging out doesn't stretch your budget.")
             end
           end
-          li(class: "flex gap-3") do
-            span(class: "text-landing-secondary text-xl") { "✦" }
+          li do
+            span(data: { slot: "marker" }) { "✦" }
             span do
               strong { "light structure for hosts:" }
-              plain(%( guidance that helps you feel like "you've got this".))
+              whitespace
+              plain("guidance that helps you feel like \"you've got this\".")
             end
           end
-          li(class: "flex gap-3") do
-            span(class: "text-landing-secondary text-xl") { "✦" }
+          li do
+            span(data: { slot: "marker" }) { "✦" }
             span do
               strong { "a place to be yourself:" }
-              plain(" no networking, please! just bring the \"5-9\" you :)")
+              whitespace
+              plain("no networking, please! just bring the \"5-9\" you :)")
             end
           end
-          li(class: "flex gap-3") do
-            span(class: "text-landing-secondary text-xl") { "✦" }
+          li do
+            span(data: { slot: "marker" }) { "✦" }
             span do
               strong { "a respectful relationship with spaces:" }
-              plain(" we gather responsibly and encourage support for local shops nearby.")
+              whitespace
+              plain(
+                "we gather responsibly and encourage support for local " \
+                  "shops nearby.",
+              )
             end
           end
         end
@@ -186,8 +204,12 @@ class Views::Pages::Landing < Views::Base
   end
 
   sig { void }
-  def render_for_guests
-    section(class: "landing_feature_card", data: { variant: "primary" }) do
+  def render_guest_features
+    section(
+      id: "for_guests",
+      class: "landing_feature_card",
+      data: { variant: "primary" },
+    ) do
       h2 do
         plain("for guests ")
         span(
@@ -201,7 +223,10 @@ class Views::Pages::Landing < Views::Base
           li { "want new friends but hate \"networking energy\"" }
           li { "like long walks and wandering conversations" }
           li { "miss the feeling of a friendly regular spot" }
-          li { "enjoy gentle structure: prompts, activities, \"you can join anytime\" vibes" }
+          li do
+            "enjoy gentle structure: prompts, activities, \"you can join \"" \
+              "anytime\" vibes"
+          end
         end
       end
 
@@ -226,9 +251,9 @@ class Views::Pages::Landing < Views::Base
   end
 
   sig { void }
-  def render_for_hosts
+  def render_host_features
     section(
-      id: "host",
+      id: "for_hosts",
       class: "landing_feature_card",
       data: { variant: "secondary" },
     ) do
@@ -361,7 +386,10 @@ class Views::Pages::Landing < Views::Base
       end
 
       div(
-        class: "flex flex-col sm:flex-row gap-4 justify-center items-center",
+        class: [
+          "flex flex-col gap-4 justify-center items-center",
+          "sm:flex-row ",
+        ],
       ) do
         a(
           href: "#gatherings",
@@ -371,7 +399,7 @@ class Views::Pages::Landing < Views::Base
           "see upcoming gatherings"
         end
         a(
-          href: "#host",
+          href: "#for_hosts",
           class: "landing_btn",
           data: { variant: "secondary" },
         ) do
