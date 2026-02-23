@@ -11,7 +11,9 @@ class WaSenderApi
 
   # == Exceptions ==
 
-  class Error < StandardError
+  class Error < StandardError; end
+
+  class BadResponse < StandardError
     extend T::Sig
 
     sig { params(response: HTTParty::Response).void }
@@ -24,9 +26,9 @@ class WaSenderApi
     attr_reader :response
   end
 
-  class TooManyRequests < Error; end
-  class RequestTimeout < Error; end
-  class Forbidden < Error; end
+  class TooManyRequests < BadResponse; end
+  class RequestTimeout < BadResponse; end
+  class Forbidden < BadResponse; end
 
   # == Configuration ==
 
@@ -172,7 +174,7 @@ class WaSenderApi
       when 429
         raise TooManyRequests, response
       else
-        raise Error, response
+        raise BadResponse, response
       end
     end
   end
@@ -180,7 +182,11 @@ class WaSenderApi
   sig { params(response: HTTParty::Response).returns(T.untyped) }
   def response_data!(response)
     check_response!(response)
-    response.parsed_response.fetch("data")
+    if response.parsed_response["success"] == false
+      message = response.parsed_response.fetch("message")
+      raise Error, message
+    end
+    response.parsed_response["data"]
   end
 
   sig { returns(T::Boolean) }
