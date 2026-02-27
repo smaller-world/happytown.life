@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "sentry": {
+    "happytown_sentry": {
       "type": "http",
       "url": "https://mcp.sentry.dev/mcp"
     },
