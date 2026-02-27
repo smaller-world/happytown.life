@@ -25,10 +25,10 @@ class Rails::Conductor::BaseController
     include ::ActionText::TagHelper
     include ::Importmap::ImportmapTagsHelper
     include ::ActionController::Base::HelperMethods
+    include ::ApplicationHelper
     include ::WhatsappMessaging::Helpers
     include ::WhatsappMessaging
-    include ::AgentHelper
-    include ::ApplicationHelper
+    include ::WhatsappGroupAgentHelper
     include ::LocalTimeHelper
   end
 

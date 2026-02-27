@@ -8,16 +8,18 @@ require "test_helper"
 #
 # Table name: whatsapp_groups
 #
-#  id                      :uuid             not null, primary key
-#  description             :text
-#  intro_sent_at           :timestamptz
-#  jid                     :string           not null
-#  memberships_imported_at :timestamptz
-#  metadata_imported_at    :timestamptz
-#  profile_picture_url     :string
-#  subject                 :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
+#  id                          :uuid             not null, primary key
+#  description                 :text
+#  intro_sent_at               :timestamptz
+#  jid                         :string           not null
+#  memberships_imported_at     :timestamptz
+#  message_history_enabled_at  :timestamptz      not null
+#  message_history_window_days :integer
+#  metadata_imported_at        :timestamptz
+#  profile_picture_url         :string
+#  subject                     :string
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
 #
 # Indexes
 #

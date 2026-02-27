@@ -20,9 +20,9 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
     assert_includes tool_calls,
                     :send_message,
                     "Expected `send_message' tool usage"
-    assert_includes tool_calls,
-                    :send_message_history_link,
-                    "Expected `send_message_history_link' tool usage"
+    # assert_includes tool_calls,
+    #                 :send_message_history_link,
+    #                 "Expected `send_message_history_link' tool usage"
     "once"
   end
 

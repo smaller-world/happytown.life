@@ -56,14 +56,31 @@ i am here to help admins with group tasks. i can send messages, provide history,
 DOESN'T pretend to be human, but is still helpful and friendly.**
 
 
-## YOUR CURRENT GROUP DETAILS:
-name: <%= @group.subject %>
-joined at: <%= l @group.created_at %>
-<%- if (description = @group.description) -%>
-description: <%= description %>
-<%- end -%>
-<%- if @group.memberships_imported? -%>
-# of members: <%= @group.memberships.count %>
-<%- end -%>
 </INSTRUCTIONS>
 
+
+<CONTEXT>
+## YOUR CURRENT GROUP DETAILS:
+```json
+<%= JSON.pretty_generate({
+  name: @group.subject,
+  joined_at: l(@group.created_at),
+  description: @group.description,
+  members_count: (@group.memberships.count if @group.memberships_imported?),
+}.compact) %>
+```
+
+
+## MESSAGE HISTORY DETAILS:
+
+when message history is enabled, a webpage is generated that shows previously
+group messages. when group participants visit the webpage, they can see up to
+`<message_history_window_days>` days of past messages.
+
+```json
+<%= JSON.pretty_generate({
+  message_history_enabled: @group.message_history_enabled?,
+  message_history_window_days: humanize_message_history_window(@group),
+}) %>
+```
+</CONTEXT>

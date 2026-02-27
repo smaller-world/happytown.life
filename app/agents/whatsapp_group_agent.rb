@@ -6,6 +6,7 @@ class WhatsappGroupAgent < ApplicationAgent
   include SendMessageTool
   include SendReplyTool
   include SendMessageHistoryLinkTool
+  include ConfigureMessageHistoryTool
   include MessageLoadingTools
 
   # == Configuration ==
@@ -20,6 +21,7 @@ class WhatsappGroupAgent < ApplicationAgent
                 instructions: true,
                 temperature: 0
   # end
+  helper WhatsappGroupAgentHelper
   helper_method :mentioned_jids_in
 
   # == Hooks ==
@@ -32,10 +34,7 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { void }
   def introduce_yourself
-    options = {
-      tools: [SEND_MESSAGE_TOOL, SEND_MESSAGE_HISTORY_LINK_TOOL],
-      tool_choice: "required",
-    }
+    options = { tools: [SEND_MESSAGE_TOOL], tool_choice: "required" }
     if json_response_format_supported?
       options[:response_format] = :json_object
     end
@@ -44,15 +43,17 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { void }
   def reply
+    group = group!
     @message = message!
-    options = {
-      tools: [
-        SEND_REPLY_TOOL,
-        SEND_MESSAGE_HISTORY_LINK_TOOL,
-        *MESSAGE_LOADING_TOOLS,
-      ],
-      tool_choice: "required",
-    }
+    tools = [
+      SEND_REPLY_TOOL,
+      CONFIGURE_MESSAGE_HISTORY_TOOL,
+      *MESSAGE_LOADING_TOOLS,
+    ]
+    if group.message_history_enabled?
+      tools << SEND_MESSAGE_HISTORY_LINK_TOOL
+    end
+    options = { tools:, tool_choice: "required" }
     if json_response_format_supported?
       options[:response_format] = :json_object
     end

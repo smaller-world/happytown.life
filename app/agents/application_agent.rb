@@ -35,7 +35,7 @@ class ApplicationAgent < ActiveAgent::Base
   # == Configuration ==
 
   # generate_with :open_router, instructions: true
-  helper AgentHelper
+  # helper AgentHelper
 
   # == URL Generation ==
 

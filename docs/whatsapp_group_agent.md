@@ -4,7 +4,7 @@ Happytown operates a WhatsApp bot, named "Happy Town". It is an autonomous AI
 agent that can be added to a WhatsApp group chat, to augment it with additional
 features such as:
 
-- Full message history recording / archival / search
+- Message history recording / archival / search
 - (UNIMPLEMENTED) Screening pending group members
 
 ## Architecture & Framework

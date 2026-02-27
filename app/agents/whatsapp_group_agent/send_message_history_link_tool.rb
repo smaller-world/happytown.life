@@ -14,8 +14,7 @@ class WhatsappGroupAgent
 
     SEND_MESSAGE_HISTORY_LINK_TOOL = {
       name: "send_message_history_link",
-      description:
-        "Send a message to containing the group's full message history URL.",
+      description: "Sends the message history link to the group.",
     }
 
     # == Execution ==
@@ -26,16 +25,12 @@ class WhatsappGroupAgent
       jid = group.jid
       begin
         history_url = message_history_whatsapp_group_url(group)
-        instructions_video_url = view_context.video_url(
-          "pin_message_instructions.mp4",
-          host: root_url,
-        )
+        send_message(text: "*see message history at:* #{history_url}")
         tag_logger do
           logger.info(
             "Sending message history link to group #{jid}: #{history_url}",
           )
         end
-        group.send_message_history_link(history_url:, instructions_video_url:)
         JSON.pretty_generate({ success: true })
       rescue => error
         tag_logger do

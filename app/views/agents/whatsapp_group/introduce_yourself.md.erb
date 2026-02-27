@@ -7,19 +7,14 @@
   - DO NOT output plain text as your final answer; YOU MUST call this tool to
     reply.
 
-- **send_message_history_link** - use this to send the full message history URL.
-  - sends a message containing the group's full message history URL.
-  - YOU MUST USE THIS TOOL TO SEND THE LINK.
-  - DO NOT send the history URL through `send_reply`.
-
 </AVAILABLE_TOOLS>
 
 
 <ACTION_SEQUENCE>
-1. YOU MUST introduce yourself to the group with the `send_message` tool.
-   DO NOT output your message; you MUST use the provided tool.
-2. then, YOU MUST use the `send_message_history_link` tool to send the group's
-   full message history URL.
+1. YOU MUST use `send_message` to introduce yourself to the group.
+  - DO NOT output your message; you MUST use the provided tool.
+2. YOU MUST use `send_message` to ask the group if they would like to generate
+   a link that new group members can use to see recent past messages.
 </ACTION_SEQUENCE>
 
 

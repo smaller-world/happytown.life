@@ -1,11 +1,11 @@
 # typed: true
 # frozen_string_literal: true
 
-module AgentHelper
+module WhatsappGroupAgentHelper
   extend T::Sig
   extend T::Helpers
 
-  requires_ancestor { Kernel }
+  requires_ancestor { ActionView::Base }
 
   # == Configuration ==
 
@@ -43,16 +43,25 @@ module AgentHelper
 
   sig { params(message: WhatsappMessage).returns(String) }
   def message_body_with_inlined_mentions(message)
+    group = message.group!
     body = message.body.dup
     message.mentioned_users.each do |user|
       lid = user.lid.delete_suffix("@lid")
       body.gsub!("@#{lid}", "@#{whatsapp_user_identity(user)}")
     end
+    redact_message_body!(body, group:)
     body
+  end
+
+  sig { params(body: String, group: WhatsappGroup).void }
+  def redact_message_body!(body, group:)
+    history_url = message_history_whatsapp_group_url(group)
+    body.gsub!(history_url, "[REDACTED MESSAGE HISTORY URL]")
   end
 
   sig { params(message: WhatsappMessage).returns(T.nilable(String)) }
   def quoted_message_body_with_inlined_mentions(message)
+    group = message.group!
     if (quoted_message = message.quoted_message)
       message_body_with_inlined_mentions(quoted_message)
     elsif (body = message.quoted_message_body&.dup)
@@ -65,6 +74,7 @@ module AgentHelper
         lid = user.lid.delete_suffix("@lid")
         body.gsub!("@#{lid}", "@#{whatsapp_user_identity(user)}")
       end
+      redact_message_body!(body, group:)
       body
     end
   end
@@ -80,5 +90,18 @@ module AgentHelper
       phone.to_s
     end
     scope.where(phone_number: mentioned_numbers).distinct.to_a
+  end
+
+  sig { params(group: WhatsappGroup).returns(String) }
+  def humanize_message_history_window(group)
+    days = group.message_history_window_days
+    case days
+    when nil
+      "indefinitely"
+    when 1
+      "1 day"
+    else
+      "#{days} days"
+    end
   end
 end

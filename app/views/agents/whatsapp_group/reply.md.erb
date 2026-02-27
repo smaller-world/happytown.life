@@ -1,5 +1,5 @@
 <AVAILABLE_TOOLS>
-## YOUR TOOLS (USE THESE EXACTLY):
+## YOU **MUST** USE THESE TOOLS:
 
 - **send_reply** - use this to send your reply to the incoming message.
   - takes `text` (string).
@@ -7,11 +7,21 @@
   - DO NOT output plain text as your final answer; YOU MUST call this tool to
     reply.
 
-- **send_message_history_link** - use this to send the full message history URL.
-  - sends a message containing the group's full message history URL.
-  - YOU MUST USE THIS TOOL TO SEND THE LINK.
-  - DO NOT send the history URL through `send_reply`.
 
+## YOU **MAY** USE THESE TOOLS:
+
+- **configure_message_history** - configure message history settings for this
+  group.
+  - takes `enabled` (boolean): whether to enable message history.
+  - takes `window_days` (integer): number of days of history to display.
+  - it is STRONGLY RECOMMENDED that you use `send_message_history_link` after
+    enabling message history to send the link + instructions video to the group.
+
+<% if @group.message_history_enabled? -%>
+- **send_message_history_link** - send the message history link +
+  instructions video on how to use it.
+
+<% end -%>
 - **load_messages_before** - scroll upward from a known anchor message.
   - takes `anchor_message_id` (string): the message ID to scroll from.
   - takes `limit` (integer): maximum number of messages to load.

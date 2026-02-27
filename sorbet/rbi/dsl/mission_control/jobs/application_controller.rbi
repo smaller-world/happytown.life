@@ -25,7 +25,7 @@ class MissionControl::Jobs::ApplicationController
     include ::ApplicationHelper
     include ::WhatsappMessaging::Helpers
     include ::WhatsappMessaging
-    include ::AgentHelper
+    include ::WhatsappGroupAgentHelper
     include ::LocalTimeHelper
     include ::ApplicationController::HelperMethods
     include ::MissionControl::Jobs::InterfaceHelper

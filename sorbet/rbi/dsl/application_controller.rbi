@@ -28,7 +28,7 @@ class ApplicationController
     include ::ApplicationHelper
     include ::WhatsappMessaging::Helpers
     include ::WhatsappMessaging
-    include ::AgentHelper
+    include ::WhatsappGroupAgentHelper
     include ::LocalTimeHelper
 
     sig { returns(T::Boolean) }

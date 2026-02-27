@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_213000) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_27_204028) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -192,6 +192,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_213000) do
     t.timestamptz "intro_sent_at"
     t.string "jid", null: false
     t.timestamptz "memberships_imported_at"
+    t.timestamptz "message_history_enabled_at", null: false
+    t.integer "message_history_window_days"
     t.timestamptz "metadata_imported_at"
     t.string "profile_picture_url"
     t.string "subject"

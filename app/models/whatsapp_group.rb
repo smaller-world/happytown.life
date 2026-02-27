@@ -6,16 +6,18 @@
 #
 # Table name: whatsapp_groups
 #
-#  id                      :uuid             not null, primary key
-#  description             :text
-#  intro_sent_at           :timestamptz
-#  jid                     :string           not null
-#  memberships_imported_at :timestamptz
-#  metadata_imported_at    :timestamptz
-#  profile_picture_url     :string
-#  subject                 :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
+#  id                          :uuid             not null, primary key
+#  description                 :text
+#  intro_sent_at               :timestamptz
+#  jid                         :string           not null
+#  memberships_imported_at     :timestamptz
+#  message_history_enabled_at  :timestamptz      not null
+#  message_history_window_days :integer
+#  metadata_imported_at        :timestamptz
+#  profile_picture_url         :string
+#  subject                     :string
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
 #
 # Indexes
 #
@@ -65,6 +67,9 @@ class WhatsappGroup < ApplicationRecord
   sig { returns(T::Boolean) }
   def memberships_imported? = memberships_imported_at?
 
+  sig { returns(T::Boolean) }
+  def message_history_enabled? = message_history_enabled_at?
+
   # == Associations ==
 
   has_many :messages,
@@ -78,6 +83,12 @@ class WhatsappGroup < ApplicationRecord
            inverse_of: :group,
            foreign_key: :group_id
   has_many :users, through: :memberships
+
+  # == Validations ==
+
+  validates :message_history_window_days,
+            numericality: { greater_than: 0 },
+            allow_nil: true
 
   # == Hooks ==
 
