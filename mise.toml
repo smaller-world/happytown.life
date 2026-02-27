@@ -12,9 +12,9 @@
   # Development flow
   setup = { run = "bin/setup" }
   dev = { run = "bin/dev" }
-  attach = { run = "bin/attach" }
   restart = { run = "bin/overmind restart" }
   test = { run = "bin/rails test" }
+  "test:system" = { run = "bin/rails test:system" }
 
   # Tools
   fix = { run = "hk fix" }
@@ -25,6 +25,12 @@
   "fly:ssh" = { run = "fly ssh console" }
   "fly:console" = { run = "bin/fly-exec 'bin/rails console'" }
   "fly:eval" = { run = "bin/fly-eval" }
+
+[tasks.attach]
+  usage = '''
+  arg "<target>" help="Process to attach to" default="web"
+  '''
+  run = "bin/overmind connect ${usage_target?}"
 
 [hooks]
   postinstall = 'if [ -z "$CI" ]; then bin/setup --skip-server; fi'

@@ -1,12 +1,17 @@
-# WhatsApp Agent Implementation
+# WhatsApp Group Agent
 
-This document provides a technical deep-dive into the WhatsApp bot architecture
-for the `happytown.life` platform.
+Happytown operates a WhatsApp bot, named "Happy Town". It is an autonomous AI
+agent that can be added to a WhatsApp group chat, to augment it with additional
+features such as:
+
+- Full message history recording / archival / search
+- (UNIMPLEMENTED) Screening pending group members
 
 ## Architecture & Framework
 
-The bot is built using the **ActiveAgent** framework, which follows a
-Rails-idiomatic approach to AI integrations.
+The bot is built using the
+[**ActiveAgent** framework](https://docs.activeagents.ai/agents), which follows
+a Rails-idiomatic approach to AI integrations.
 
 ### Core Logic
 

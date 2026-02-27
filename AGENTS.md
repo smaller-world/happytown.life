@@ -1,18 +1,33 @@
-# Agent Documentation Index
+# Agent Instructions
 
-This file indexes the documentation for the AI agents in this repository.
+## Docs
 
-**Usage Instruction for Agents:** Do not read the detailed documentation files
-below unless the user's request specifically involves modifying, debugging, or
-extending the corresponding agent.
+- WhatsApp group agent: `docs/whatsapp_group_agent.md`
+  - Use only when changing `app/agents/whatsapp_*.rb` or
+    `app/models/whatsapp_*.rb`
 
-## Available Agent Documentation
+## Tooling
 
-- **[WhatsApp Group Agent](docs/whatsapp_agent.md)**
-  - **Primary Function**: Manages the "Happy Town" bot in WhatsApp groups.
-  - **Key Files**: `app/agents/whatsapp_group_agent.rb`,
-    `app/models/whatsapp_message.rb`.
-  - **Consult When**: Working on WhatsApp message handling, webhook logic, bot
-    personality, or group management tools.
+- `mise install` - install devtools and dependencies
+- `mise dev` - run dev server
+- `mise test [-i <name>]` - run tests (excluding system tests)
+- `mise test:system [-i <name>]` - run system tests
+- `mise x -- ...` (run ad-hoc command with tools installed by mise)
+  - `mise x -- bunx ...` (run ad-hoc command from NPM)
+  - `mise x -- bundle e ...` (run ad-hoc command from Rubygems)
 
-<!-- Future agents (e.g., Discord, Email) will be indexed here. -->
+## Commit Attribution
+
+- AI commits MUST include attribute, e.g.
+
+```text
+Co-Authored-By: Codex by OpenAI <codex@openai.com>
+```
+
+## Key Conventions
+
+- Search with `rg` / `rg --files`
+- Keep edits scoped; do not revert unrelated local changes
+- Prefer project scripts in `bin/` and `mise run ...` when available (see
+  available tasks with `mise tasks`)
+- Run targeted verification before completion: `mise test` (or relevant subset)
