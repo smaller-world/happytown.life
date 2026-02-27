@@ -10,9 +10,11 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
 
   test "introduce_yourself calls required tools" do
     group = whatsapp_groups(:hangout)
-    response = WhatsappGroupAgent.with(group:)
-      .introduce_yourself
-      .generate_now
+    response = retry_on(OpenAI::Errors::RateLimitError) do
+      WhatsappGroupAgent.with(group:)
+        .introduce_yourself
+        .generate_now
+    end
     tool_calls = tool_calls_from_response(response)
 
     assert_includes tool_calls,
@@ -29,9 +31,11 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   test "reply calls required tools" do
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:hello_message)
-    response = WhatsappGroupAgent.with(group:, message:)
-      .reply
-      .generate_now
+    response = retry_on(OpenAI::Errors::RateLimitError) do
+      WhatsappGroupAgent.with(group:, message:)
+        .reply
+        .generate_now
+    end
     tool_calls = tool_calls_from_response(response)
 
     assert_includes tool_calls, :send_reply, "Expected `send_reply' tool usage"
@@ -49,9 +53,11 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
       sent_replies << text
     end
     response = group.stub(:send_message, capture_reply) do
-      WhatsappGroupAgent.with(group:, message:)
-        .reply
-        .generate_now
+      retry_on(OpenAI::Errors::RateLimitError) do
+        WhatsappGroupAgent.with(group:, message:)
+          .reply
+          .generate_now
+      end
     end
     tool_calls = tool_calls_from_response(response)
 
@@ -72,9 +78,11 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   test "reply with message history link when requested" do
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:message_history_request_message)
-    response = WhatsappGroupAgent.with(group:, message:)
-      .reply
-      .generate_now
+    response = retry_on(OpenAI::Errors::RateLimitError) do
+      WhatsappGroupAgent.with(group:, message:)
+        .reply
+        .generate_now
+    end
     tool_calls = tool_calls_from_response(response)
 
     assert_includes tool_calls,
@@ -106,8 +114,9 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
                        "Expected 'tools_used' to be non-empty"
       tools_used.map(&:to_sym)
     rescue JSON::ParserError, KeyError
-      flunk "Expected tool usage details to be a JSON object with " \
-        "'tools_used' key"
+      flunk(
+        "Expected tool usage details to be a JSON object with `tools_used` key",
+      )
     end
   end
 end

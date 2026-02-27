@@ -110,7 +110,7 @@ group :development, :test do
   gem "bundler-audit", require: false
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
+  gem "brakeman", "8.0.4", require: false
 
   # Generate Sorbet types from Rails code
   gem "tapioca", require: false
