@@ -155,3 +155,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+group :production do
+  # Fix request.ip and request.remote_ip in Rails when using Cloudflare
+  gem "cloudflare-rails", "~> 7.0"
+end
