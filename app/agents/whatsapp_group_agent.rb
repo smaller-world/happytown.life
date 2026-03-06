@@ -19,10 +19,7 @@ class WhatsappGroupAgent < ApplicationAgent
   generate_with :open_router,
                 model: "stepfun/step-3.5-flash:free",
                 instructions: true,
-                temperature: 0,
-                reasoning: {
-                  enabled: true,
-                }
+                temperature: 0
   # end
   helper WhatsappGroupAgentHelper
   helper_method :mentioned_jids_in
