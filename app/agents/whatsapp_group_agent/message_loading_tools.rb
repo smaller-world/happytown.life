@@ -246,16 +246,6 @@ class WhatsappGroupAgent
 
     # == Helpers ==
 
-    sig { params(text: String).returns(T::Array[String]) }
-    def mentioned_jids_in(text)
-      mentions = text.scan(/@(\d+)/).flatten
-      mentioned_numbers = mentions.map do |mention|
-        phone = Phonelib.parse(mention.delete_prefix("@"))
-        phone.to_s
-      end
-      WhatsappUser.where(phone_number: mentioned_numbers).distinct.pluck(:lid)
-    end
-
     sig { params(values: T::Array[String]).returns(T::Array[String]) }
     def normalized_values(values)
       values.filter_map do |value|
