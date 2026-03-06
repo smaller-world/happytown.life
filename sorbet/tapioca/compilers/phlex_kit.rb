@@ -58,7 +58,7 @@ module Tapioca
 
         sig do
           params(mod: Module).returns(
-            T::Array[[String, T.class_of(::Phlex::SGML)]],
+            T::Array[[ String, T.class_of(::Phlex::SGML) ]],
           )
         end
         def kit_component_constants(mod)
@@ -67,7 +67,7 @@ module Tapioca
             next unless const.is_a?(Class) && const < ::Phlex::SGML
             next if T::AbstractUtils.abstract_module?(const)
 
-            [name.to_s, const]
+            [ name.to_s, const ]
           end.sort_by(&:first)
         end
 

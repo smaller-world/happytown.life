@@ -79,7 +79,7 @@ class WhatsappUser < ApplicationRecord
 
   sig { returns(T::Array[String]) }
   def mention_tokens
-    [phone_mention_token, lid_mention_token].compact
+    [ phone_mention_token, lid_mention_token ].compact
   end
 
   # == Metadata ==

@@ -2,12 +2,12 @@
 
 CONTAINER=$1
 
-if [ -f ./tmp/pids/$CONTAINER.cid ]
+if [ -f ./tmp/pids/$CONTAINER.cid ]; then
   if docker inspect -f '{{.State.Running}}' $(cat ./tmp/pids/$CONTAINER.cid) | grep -q true; then
     exit 0
-  end
+  fi
 
   rm ./tmp/pids/$CONTAINER.cid
-end
+fi
 
 exit 1

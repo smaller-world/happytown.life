@@ -25,7 +25,7 @@ gem "cssbundling-rails"
 gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: [:windows, :jruby]
+gem "tzinfo-data", platforms: [ :windows, :jruby ]
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache"
@@ -79,6 +79,9 @@ gem "pagy", "~> 43.2"
 gem "activeagent", "~> 1.0"
 gem "openai", "~> 0.49.0"
 
+# Interact with LLMs using RubyLLM
+gem "ruby_llm", "~> 1.13"
+
 # Parse and format phone numbers with phonelib
 gem "phonelib", "~> 0.10.16"
 
@@ -104,7 +107,7 @@ group :development, :test do
   gem "minitest-mock", "~> 5.27"
 
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: [:mri, :windows], require: "debug/prelude"
+  gem "debug", platforms: [ :mri, :windows ], require: "debug/prelude"
 
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false

@@ -93,7 +93,7 @@ class Components::Layout < Components::Base
         @head&.call
       end
 
-      body(class: ["flex min-h-dvh flex-col", @body_class]) do
+      body(class: [ "flex min-h-dvh flex-col", @body_class ]) do
         Components::Header()
         render_flash(class: "m-4 self-center")
         raw(body) # rubocop:disable Rails/OutputSafety
@@ -120,7 +120,7 @@ class Components::Layout < Components::Base
   sig { returns(T.nilable(String)) }
   def title_text
     @site_title ||
-      [@page_title, Rails.configuration.x.site_name]
+      [ @page_title, Rails.configuration.x.site_name ]
         .compact.join(" | ").presence
   end
 

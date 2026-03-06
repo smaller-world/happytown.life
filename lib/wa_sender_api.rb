@@ -198,7 +198,7 @@ class WaSenderApi
   def tag_logger(&block)
     logger = Rails.logger
     if logger.respond_to?(:tagged)
-      args = [:tagged, "WaSenderApi"]
+      args = [ :tagged, "WaSenderApi" ]
       logger.public_send(*T.unsafe(args), &block)
     else
       yield

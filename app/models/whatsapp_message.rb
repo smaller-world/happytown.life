@@ -82,7 +82,7 @@ class WhatsappMessage < ApplicationRecord
       )
   }
 
-  pg_search_scope :search, against: [:body], using: {
+  pg_search_scope :search, against: [ :body ], using: {
     tsearch: {},
   }
 
@@ -259,7 +259,7 @@ class WhatsappMessage < ApplicationRecord
     if (embedded_mention = sender.phone_mention_token)
       text = "#{embedded_mention} #{text}"
     end
-    group!.send_message(text: text, mentioned_jids: [sender.lid])
+    group!.send_message(text: text, mentioned_jids: [ sender.lid ])
   end
 
   # == Callbacks ==

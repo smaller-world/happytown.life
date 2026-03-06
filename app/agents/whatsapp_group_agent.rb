@@ -19,7 +19,10 @@ class WhatsappGroupAgent < ApplicationAgent
   generate_with :open_router,
                 model: "stepfun/step-3.5-flash:free",
                 instructions: true,
-                temperature: 0
+                temperature: 0,
+                reasoning: {
+                  enabled: true,
+                }
   # end
   helper WhatsappGroupAgentHelper
   helper_method :mentioned_jids_in
@@ -34,7 +37,7 @@ class WhatsappGroupAgent < ApplicationAgent
 
   sig { void }
   def introduce_yourself
-    options = { tools: [SEND_MESSAGE_TOOL], tool_choice: "required" }
+    options = { tools: [ SEND_MESSAGE_TOOL ], tool_choice: "required" }
     if json_response_format_supported?
       options[:response_format] = :json_object
     end

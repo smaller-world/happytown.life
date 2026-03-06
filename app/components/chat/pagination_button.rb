@@ -19,7 +19,7 @@ class Components::Chat::PaginationButton < Components::Base
   sig { override.void }
   def view_template
     options = {
-      to: [@group, :whatsapp_messages],
+      to: [ @group, :whatsapp_messages ],
       method: :get,
       form_class: "self-center",
       pagy: @pagy,

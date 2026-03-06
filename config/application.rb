@@ -9,6 +9,14 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Configure RubyLLM before Rails::Application is inherited
+#
+# TODO: Remove after upgrading to RubyLLM 2.0 (currently unreleased as of
+# 2026-03-06)
+RubyLLM.configure do |config|
+  config.use_new_acts_as = true
+end
+
 module HappyTown
   extend T::Sig
 
@@ -48,7 +56,7 @@ module HappyTown
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: ["assets", "tasks", "extensions"])
+    config.autoload_lib(ignore: [ "assets", "tasks", "extensions" ])
 
     # Configuration for the application, engines, and railties goes here.
     #

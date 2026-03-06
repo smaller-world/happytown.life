@@ -4,7 +4,7 @@
 class SessionsController < ApplicationController
   # == Filters ==
 
-  allow_unauthenticated_access only: [:new, :create]
+  allow_unauthenticated_access only: [ :new, :create ]
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> {
     T.bind(self, SessionsController)
     redirect_to(new_session_path, alert: "try again later.")

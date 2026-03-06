@@ -17,10 +17,10 @@ class Views::Admin::Dashboard::Show < Views::Base
           h2(class: "text-xl font-semibold") { "quick links" }
           ul(class: "list-disc ml-6 space-y-0.5") do
             li do
-              link_to("webhook logs", [:admin, :webhook_messages], class: "link")
+              link_to("webhook logs", [ :admin, :webhook_messages ], class: "link")
             end
             li do
-              link_to("background jobs", [:mission_control, :jobs], class: "link")
+              link_to("background jobs", [ :mission_control, :jobs ], class: "link")
             end
           end
         end
@@ -34,7 +34,7 @@ class Views::Admin::Dashboard::Show < Views::Base
               li do
                 link_to(
                   group.subject || group.jid,
-                  [:message_history, group],
+                  [ :message_history, group ],
                   class: "link",
                 )
                 ul(class: "list-disc ml-6 space-y-0.5") do

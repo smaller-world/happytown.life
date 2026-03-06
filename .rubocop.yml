@@ -20,8 +20,8 @@ AllCops:
 # Overwrite or add rules to create your own house style
 #
 # # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
-# Layout/SpaceInsideArrayLiteralBrackets:
-#   Enabled: false
+Layout/SpaceInsideArrayLiteralBrackets:
+  EnforcedStyle: space
 
 Rails/I18nLocaleTexts:
   Enabled: false

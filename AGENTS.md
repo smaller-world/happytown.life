@@ -31,3 +31,6 @@ Co-Authored-By: Codex by OpenAI <codex@openai.com>
 - Prefer project scripts in `bin/` and `mise run ...` when available (see
   available tasks with `mise tasks`)
 - Run targeted verification before completion: `mise test` (or relevant subset)
+- Use `mise x -- bin/rails generate [model/migration]` to generate stubs for new
+  models and migrations, then edit the generated files (do not write from
+  scratch)

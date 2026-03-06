@@ -86,7 +86,7 @@ Rails.application.configure do
   config.hotwire.spark.html_paths << "app/components"
 
   # Allowed development hosts
-  config.hosts += [/.+\.ngrok-free\.app/, "kaibook.itskai.me"]
+  config.hosts += [ /.+\.ngrok-free\.app/, "kaibook.itskai.me" ]
 
   # Use Solid Queue in development
   config.active_job.queue_adapter = :solid_queue

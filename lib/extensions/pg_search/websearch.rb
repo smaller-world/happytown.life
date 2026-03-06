@@ -19,7 +19,7 @@ module PgSearch::Features
 
           term_sql = Arel.sql(normalize(connection.quote(query)))
           Arel::Nodes::NamedFunction
-            .new("websearch_to_tsquery", [dictionary, term_sql])
+            .new("websearch_to_tsquery", [ dictionary, term_sql ])
             .to_sql
         else
           super
@@ -31,7 +31,7 @@ module PgSearch::Features
 
         sig { returns(T::Array[Symbol]) }
         def valid_options
-          super + [:websearch]
+          super + [ :websearch ]
         end
       end
     end

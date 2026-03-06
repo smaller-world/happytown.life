@@ -32,7 +32,7 @@ class Views::Pages::Landing < Views::Base
   sig { returns(T.nilable(String)) }
   def site_title
     config = Rails.configuration.x
-    [config.site_name, config.site_tagline].compact.join(" | ").presence
+    [ config.site_name, config.site_tagline ].compact.join(" | ").presence
   end
 
   sig { void }

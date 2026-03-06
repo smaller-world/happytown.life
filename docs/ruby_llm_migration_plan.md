@@ -186,15 +186,9 @@ RubyLLM.configure do |config|
 end
 ```
 
-The current model (`stepfun/step-3.5-flash:free`) may not be in RubyLLM's
-built-in model registry. Use `assume_model_exists: true` to bypass registry
-validation:
-
 ```ruby
 class WhatsappGroupReplyAgent < RubyLLM::Agent
-  model "stepfun/step-3.5-flash:free",
-        provider: :openrouter,
-        assume_model_exists: true
+  model "stepfun/step-3.5-flash:free", provider: :openrouter
   # ...
 end
 ```

@@ -5,7 +5,7 @@ credentials = Rails.application.credentials.sentry
 
 Sentry.init do |config|
   config.dsn = credentials&.dsn
-  config.enabled_environments = ["production"]
+  config.enabled_environments = [ "production" ]
   config.breadcrumbs_logger = [
     :sentry_logger,
     :active_support_logger,

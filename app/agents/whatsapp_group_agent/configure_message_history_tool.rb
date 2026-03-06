@@ -29,7 +29,7 @@ class WhatsappGroupAgent
               "indefinite history.",
           },
         },
-        required: ["enabled", "window_days"],
+        required: [ "enabled", "window_days" ],
       },
     }
 

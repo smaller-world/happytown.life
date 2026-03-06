@@ -9,7 +9,7 @@ cd "${BASH_SOURCE%/*}/.."
 ./bin/boot-docker
 
 # Tail logs if Postgres already running; else run Postgres
-if ./bin/docker-running postgres; then
+if ./bin/container-running postgres; then
   echo "Postgres is already running; tailing logs..." >&2
   trap "exit 0" INT
   docker logs -f $(cat ./tmp/pids/postgres.cid)

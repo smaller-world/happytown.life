@@ -22,7 +22,7 @@ class WhatsappGroupAgent
             type: "string",
           },
         },
-        required: ["text"],
+        required: [ "text" ],
       },
     }
 

@@ -25,7 +25,7 @@ class ApplicationAgent < ActiveAgent::Base
             },
           },
         },
-        required: ["tools_used"],
+        required: [ "tools_used" ],
         additionalProperties: false,
       },
       strict: true,

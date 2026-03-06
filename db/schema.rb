@@ -10,9 +10,101 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_27_204028) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_06_170820) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.uuid "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "ai_chat_messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "cache_creation_tokens"
+    t.integer "cached_tokens"
+    t.uuid "chat_id", null: false
+    t.text "content"
+    t.json "content_raw"
+    t.datetime "created_at", null: false
+    t.integer "input_tokens"
+    t.uuid "model_id"
+    t.integer "output_tokens"
+    t.string "role", null: false
+    t.text "thinking_signature"
+    t.text "thinking_text"
+    t.integer "thinking_tokens"
+    t.uuid "tool_call_id"
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_ai_chat_messages_on_chat_id"
+    t.index ["model_id"], name: "index_ai_chat_messages_on_model_id"
+    t.index ["role"], name: "index_ai_chat_messages_on_role"
+    t.index ["tool_call_id"], name: "index_ai_chat_messages_on_tool_call_id"
+  end
+
+  create_table "ai_chats", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "model_id"
+    t.datetime "updated_at", null: false
+    t.index ["model_id"], name: "index_ai_chats_on_model_id"
+  end
+
+  create_table "ai_models", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.jsonb "capabilities", default: []
+    t.integer "context_window"
+    t.datetime "created_at", null: false
+    t.string "family"
+    t.date "knowledge_cutoff"
+    t.integer "max_output_tokens"
+    t.jsonb "metadata", default: {}
+    t.jsonb "modalities", default: {}
+    t.datetime "model_created_at"
+    t.string "model_id", null: false
+    t.string "name", null: false
+    t.jsonb "pricing", default: {}
+    t.string "provider", null: false
+    t.datetime "updated_at", null: false
+    t.index ["capabilities"], name: "index_ai_models_on_capabilities", using: :gin
+    t.index ["family"], name: "index_ai_models_on_family"
+    t.index ["modalities"], name: "index_ai_models_on_modalities", using: :gin
+    t.index ["provider", "model_id"], name: "index_ai_models_on_provider_and_model_id", unique: true
+    t.index ["provider"], name: "index_ai_models_on_provider"
+  end
+
+  create_table "ai_tool_calls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.jsonb "arguments", default: {}
+    t.datetime "created_at", null: false
+    t.uuid "message_id", null: false
+    t.string "name", null: false
+    t.string "thought_signature"
+    t.string "tool_call_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_ai_tool_calls_on_message_id"
+    t.index ["name"], name: "index_ai_tool_calls_on_name"
+    t.index ["tool_call_id"], name: "index_ai_tool_calls_on_tool_call_id", unique: true
+  end
 
   create_table "sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -249,6 +341,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_204028) do
     t.index ["phone_number"], name: "index_whatsapp_users_on_phone_number", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ai_chat_messages", "ai_chats", column: "chat_id"
+  add_foreign_key "ai_chat_messages", "ai_models", column: "model_id"
+  add_foreign_key "ai_chat_messages", "ai_tool_calls", column: "tool_call_id"
+  add_foreign_key "ai_chats", "ai_models", column: "model_id"
+  add_foreign_key "ai_tool_calls", "ai_chat_messages", column: "message_id"
   add_foreign_key "sessions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

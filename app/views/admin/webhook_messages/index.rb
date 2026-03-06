@@ -21,7 +21,7 @@ class Views::Admin::WebhookMessages::Index < Views::Base
           h1(class: "text-2xl font-bold") { "webhook logs" }
           link_to(
             "back to admin dashboard",
-            [:admin, :dashboard],
+            [ :admin, :dashboard ],
             class: "link",
           )
         end
@@ -44,7 +44,7 @@ class Views::Admin::WebhookMessages::Index < Views::Base
                     if (group = message.associated_whatsapp_group)
                       card.description do
                         link_to(
-                          [:message_history, group],
+                          [ :message_history, group ],
                           class: "link inline-flex items-center gap-x-1",
                         ) do
                           Icon("huge/arrow-right-02", class: "size-4.5")

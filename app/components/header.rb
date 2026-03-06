@@ -17,7 +17,7 @@ class Components::Header < Components::Base
         ) do
           image_tag(
             "icon.png",
-            alt: [site_name, "logo"].compact.join(" "),
+            alt: [ site_name, "logo" ].compact.join(" "),
             class: [
               "size-5 dark:size-5.5",
               "dark:p-[2px] dark:rounded-full dark:bg-primary-foreground",

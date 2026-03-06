@@ -32,7 +32,7 @@ class WhatsappMessagesController < ApplicationController
           renderable: Components::Chat::Messages.new(messages: messages.reverse),
         )
 
-        render turbo_stream: [update_pagination, prepend_messages]
+        render turbo_stream: [ update_pagination, prepend_messages ]
       end
     end
   end

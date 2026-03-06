@@ -30,7 +30,7 @@ class WhatsappGroupAgent
             default: 10,
           },
         },
-        required: ["anchor_message_id", "limit"],
+        required: [ "anchor_message_id", "limit" ],
       },
     }
 
@@ -52,7 +52,7 @@ class WhatsappGroupAgent
             default: 10,
           },
         },
-        required: ["anchor_message_id", "limit"],
+        required: [ "anchor_message_id", "limit" ],
       },
     }
 
@@ -95,7 +95,7 @@ class WhatsappGroupAgent
                 description: "ISO-8601 range end date.",
               },
             },
-            required: ["from", "to"],
+            required: [ "from", "to" ],
             description:
               "The date range to search for messages in. Strongly consider " \
               "setting this value.",
@@ -114,7 +114,7 @@ class WhatsappGroupAgent
             default: 1,
           },
         },
-        required: ["limit"],
+        required: [ "limit" ],
       },
     }
 
@@ -197,7 +197,7 @@ class WhatsappGroupAgent
         end
 
         # Early return if no filters to apply
-        if [any_keywords, all_keywords, any_participants, date_range].all?(&:blank?)
+        if [ any_keywords, all_keywords, any_participants, date_range ].all?(&:blank?)
           next [].each
         end
 
@@ -211,7 +211,7 @@ class WhatsappGroupAgent
           to = Time.zone.parse(date_range.fetch(:to)).end_of_day
           scope = scope.where(timestamp: from..to)
         end
-        if [any_keywords, all_keywords].any?(&:present?)
+        if [ any_keywords, all_keywords ].any?(&:present?)
           scope = filter_by_keywords(scope, all_keywords:, any_keywords:)
         end
 
@@ -230,7 +230,7 @@ class WhatsappGroupAgent
         <<~EOF
           ### RESULT METADATA
           ```json
-          #{pagy.data_hash(data_keys: [:page, :next, :count, :pages])}
+          #{pagy.data_hash(data_keys: [ :page, :next, :count, :pages ])}
           ```
 
           ---
@@ -315,7 +315,7 @@ class WhatsappGroupAgent
       end
 
       # Early return if no participants to filter by
-      if [lids, jids, phone_numbers].all?(&:empty?)
+      if [ lids, jids, phone_numbers ].all?(&:empty?)
         return scope
       end
 
@@ -360,7 +360,7 @@ class WhatsappGroupAgent
               message:,
             },
           )
-          formatted_messages << [heading, content].join("\n")
+          formatted_messages << [ heading, content ].join("\n")
         end
         formatted_messages.join("\n\n")
       rescue => error

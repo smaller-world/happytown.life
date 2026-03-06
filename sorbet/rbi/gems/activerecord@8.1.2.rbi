@@ -8624,6 +8624,7 @@ class ActiveRecord::Base
   include ::ActiveRecord::SignedId
   include ::ActiveRecord::Suppressor
   include ::ActiveRecord::Marshalling::Methods
+  include ::FriendlyId::UnfriendlyUtils
   include ::ActiveStorage::Attached::Model
   include ::ActiveStorage::Reflection::ActiveRecordExtensions
   include ::ActionText::Attribute
