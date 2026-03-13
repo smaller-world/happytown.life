@@ -73,7 +73,7 @@ gem "rack-canonical-host", "~> 1.3"
 gem "mission_control-jobs"
 
 # Paginate with Pagy
-gem "pagy", "~> 43.2"
+gem "pagy", "~> 43.3"
 
 # Extend MVC to AI interactions
 gem "activeagent", "~> 1.0"
