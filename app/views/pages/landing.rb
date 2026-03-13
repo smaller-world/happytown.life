@@ -355,7 +355,7 @@ class Views::Pages::Landing < Views::Base
   sig { params(name: String, slug: String, attributes: T.untyped).void }
   def render_gathering_button(name, slug:, **attributes)
     a(
-      href: "https://luma.com/#{slug}?utm_source=happytown.life",
+      href: "https://luma.com/happytown?utm_source=happytown.life",
       target: "_blank",
       **mix(
         { class: "landing_gathering_btn" },
