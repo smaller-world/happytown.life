@@ -12,7 +12,10 @@ _a home for third-space hosts and guests._
 # Install dev tools and dependencies:
 mise install
 
-# Run the development server:
+# Set up local dev environment and run dev server:
+mise setup
+
+# OR: Only run the development server:
 mise dev
 ```
 

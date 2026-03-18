@@ -13,16 +13,16 @@ FileUtils.chdir APP_ROOT do
   # This script is idempotent, so that you can run it at any time and get an expectable outcome.
   # Add necessary setup steps to this file.
 
-  puts "== Installing dependencies =="
+  # puts "== Installing dependencies =="
 
-  # Install Gems
-  system("bundle check") || system!("bundle install")
+  # # Install Gems
+  # system("bundle check") || system!("bundle install")
 
-  # Install JavaScript dependencies
-  system!("bun install")
+  # # Install JavaScript dependencies
+  # system!("bun install")
 
-  puts "\n== Installing git hooks =="
-  system!("hk install")
+  # puts "\n== Installing git hooks =="
+  # system!("hk install")
 
   # puts "\n== Copying sample files =="
   # unless File.exist?("config/database.yml")
@@ -33,7 +33,7 @@ FileUtils.chdir APP_ROOT do
   unless File.exist?("tmp/pids/postgres.cid")
     puts "\n== Starting database =="
     postgres_pid = Process.spawn("bin/postgres", out: File::NULL, err: File::NULL)
-    sleep 1
+    system! "bin/postgres-await"
     puts "* PID: #{postgres_pid}"
   end
 
