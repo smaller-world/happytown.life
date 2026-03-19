@@ -13,9 +13,6 @@ overmind = "latest"
 setup = { run = "bin/setup" }
 dev = { run = "bin/dev" }
 restart = { run = "bin/overmind restart" }
-test = { run = "bin/rails test" }
-"test:system" = { run = "bin/rails test:system" }
-
 # Development tasks
 annotate = { run = "bin/annotaterb models" }
 
@@ -23,6 +20,24 @@ annotate = { run = "bin/annotaterb models" }
 "fly:ssh" = { run = "fly ssh console" }
 "fly:console" = { run = "bin/fly-exec 'bin/rails console'" }
 "fly:eval" = { run = "bin/fly-eval" }
+
+[tasks.test]
+description = "Run tests"
+usage = '''
+arg "[files]..." var=#true help="Test files, directories, or file:line patterns"
+flag "-i --include <pattern>" help="Include tests matching /regexp/ or string"
+flag "-v --verbose" help="Print each test name as it runs"
+'''
+run = "bin/rails test $@"
+
+[tasks."test:system"]
+description = "Run system tests"
+usage = '''
+arg "[files]..." var=#true help="Test files, directories, or file:line patterns"
+flag "-i --include <pattern>" help="Include tests matching /regexp/ or string"
+flag "-v --verbose" help="Print each test name as it runs"
+'''
+run = "bin/rails test:system $@"
 
 [tasks.fix]
 description = "Fix code with hk"
