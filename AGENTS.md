@@ -24,6 +24,14 @@
 Co-Authored-By: Codex by OpenAI <codex@openai.com>
 ```
 
+## Sorbet / Tapioca
+
+- After adding or updating a gem, run `mise x -- bin/tapioca gems` to regenerate
+  RBI files
+- After adding or changing a model, run `mise x -- bin/tapioca dsl <ModelName>`
+  to regenerate DSL RBI files
+- Never restore RBI files from git — always regenerate them
+
 ## Key Conventions
 
 - Search with `rg` / `rg --files`
