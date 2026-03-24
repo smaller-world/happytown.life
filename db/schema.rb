@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_06_170820) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_23_160515) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "postgis"
 
   create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "blob_id", null: false
@@ -104,6 +105,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_06_170820) do
     t.index ["message_id"], name: "index_ai_tool_calls_on_message_id"
     t.index ["name"], name: "index_ai_tool_calls_on_name"
     t.index ["tool_call_id"], name: "index_ai_tool_calls_on_tool_call_id", unique: true
+  end
+
+  create_table "events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.text "description_md", null: false
+    t.tstzrange "duration", null: false
+    t.jsonb "geo_address"
+    t.geography "geo_location", limit: {srid: 4326, type: "st_point", geographic: true}
+    t.string "luma_id", null: false
+    t.string "luma_url", null: false
+    t.string "name", null: false
+    t.string "tag_ids", default: [], null: false, array: true
+    t.string "time_zone_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["luma_id"], name: "index_events_on_luma_id", unique: true
   end
 
   create_table "sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

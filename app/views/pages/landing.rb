@@ -297,52 +297,56 @@ class Views::Pages::Landing < Views::Base
       h2(class: "text-3xl font-bold text-center") { "featured gatherings" }
 
       div(class: "grid md:grid-cols-2 gap-6 lg:gap-8") do
-        div(class: "landing_gathering_card") do
-          div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
-            image_tag(
-              "landing/mindful-miles-profile.jpg",
-              alt: "mindful miles profile",
-              class: "size-40 rounded-2xl object-cover",
+        if (event = Event.next_mindful_miles_event(only: [ :luma_url ]))
+          div(class: "landing_gathering_card") do
+            div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
+              image_tag(
+                "landing/mindful-miles-profile.jpg",
+                alt: "mindful miles profile",
+                class: "size-40 rounded-2xl object-cover",
+              )
+              div(
+                class: "landing_gathering_badge",
+                data: { variant: "primary" },
+              ) { "walk with us" }
+            end
+            h3(class: "text-2xl font-bold mb-2") { "mindful miles" }
+            p(class: "text-gray-500 mb-4 font-medium") do
+              "a winter PATH walk for wandering conversations. 10k-ish steps " \
+                "at 8am every saturday."
+            end
+            render_gathering_button(
+              "mindful miles",
+              url: event.luma_url_with_utm,
+              class: "text-landing-primary",
             )
-            div(
-              class: "landing_gathering_badge",
-              data: { variant: "primary" },
-            ) { "walk with us" }
           end
-          h3(class: "text-2xl font-bold mb-2") { "mindful miles" }
-          p(class: "text-gray-500 mb-4 font-medium") do
-            "a winter PATH walk for wandering conversations. 10k-ish steps " \
-              "at 8am every saturday."
-          end
-          render_gathering_button(
-            "mindful miles",
-            slug: "mindfulmiles",
-            class: "text-landing-primary",
-          )
         end
 
-        div(class: "landing_gathering_card") do
-          div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
-            image_tag(
-              "landing/foodcourt-fairgrounds-profile.png",
-              alt: "foodcourt fairgrounds profile",
-              class: "size-40 rounded-2xl object-cover",
+        if (event = Event.next_fairgrounds_event(only: [ :luma_url ]))
+          div(class: "landing_gathering_card") do
+            div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
+              image_tag(
+                "landing/foodcourt-fairgrounds-profile.png",
+                alt: "foodcourt fairgrounds profile",
+                class: "size-40 rounded-2xl object-cover",
+              )
+              div(
+                class: "landing_gathering_badge",
+                data: { variant: "secondary" },
+              ) { "create with us" }
+            end
+            h3(class: "text-2xl font-bold mb-2") { "foodcourt fairgrounds" }
+            p(class: "text-gray-500 mb-4 font-medium") do
+              "a cozy post-walk third-space hang: low-key activities in the " \
+                "aura concourse basement food court."
+            end
+            render_gathering_button(
+              "foodcourt fairgrounds",
+              url: event.luma_url_with_utm,
+              class: "text-landing-secondary",
             )
-            div(
-              class: "landing_gathering_badge",
-              data: { variant: "secondary" },
-            ) { "create with us" }
           end
-          h3(class: "text-2xl font-bold mb-2") { "foodcourt fairgrounds" }
-          p(class: "text-gray-500 mb-4 font-medium") do
-            "a cozy post-walk third-space hang: low-key activities in the " \
-              "aura concourse basement food court."
-          end
-          render_gathering_button(
-            "foodcourt fairgrounds",
-            slug: "foodcourt-fairgrounds",
-            class: "text-landing-secondary",
-          )
         end
       end
 
@@ -352,10 +356,10 @@ class Views::Pages::Landing < Views::Base
     end
   end
 
-  sig { params(name: String, slug: String, attributes: T.untyped).void }
-  def render_gathering_button(name, slug:, **attributes)
+  sig { params(name: String, url: String, attributes: T.untyped).void }
+  def render_gathering_button(name, url:, **attributes)
     a(
-      href: "https://luma.com/happytown?utm_source=happytown.life",
+      href: url,
       target: "_blank",
       **mix(
         { class: "landing_gathering_btn" },

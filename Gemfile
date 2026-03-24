@@ -104,6 +104,10 @@ gem "after_party"
 # Use the auto_link helper to automatically link URLs in text
 gem "rails_autolink", "~> 1.1"
 
+# Add PostGIS support
+gem "activerecord-postgis-adapter"
+gem "rgeo"
+
 group :development, :test do
   # Run tests with Minitest
   gem "minitest", "~> 6.0.1"
