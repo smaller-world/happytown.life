@@ -61,8 +61,7 @@ class WaSenderApi
     tag_logger do
       logger.debug("Sending message: #{body}")
     end
-    response = self.class.post("/send-message", body:)
-    check_response!(response)
+    post!("/send-message", body:)
     @message_last_sent_at = Time.current
   end
 
@@ -80,8 +79,7 @@ class WaSenderApi
     tag_logger do
       logger.debug("Sending image message: #{body}")
     end
-    response = self.class.post("/send-message", body:)
-    check_response!(response)
+    post!("/send-message", body:)
     @message_last_sent_at = Time.current
   end
 
@@ -99,8 +97,7 @@ class WaSenderApi
     tag_logger do
       logger.debug("Sending video message: #{body}")
     end
-    response = self.class.post("/send-message", body:)
-    check_response!(response)
+    post!("/send-message", body:)
     @message_last_sent_at = Time.current
   end
 
@@ -117,14 +114,12 @@ class WaSenderApi
     tag_logger do
       logger.debug("Sending presence update: #{body}")
     end
-    response = self.class.post("/send-presence-update", body:)
-    check_response!(response)
+    post!("/send-presence-update", body:)
   end
 
   sig { params(jid: String).returns(T::Hash[String, T.untyped]) }
   def group_metadata(jid:)
-    response = self.class.get("/groups/#{jid}/metadata")
-    response_data!(response)
+    get_data!("/groups/#{jid}/metadata")
   end
 
   sig { params(jid: String).returns(T.nilable(String)) }
@@ -139,14 +134,12 @@ class WaSenderApi
 
   sig { params(jid: String).returns(T::Array[T::Hash[String, T.untyped]]) }
   def group_participants(jid:)
-    response = self.class.get("/groups/#{jid}/participants")
-    response_data!(response)
+    get_data!("/groups/#{jid}/participants")
   end
 
   sig { params(lid: String).returns(T.nilable(String)) }
   def phone_number_jid_for_user(lid:)
-    response = self.class.get("/pn-from-lid/#{lid}")
-    response_data!(response).fetch("pn").presence
+    get_data!("/pn-from-lid/#{lid}").fetch("pn").presence
   end
 
   sig { params(phone_number: String).returns(T.nilable(String)) }
@@ -162,6 +155,25 @@ class WaSenderApi
   private
 
   # == Helpers ==
+
+  sig { params(path: String, options: T.untyped).returns(T.untyped) }
+  def get!(path, **options)
+    response = self.class.get(path, **options)
+    check_response!(response)
+    response.parsed_response
+  end
+
+  sig { params(path: String, options: T.untyped).returns(T.untyped) }
+  def get_data!(path, **options)
+    response_data!(self.class.get(path, **options))
+  end
+
+  sig { params(path: String, options: T.untyped).returns(T.untyped) }
+  def post!(path, **options)
+    response = self.class.post(path, **options)
+    check_response!(response)
+    response.parsed_response
+  end
 
   sig { params(response: HTTParty::Response).void }
   def check_response!(response)
@@ -194,12 +206,11 @@ class WaSenderApi
     Rails.configuration.x.perform_whatsapp_deliveries
   end
 
-  sig { params(block: T.proc.void).void }
-  def tag_logger(&block)
+  sig { params(tags: String, block: T.proc.void).void }
+  def tag_logger(*tags, &block)
     logger = Rails.logger
     if logger.respond_to?(:tagged)
-      args = [ :tagged, "WaSenderApi" ]
-      logger.public_send(*T.unsafe(args), &block)
+      T.unsafe(logger).tagged(self.class.name, *tags, &block)
     else
       yield
     end
