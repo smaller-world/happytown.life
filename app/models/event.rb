@@ -137,7 +137,7 @@ class Event < ApplicationRecord
 
   sig { params(tag_id: String, only: T.nilable(T::Array[Symbol])).returns(T.nilable(Event)) }
   private_class_method def self.next_event_for_tag_id(tag_id, only: nil)
-    time_zone = time_zone_for_tag_id(tag_id)
+    time_zone = time_zone_for_tag_id(tag_id) or return
     day_start = time_zone.now.beginning_of_day
     relation = where("? = ANY(tag_ids)", tag_id)
       .where("LOWER(duration) >= ?", day_start)
@@ -149,12 +149,12 @@ class Event < ApplicationRecord
     relation.first
   end
 
-  sig { params(tag_id: String).returns(ActiveSupport::TimeZone) }
+  sig { params(tag_id: String).returns(T.nilable(ActiveSupport::TimeZone)) }
   private_class_method def self.time_zone_for_tag_id(tag_id)
     name = where("LOWER(duration) >= NOW()")
       .where("? = ANY(tag_ids)", tag_id)
       .order(Arel.sql("LOWER(duration) ASC"))
-      .pick(:time_zone_name)
+      .pick(:time_zone_name) or return
     ActiveSupport::TimeZone.new(name)
   end
 end

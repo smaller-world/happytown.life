@@ -293,11 +293,15 @@ class Views::Pages::Landing < Views::Base
 
   sig { void }
   def render_gatherings
+    fairgrounds_event = next_fairgrounds_event
+    mindful_miles_event = next_mindful_miles_event
+    return if !fairgrounds_event && !mindful_miles_event
+
     section(id: "gatherings", class: "space-y-6 lg:space-y-8") do
       h2(class: "text-3xl font-bold text-center") { "featured gatherings" }
 
       div(class: "grid md:grid-cols-2 gap-6 lg:gap-8") do
-        if (event = Event.next_mindful_miles_event(only: [ :luma_url ]))
+        if mindful_miles_event
           div(class: "landing_gathering_card") do
             div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
               image_tag(
@@ -317,13 +321,13 @@ class Views::Pages::Landing < Views::Base
             end
             render_gathering_button(
               "mindful miles",
-              url: event.luma_url_with_utm,
+              url: mindful_miles_event.luma_url_with_utm,
               class: "text-landing-primary",
             )
           end
         end
 
-        if (event = Event.next_fairgrounds_event(only: [ :luma_url ]))
+        if fairgrounds_event
           div(class: "landing_gathering_card") do
             div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
               image_tag(
@@ -343,7 +347,7 @@ class Views::Pages::Landing < Views::Base
             end
             render_gathering_button(
               "foodcourt fairgrounds",
-              url: event.luma_url_with_utm,
+              url: fairgrounds_event.luma_url_with_utm,
               class: "text-landing-secondary",
             )
           end
@@ -436,5 +440,15 @@ class Views::Pages::Landing < Views::Base
         "© 2026 happy town. all rights reserved (but share the vibe freely)."
       end
     end
+  end
+
+  sig { returns(T.nilable(Event)) }
+  def next_fairgrounds_event
+    Event.next_fairgrounds_event(only: [ :luma_url ])
+  end
+
+  sig { returns(T.nilable(Event)) }
+  def next_mindful_miles_event
+    Event.next_mindful_miles_event(only: [ :luma_url ])
   end
 end
