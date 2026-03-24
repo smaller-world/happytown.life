@@ -79,11 +79,11 @@ jobs:
 
     env:
       RAILS_ENV: test
-      DATABASE_URL: postgres://supabase_admin:postgres@localhost:5432
+      DATABASE_URL: postgis://supabase_admin:postgres@localhost:5432
 
     services:
       postgres:
-        image: postgres
+        image: supabase/postgres:17.6.1.016
         env:
           POSTGRES_USER: supabase_admin
           POSTGRES_PASSWORD: postgres
@@ -91,7 +91,7 @@ jobs:
           - 5432:5432
         options:
           --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s
-          --health-retries=3
+          --health-retries=5 --health-start-period=5s
       # redis:
       #   image: valkey/valkey:8
       #   ports:
