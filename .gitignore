@@ -49,6 +49,10 @@ sorbet/rbi/hidden-definitions/errors.txt
 /node_modules
 
 
+# == Agents
+.cursor/hooks/state/
+
+
 # == IDE
 # VSCode (keeping workspace configurations):
 **/.vscode/*
