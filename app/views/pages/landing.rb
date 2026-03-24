@@ -293,64 +293,60 @@ class Views::Pages::Landing < Views::Base
 
   sig { void }
   def render_gatherings
-    fairgrounds_event = next_fairgrounds_event
-    mindful_miles_event = next_mindful_miles_event
-    return if !fairgrounds_event && !mindful_miles_event
-
     section(id: "gatherings", class: "space-y-6 lg:space-y-8") do
       h2(class: "text-3xl font-bold text-center") { "featured gatherings" }
 
       div(class: "grid md:grid-cols-2 gap-6 lg:gap-8") do
-        if mindful_miles_event
-          div(class: "landing_gathering_card") do
-            div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
-              image_tag(
-                "landing/mindful-miles-profile.jpg",
-                alt: "mindful miles profile",
-                class: "size-40 rounded-2xl object-cover",
-              )
-              div(
-                class: "landing_gathering_badge",
-                data: { variant: "primary" },
-              ) { "walk with us" }
-            end
-            h3(class: "text-2xl font-bold mb-2") { "mindful miles" }
-            p(class: "text-gray-500 mb-4 font-medium") do
-              "a winter PATH walk for wandering conversations. 10k-ish steps " \
-                "at 8am every saturday."
-            end
-            render_gathering_button(
-              "mindful miles",
-              url: mindful_miles_event.luma_url_with_utm,
-              class: "text-landing-primary",
+        div(class: "landing_gathering_card") do
+          div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
+            image_tag(
+              "landing/mindful-miles-profile.jpg",
+              alt: "mindful miles profile",
+              class: "size-40 rounded-2xl object-cover",
             )
+            div(
+              class: "landing_gathering_badge",
+              data: { variant: "primary" },
+            ) { "walk with us" }
           end
+          h3(class: "text-2xl font-bold mb-2") { "mindful miles" }
+          p(class: "text-gray-500 mb-4 font-medium") do
+            "a winter PATH walk for wandering conversations. 10k-ish steps " \
+              "at 8am every saturday."
+          end
+          render_gathering_button(
+            "mindful miles",
+            url: luma_redirect_events_path(
+              tag_id: Rails.configuration.x.mindful_miles_tag_id,
+            ),
+            class: "text-landing-primary",
+          )
         end
 
-        if fairgrounds_event
-          div(class: "landing_gathering_card") do
-            div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
-              image_tag(
-                "landing/foodcourt-fairgrounds-profile.png",
-                alt: "foodcourt fairgrounds profile",
-                class: "size-40 rounded-2xl object-cover",
-              )
-              div(
-                class: "landing_gathering_badge",
-                data: { variant: "secondary" },
-              ) { "create with us" }
-            end
-            h3(class: "text-2xl font-bold mb-2") { "foodcourt fairgrounds" }
-            p(class: "text-gray-500 mb-4 font-medium") do
-              "a cozy post-walk third-space hang: low-key activities in the " \
-                "aura concourse basement food court."
-            end
-            render_gathering_button(
-              "foodcourt fairgrounds",
-              url: fairgrounds_event.luma_url_with_utm,
-              class: "text-landing-secondary",
+        div(class: "landing_gathering_card") do
+          div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
+            image_tag(
+              "landing/foodcourt-fairgrounds-profile.png",
+              alt: "foodcourt fairgrounds profile",
+              class: "size-40 rounded-2xl object-cover",
             )
+            div(
+              class: "landing_gathering_badge",
+              data: { variant: "secondary" },
+            ) { "create with us" }
           end
+          h3(class: "text-2xl font-bold mb-2") { "foodcourt fairgrounds" }
+          p(class: "text-gray-500 mb-4 font-medium") do
+            "a cozy post-walk third-space hang: low-key activities in the " \
+              "aura concourse basement food court."
+          end
+          render_gathering_button(
+            "foodcourt fairgrounds",
+            url: luma_redirect_events_path(
+              tag_id: Rails.configuration.x.fairgrounds_tag_id,
+            ),
+            class: "text-landing-secondary",
+          )
         end
       end
 
@@ -440,15 +436,5 @@ class Views::Pages::Landing < Views::Base
         "© 2026 happy town. all rights reserved (but share the vibe freely)."
       end
     end
-  end
-
-  sig { returns(T.nilable(Event)) }
-  def next_fairgrounds_event
-    Event.next_fairgrounds_event(only: [ :luma_url ])
-  end
-
-  sig { returns(T.nilable(Event)) }
-  def next_mindful_miles_event
-    Event.next_mindful_miles_event(only: [ :luma_url ])
   end
 end

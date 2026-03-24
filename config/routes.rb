@@ -41,6 +41,13 @@ Rails.application.routes.draw do
     resources :whatsapp_messages, path: "/messages", only: :index
   end
 
+  # == Events ==
+  resources :events, only: [] do
+    collection do
+      get :luma_redirect
+    end
+  end
+
   # == Devtools ==
   get "/fly" => redirect(
     "https://fly.io/apps/happytown",

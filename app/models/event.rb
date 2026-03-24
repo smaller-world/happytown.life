@@ -53,15 +53,6 @@ class Event < ApplicationRecord
     self[:duration].end.in_time_zone(time_zone)
   end
 
-  sig { returns(String) }
-  def luma_url_with_utm
-    url = Addressable::URI.parse(luma_url)
-    query_values = url.query_values || {}
-    query_values["utm_source"] = "happytown.life"
-    url.query_values = query_values
-    url.to_s
-  end
-
   # == Importing ==
 
   sig { returns(T::Array[Event]) }
@@ -94,20 +85,34 @@ class Event < ApplicationRecord
 
   # == Helpers ==
 
-  sig { params(only: T.nilable(T::Array[Symbol])).returns(T.nilable(Event)) }
-  def self.next_fairgrounds_event(only: nil)
-    next_event_for_tag_id(
-      Rails.configuration.x.fairgrounds_tag_id,
-      only:,
-    )
-  end
+  # sig { params(only: T.nilable(T::Array[Symbol])).returns(T.nilable(Event)) }
+  # def self.next_fairgrounds_event(only: nil)
+  #   next_event_for_tag_id(
+  #     Rails.configuration.x.fairgrounds_tag_id,
+  #     only:,
+  #   )
+  # end
 
-  sig { params(only: T.nilable(T::Array[Symbol])).returns(T.nilable(Event)) }
-  def self.next_mindful_miles_event(only: nil)
-    next_event_for_tag_id(
-      Rails.configuration.x.mindful_miles_tag_id,
-      only:,
-    )
+  # sig { params(only: T.nilable(T::Array[Symbol])).returns(T.nilable(Event)) }
+  # def self.next_mindful_miles_event(only: nil)
+  #   next_event_for_tag_id(
+  #     Rails.configuration.x.mindful_miles_tag_id,
+  #     only:,
+  #   )
+  # end
+
+  sig { params(tag_id: String, only: T.nilable(T::Array[Symbol])).returns(T.nilable(Event)) }
+  def self.next_event_for_tag_id(tag_id, only: nil)
+    time_zone = time_zone_for_tag_id(tag_id) or return
+    day_start = time_zone.now.beginning_of_day
+    relation = where("? = ANY(tag_ids)", tag_id)
+      .where("LOWER(duration) >= ?", day_start)
+      .where("LOWER(duration) < ?", day_start + 1.week)
+      .order(Arel.sql("LOWER(duration) ASC"))
+    if only
+      relation = T.cast(relation.select(*T.unsafe(only)), PrivateRelation)
+    end
+    relation.first
   end
 
   private
@@ -133,20 +138,6 @@ class Event < ApplicationRecord
         tag_ids: entry.tags.map(&:id),
       )
     end
-  end
-
-  sig { params(tag_id: String, only: T.nilable(T::Array[Symbol])).returns(T.nilable(Event)) }
-  private_class_method def self.next_event_for_tag_id(tag_id, only: nil)
-    time_zone = time_zone_for_tag_id(tag_id) or return
-    day_start = time_zone.now.beginning_of_day
-    relation = where("? = ANY(tag_ids)", tag_id)
-      .where("LOWER(duration) >= ?", day_start)
-      .where("LOWER(duration) < ?", day_start + 1.week)
-      .order(Arel.sql("LOWER(duration) ASC"))
-    if only
-      relation = T.cast(relation.select(*T.unsafe(only)), PrivateRelation)
-    end
-    relation.first
   end
 
   sig { params(tag_id: String).returns(T.nilable(ActiveSupport::TimeZone)) }

@@ -31,6 +31,9 @@ module GeneratedPathHelpersModule
   def logs_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def luma_redirect_events_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def message_history_whatsapp_group_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
