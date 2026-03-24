@@ -21,7 +21,7 @@
 - AI commits MUST include attribute, e.g.
 
 ```text
-Co-Authored-By: Codex by OpenAI <codex@openai.com>
+Co-Authored-By: (model)
 ```
 
 ## Sorbet / Tapioca
