@@ -2,12 +2,10 @@
 # frozen_string_literal: true
 
 require "rails"
-require "httparty"
+require "http"
 
 class Luma
   extend T::Sig
-
-  include HTTParty
 
   # == Models ==
 
@@ -48,13 +46,13 @@ class Luma
   class BadResponse < StandardError
     extend T::Sig
 
-    sig { params(response: HTTParty::Response).void }
+    sig { params(response: HTTP::Response).void }
     def initialize(response)
       @response = response
-      super("Luma API error (status #{response.code}): #{response.parsed_response}")
+      super("Luma API error (status #{response.code}): #{response.parse}")
     end
 
-    sig { returns(HTTParty::Response) }
+    sig { returns(HTTP::Response) }
     attr_reader :response
   end
 
@@ -62,13 +60,15 @@ class Luma
 
   # == Configuration ==
 
-  base_uri "https://public-api.luma.com"
-  format :json
-  logger Rails.logger, Rails.configuration.log_level
-
   sig { params(api_key: String).void }
   def initialize(api_key:)
-    self.class.headers("x-luma-api-key" => api_key)
+    @session = T.let(
+      HTTP
+      .use(logging: { logger: Rails.logger.tagged(self.class.name) })
+      .base_uri("https://public-api.luma.com")
+      .headers("x-luma-api-key" => api_key),
+      HTTP::Session,
+    )
   end
 
   # == Methods ==
@@ -91,7 +91,7 @@ class Luma
     sort_column: nil,
     sort_direction: nil
   )
-    query = {
+    params = {
       after: after&.iso8601,
       before: before&.iso8601,
       pagination_cursor:,
@@ -99,7 +99,7 @@ class Luma
       sort_column:,
       sort_direction:,
     }.compact
-    response = get!("/v1/calendar/list-events", query:)
+    response = get!("/v1/calendar/list-events", params:)
     entries = response.fetch("entries").map do |entry|
       event = entry.fetch("event")
       event = Event.new(
@@ -138,14 +138,14 @@ class Luma
 
   sig { params(path: String, options: T.untyped).returns(T.untyped) }
   def get!(path, **options)
-    response = self.class.get(path, **options)
+    response = @session.get(path, **options)
     check_response!(response)
-    response.parsed_response
+    response.parse
   end
 
-  sig { params(response: HTTParty::Response).void }
+  sig { params(response: HTTP::Response).void }
   def check_response!(response)
-    unless response.success?
+    unless response.status.success?
       case response.code
       when 429
         raise TooManyRequests, response

@@ -66,8 +66,8 @@ gem "enumerize", "~> 2.8"
 # Create human-friendly identifiers for models
 gem "friendly_id", "~> 5.6"
 
-# Makes http fun again!
-gem "httparty", "~> 0.24.2"
+# Fast HTTP client
+gem "http", "~> 6.0"
 
 # Enforce a canonical host
 gem "rack-canonical-host", "~> 1.3"

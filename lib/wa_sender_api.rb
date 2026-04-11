@@ -2,12 +2,10 @@
 # frozen_string_literal: true
 
 require "rails"
-require "httparty"
+require "http"
 
 class WaSenderApi
   extend T::Sig
-
-  include HTTParty
 
   # == Exceptions ==
 
@@ -16,13 +14,13 @@ class WaSenderApi
   class BadResponse < StandardError
     extend T::Sig
 
-    sig { params(response: HTTParty::Response).void }
+    sig { params(response: HTTP::Response).void }
     def initialize(response)
       @response = response
-      super("WASenderAPI error (status #{response.code}): #{response.parsed_response}")
+      super("WASenderAPI error (status #{response.code}): #{response.parse}")
     end
 
-    sig { returns(HTTParty::Response) }
+    sig { returns(HTTP::Response) }
     attr_reader :response
   end
 
@@ -34,15 +32,19 @@ class WaSenderApi
 
   ACCOUNT_PROTECTION_INTERVAL = 5
 
-  base_uri "https://www.wasenderapi.com/api"
-  format :json
-  logger Rails.logger, Rails.configuration.log_level
-  debug_output Rails.logger.debug if Rails.env.development?
-
   sig { params(api_key: String).void }
   def initialize(api_key:)
-    self.class.headers("Authorization" => "Bearer #{api_key}")
-    @message_last_sent_at = T.let(nil, T.nilable(ActiveSupport::TimeWithZone))
+    @session = T.let(
+      HTTP
+        .use(logging: { logger: Rails.logger.tagged(self.class.name) })
+        .base_uri("https://www.wasenderapi.com/api")
+        .auth("Bearer #{api_key}"),
+      HTTP::Session,
+    )
+    @message_last_sent_at = T.let(
+      nil,
+      T.nilable(ActiveSupport::TimeWithZone),
+    )
   end
 
   # == Methods ==
@@ -57,11 +59,11 @@ class WaSenderApi
     end
 
     wait_for_account_protection_period
-    body = { to:, text:, mentions: mentioned_jids }.compact_blank
+    payload = { to:, text:, mentions: mentioned_jids }.compact_blank
     tag_logger do
-      logger.debug("Sending message: #{body}")
+      logger.debug("Sending message: #{payload}")
     end
-    post!("/send-message", body:)
+    post!("/send-message", json: payload)
     @message_last_sent_at = Time.current
   end
 
@@ -75,11 +77,11 @@ class WaSenderApi
     end
 
     wait_for_account_protection_period
-    body = { to:, text:, "imageUrl" => image_url }.compact
+    payload = { to:, text:, "imageUrl" => image_url }.compact
     tag_logger do
-      logger.debug("Sending image message: #{body}")
+      logger.debug("Sending image message: #{payload}")
     end
-    post!("/send-message", body:)
+    post!("/send-message", json: payload)
     @message_last_sent_at = Time.current
   end
 
@@ -93,11 +95,11 @@ class WaSenderApi
     end
 
     wait_for_account_protection_period
-    body = { to:, text:, "videoUrl" => video_url }.compact
+    payload = { to:, text:, "videoUrl" => video_url }.compact
     tag_logger do
-      logger.debug("Sending video message: #{body}")
+      logger.debug("Sending video message: #{payload}")
     end
-    post!("/send-message", body:)
+    post!("/send-message", json: payload)
     @message_last_sent_at = Time.current
   end
 
@@ -110,11 +112,11 @@ class WaSenderApi
       return
     end
 
-    body = { jid:, type: }
+    payload = { jid:, type: }
     tag_logger do
-      logger.debug("Sending presence update: #{body}")
+      logger.debug("Sending presence update: #{payload}")
     end
-    post!("/send-presence-update", body:)
+    post!("/send-presence-update", json: payload)
   end
 
   sig { params(jid: String).returns(T::Hash[String, T.untyped]) }
@@ -124,7 +126,7 @@ class WaSenderApi
 
   sig { params(jid: String).returns(T.nilable(String)) }
   def group_profile_picture_url(jid:)
-    response = self.class.get("/groups/#{jid}/picture")
+    response = @session.get("/groups/#{jid}/picture")
     if response.code == 422
       nil
     else
@@ -144,10 +146,11 @@ class WaSenderApi
 
   sig { params(phone_number: String).returns(T.nilable(String)) }
   def contact_profile_picture_url(phone_number:)
-    response = self.class.get("/contacts/#{phone_number}/picture")
+    response = @session.get("/contacts/#{phone_number}/picture")
     if response.code == 422
       nil
     else
+      check_response!(response)
       response_data!(response).fetch("imgUrl")
     end
   end
@@ -158,26 +161,28 @@ class WaSenderApi
 
   sig { params(path: String, options: T.untyped).returns(T.untyped) }
   def get!(path, **options)
-    response = self.class.get(path, **options)
+    response = @session.get(path, **options)
     check_response!(response)
-    response.parsed_response
+    response.parse
   end
 
   sig { params(path: String, options: T.untyped).returns(T.untyped) }
   def get_data!(path, **options)
-    response_data!(self.class.get(path, **options))
+    response = @session.get(path, **options)
+    check_response!(response)
+    response_data!(response)
   end
 
   sig { params(path: String, options: T.untyped).returns(T.untyped) }
   def post!(path, **options)
-    response = self.class.post(path, **options)
+    response = @session.post(path, **options)
     check_response!(response)
-    response.parsed_response
+    response.parse
   end
 
-  sig { params(response: HTTParty::Response).void }
+  sig { params(response: HTTP::Response).void }
   def check_response!(response)
-    unless response.success?
+    unless response.status.success?
       case response.code
       when 408
         raise RequestTimeout, response
@@ -191,19 +196,19 @@ class WaSenderApi
     end
   end
 
-  sig { params(response: HTTParty::Response).returns(T.untyped) }
+  sig { params(response: HTTP::Response).returns(T.untyped) }
   def response_data!(response)
-    check_response!(response)
-    if response.parsed_response["success"] == false
-      message = response.parsed_response.fetch("message")
+    parsed_response = response.parse
+    if parsed_response["success"] == false
+      message = parsed_response.fetch("message")
       raise Error, message
     end
-    response.parsed_response["data"]
+    parsed_response["data"]
   end
 
   sig { returns(T::Boolean) }
   def perform_deliveries?
-    Rails.configuration.x.perform_whatsapp_deliveries
+    Rails.configuration.x.whatsapp.perform_deliveries
   end
 
   sig { params(tags: String, block: T.proc.void).void }
