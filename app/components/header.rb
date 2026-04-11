@@ -43,46 +43,47 @@ class Components::Header < Components::Base
 
   sig { void }
   def render_navigation
-    config = Rails.configuration.x
-    instagram_url = config.instagram_url
-    tiktok_url = config.tiktok_url
-    luma_url = config.luma_url
+    socials = Rails.configuration.x.socials
 
     ul(class: "header_navigation") do
-      if instagram_url || tiktok_url
+      if socials.instagram_url || socials.tiktok_url
         li do
-          ul(class:  "flex items-center gap-x-1") do
-            li(data: {
-              controller: "tooltip",
-              tooltip_content_value: "follow us on instagram",
-            }) do
-              a(href: instagram_url, target: "_blank") do
-                Icon(
-                  "huge/instagram",
-                  class: "size-5.5 text-secondary dark:text-secondary-foreground",
-                )
+          ul(class: "flex items-center gap-x-1") do
+            if (instagram_url = socials.instagram_url)
+              li(data: {
+                controller: "tooltip",
+                tooltip_content_value: "follow us on instagram",
+              }) do
+                a(href: instagram_url, target: "_blank") do
+                  Icon(
+                    "huge/instagram",
+                    class: "size-5.5 text-secondary dark:text-secondary-foreground",
+                  )
+                end
               end
             end
-            li(data: {
-              controller: "tooltip",
-              tooltip_content_value: "follow us on tiktok",
-            }) do
-              a(href: tiktok_url, target: "_blank") do
-                Icon(
-                  "huge/tiktok",
-                  class: "size-5.5 text-secondary dark:text-secondary-foreground",
-                )
+            if (tiktok_url = socials.tiktok_url)
+              li(data: {
+                controller: "tooltip",
+                tooltip_content_value: "follow us on tiktok",
+              }) do
+                a(href: tiktok_url, target: "_blank") do
+                  Icon(
+                    "huge/tiktok",
+                    class: "size-5.5 text-secondary dark:text-secondary-foreground",
+                  )
+                end
               end
             end
           end
         end
       end
 
-      if (instagram_url || tiktok_url) && luma_url
+      if (socials.instagram_url || socials.tiktok_url) && socials.luma_url
         Components::Separator(orientation: :vertical)
       end
 
-      if luma_url
+      if (luma_url = socials.luma_url)
         li do
           Components::Button(
             element: :a,
@@ -104,7 +105,9 @@ class Components::Header < Components::Base
               class: "size-5.5",
               data: { icon: "inline-start" },
             )
-            span(class: "text-sm font-medium") { "events" }
+            span(class: "text-sm font-medium") do
+              "events"
+            end
           end
         end
       end

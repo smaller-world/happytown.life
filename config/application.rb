@@ -29,28 +29,28 @@ module HappyTown
     # == Custom Configuration ==
 
     # == Site
-    config.x.site_name = "happy town"
-    config.x.site_tagline = "a home for third-space hosts and guests"
-    config.x.site_description =
+    config.x.site.name = "happy town"
+    config.x.site.tagline = "a home for third-space hosts and guests"
+    config.x.site.description =
       "a new kind of third space in toronto. weekly walks, irl chat groups, " \
         "and hobby tables for curious, friendly people who like wandering " \
         "conversations."
 
     # == Socials
-    config.x.luma_url = "https://luma.com/happytown"
-    config.x.instagram_url = "https://instagram.com/happytown.to"
-    config.x.tiktok_url = "https://tiktok.com/@adamdriversbod"
+    config.x.socials.luma_url = "https://luma.com/happytown"
+    config.x.socials.instagram_url = "https://instagram.com/happytown.to"
+    config.x.socials.tiktok_url = "https://tiktok.com/@adamdriversbod"
 
     # == Luma
-    config.x.fairgrounds_tag_id = "tag-Tq68aDbM8T9R2Bj"
-    config.x.mindful_miles_tag_id = "tag-XRCUFkgLqcr3E0l"
+    config.x.luma.fairgrounds_tag_id = "tag-Tq68aDbM8T9R2Bj"
+    config.x.luma.mindful_miles_tag_id = "tag-XRCUFkgLqcr3E0l"
 
     # == WhatsApp
-    config.x.whatsapp_user_lid = "189971403149563@lid"
-    config.x.perform_whatsapp_deliveries = false
+    config.x.whatsapp.user_lid = "189971403149563@lid"
+    config.x.whatsapp.perform_deliveries = false
 
     # == Webhook Forwarding
-    config.x.dev_server_url_options = {
+    config.x.webhook_forwarding.dev_server_url_options = {
       protocol: "https",
       host: "kaibook.itskai.me",
     }
@@ -79,9 +79,18 @@ module HappyTown
     def wa_sender_api
       return @wa_sender_api if defined?(@wa_sender_api)
 
-      api_key = credentials.dig(:wa_sender_api, :api_key) or
+      api_key = credentials.wa_sender_api.api_key or
         raise "Missing WA Sender API key"
       @wa_sender_api = WaSenderApi.new(api_key:)
+    end
+
+    sig { returns(Luma) }
+    def luma
+      return @luma if defined?(@luma)
+
+      api_key = credentials.luma.api_key or
+        raise "Missing Luma API key"
+      @luma = Luma.new(api_key:)
     end
 
     # sig { returns(OpenRouter) }
@@ -98,4 +107,10 @@ module HappyTown
   def self.application
     T.cast(Rails.application, HappyTown::Application)
   end
+
+  sig { returns(Luma) }
+  def self.luma = application.luma
+
+  sig { returns(WaSenderApi) }
+  def self.wa_sender_api = application.wa_sender_api
 end

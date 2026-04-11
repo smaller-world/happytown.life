@@ -78,7 +78,7 @@ class WaSenderApiController < ApplicationController
 
   sig { returns(String) }
   def webhook_secret
-    Rails.application.credentials.dig(:wa_sender_api, :webhook_secret) or
+    Rails.application.credentials.wa_sender_api.webhook_secret or
       raise "Missing WASenderAPI webhook secret"
   end
 

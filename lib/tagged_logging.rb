@@ -20,7 +20,7 @@ module TaggedLogging
 
     # == Methods ==
 
-    sig { returns(T.any(ActiveSupport::Logger, ActiveSupport::BroadcastLogger)) }
+    sig { returns(T.all(ActiveSupport::Logger, ActiveSupport::TaggedLogging)) }
     def logger = Rails.logger
 
     sig do
@@ -29,11 +29,7 @@ module TaggedLogging
         .returns(T.type_parameter(:U))
     end
     def tag_logger(*tags, &block)
-      if logger.respond_to?(:tagged)
-        T.unsafe(logger).tagged(*log_tags, *tags, &block)
-      else
-        yield
-      end
+      T.unsafe(logger).tagged(*log_tags, *tags, &block)
     end
 
     sig { overridable.returns(T::Array[String]) }

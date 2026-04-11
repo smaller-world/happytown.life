@@ -57,12 +57,11 @@ class Event < ApplicationRecord
 
   sig { returns(T::Array[Event]) }
   def self.import_from_luma
-    client = Luma.new(api_key: Rails.application.credentials.luma.api_key)
     cursor = T.let(nil, T.nilable(String))
     events = T.let([], T::Array[Event])
 
     loop do
-      response = client.list_events(
+      response = HappyTown.luma.list_events(
         sort_column: "start_at",
         sort_direction: "desc nulls last",
         pagination_cursor: cursor,

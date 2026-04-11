@@ -16,7 +16,7 @@ module WhatsappMessaging
 
     sig { returns(String) }
     def application_user_lid
-      Rails.configuration.x.whatsapp_user_lid
+      Rails.configuration.x.whatsapp.user_lid
     end
   end
 
