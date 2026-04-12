@@ -97,6 +97,24 @@ module HappyTown
       @luma = Luma.new(api_key:)
     end
 
+    sig { returns(Tally) }
+    def tally
+      return @tally if defined?(@tally)
+
+      api_key = credentials.tally.api_key or
+        raise "Missing Tally API key"
+      @tally = Tally.new(api_key:)
+    end
+
+    sig { returns(Notion) }
+    def notion
+      return @notion if defined?(@notion)
+
+      integration_secret = credentials.notion.integration_secret or
+        raise "Missing Notion integration secret"
+      @notion = Notion.new(integration_secret:)
+    end
+
     # sig { returns(OpenRouter) }
     # def open_router
     #   return @open_router if defined?(@open_router)
@@ -117,4 +135,10 @@ module HappyTown
 
   sig { returns(WaSenderApi) }
   def self.wa_sender_api = application.wa_sender_api
+
+  sig { returns(Tally) }
+  def self.tally = application.tally
+
+  sig { returns(Notion) }
+  def self.notion = application.notion
 end
