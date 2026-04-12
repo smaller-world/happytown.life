@@ -49,11 +49,8 @@ class Notion
       HTTP
         .use(logging: { logger: Rails.logger.tagged(self.class.name) })
         .base_uri("https://api.notion.com")
-        .headers(
-          "Authorization" => "Bearer #{integration_secret}",
-          "Notion-Version" => "2026-03-11",
-          "Content-Type" => "application/json",
-        ),
+        .auth("Bearer #{integration_secret}")
+        .headers("Notion-Version" => "2026-03-11"),
       HTTP::Session,
     )
   end

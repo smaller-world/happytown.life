@@ -1,9 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rails"
-require "http"
-
 class Tally
   extend T::Sig
 
@@ -43,7 +40,7 @@ class Tally
 
   class Error < StandardError; end
 
-  class BadResponse < StandardError
+  class BadResponse < Error
     extend T::Sig
 
     sig { params(response: HTTP::Response).void }
@@ -66,11 +63,8 @@ class Tally
       HTTP
         .use(logging: { logger: Rails.logger.tagged(self.class.name) })
         .base_uri("https://api.tally.so")
-        .headers(
-          "Authorization" => "Bearer #{api_key}",
-          "tally-version" => "2025-02-01",
-          "Content-Type" => "application/json",
-        ),
+        .auth("Bearer #{api_key}")
+        .headers("tally-version" => "2025-02-01"),
       HTTP::Session,
     )
   end
@@ -105,7 +99,7 @@ class Tally
           key: f.fetch("key"),
           label: f.fetch("label"),
           type: f.fetch("type"),
-          value: f["value"],
+          value: f.fetch("value"),
         )
       end
       Submission.new(

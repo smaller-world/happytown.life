@@ -1,9 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rails"
-require "http"
-
 class WaSenderApi
   extend T::Sig
 
