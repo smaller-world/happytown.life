@@ -24,5 +24,8 @@ Gemfile.lock
 .cursor/
 .gemini/
 .opencode/
-opencode.json
+.qwen/
+docs/superpowers/
+docs/research/
 .mcp.json
+opencode.json

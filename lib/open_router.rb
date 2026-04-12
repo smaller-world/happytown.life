@@ -6,8 +6,6 @@ require "openai"
 class OpenRouter
   extend T::Sig
 
-  # == Typechecking ==
-
   Message = T.type_alias { { role: String, content: String } }
 
   # == Configuration ==
