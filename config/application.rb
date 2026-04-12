@@ -81,48 +81,38 @@ module HappyTown
 
     sig { returns(WaSenderApi) }
     def wa_sender_api
-      return @wa_sender_api if defined?(@wa_sender_api)
-
-      api_key = credentials.wa_sender_api.api_key or
-        raise "Missing WA Sender API key"
-      @wa_sender_api = WaSenderApi.new(api_key:)
+      @wa_sender_api ||= begin
+        api_key = credentials.wa_sender_api.api_key or
+          raise "Missing WA Sender API key"
+        WaSenderApi.new(api_key:)
+      end
     end
 
     sig { returns(Luma) }
     def luma
-      return @luma if defined?(@luma)
-
-      api_key = credentials.luma.api_key or
-        raise "Missing Luma API key"
-      @luma = Luma.new(api_key:)
+      @luma ||= begin
+        api_key = credentials.luma.api_key or
+          raise "Missing Luma API key"
+        Luma.new(api_key:)
+      end
     end
 
     sig { returns(Tally) }
     def tally
-      return @tally if defined?(@tally)
-
-      api_key = credentials.tally.api_key or
-        raise "Missing Tally API key"
-      @tally = Tally.new(api_key:)
+      @tally ||= begin
+        api_key = credentials.tally.api_key or raise "Missing Tally API key"
+        Tally.new(api_key:)
+      end
     end
 
     sig { returns(Notion) }
     def notion
-      return @notion if defined?(@notion)
-
-      integration_secret = credentials.notion.integration_secret or
-        raise "Missing Notion integration secret"
-      @notion = Notion.new(integration_secret:)
+      @notion ||= begin
+        integration_secret = credentials.notion.integration_secret or
+          raise "Missing Notion integration secret"
+        Notion.new(integration_secret:)
+      end
     end
-
-    # sig { returns(OpenRouter) }
-    # def open_router
-    #   return @open_router if defined?(@open_router)
-
-    #   api_key = credentials.dig(:open_router, :api_key) or
-    #     raise "Missing OpenRouter API key"
-    #   @open_router = OpenRouter.new(api_key:)
-    # end
   end
 
   sig { returns(HappyTown::Application) }
