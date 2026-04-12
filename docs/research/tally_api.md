@@ -190,15 +190,46 @@ Tally implements rate limiting. If you exceed the limit, you'll receive a 429 st
 4. **Cursor-Based Pagination:** For polling scenarios, prefer `afterId` over offset-based pagination to avoid duplicates and improve efficiency.
 
 5. **Versioning:** Always specify `tally-version` header explicitly if you need consistent behavior, or rotate API keys to use the latest version.
-
 ## Error Handling
-Standard HTTP status codes:
-- `200`: Success
-- `400`: Bad Request
-- `401`: Unauthorized (invalid or missing API key)
-- `404`: Not Found
-- `429`: Too Many Requests (rate limited)
-- `500`: Internal Server Error
+
+Tally returns standard HTTP status codes. While some errors (like `401 Unauthorized`) may return plain text, most application-level errors return a JSON response body.
+
+### Error Response Body (JSON)
+
+For validation and application errors, Tally typically returns a `message` and an optional `errors` array for detailed field-level issues.
+
+```json
+{
+  "message": "Invalid request body",
+  "errors": [
+    {
+      "message": "Block payload is invalid",
+      "path": ["blocks", 2, "payload"],
+      "code": "invalid_type"
+    }
+  ]
+}
+```
+
+- **`message`**: A high-level description of the error.
+- **`errors`**: (Optional) An array of specific validation failures.
+  - **`message`**: Detailed reason for the failure.
+  - **`path`**: Array of keys/indices indicating the location of the error in the request.
+  - **`code`**: A machine-readable error code (e.g., `invalid_type`, `required`).
+
+### HTTP Status Codes
+
+| Code | Description | Response Body |
+| :--- | :--- | :--- |
+| **200** | Success | JSON (data) |
+| **400** | **Bad Request** - Malformed request or validation failure. | JSON (error) or HTML |
+| **401** | **Unauthorized** - Missing or invalid Bearer token. | Plain text `"Unauthorized"` |
+| **403** | **Forbidden** - Insufficient permissions for the resource. | JSON (error) |
+| **404** | **Not Found** - The requested resource doesn't exist. | JSON (error) |
+| **429** | **Too Many Requests** - Rate limit exceeded (100 req/min). | JSON (error) |
+| **500** | **Server Error** - Something went wrong on Tally's end. | JSON (error) or HTML |
+
+---
 
 ## Testing and Development
 - **Request Inspector:** Use [Request Inspector](https://requestinspector.com/) to inspect live API responses
@@ -224,6 +255,12 @@ When building `lib/tally.rb`:
    - Status filter (`all`, `completed`, `partial`)
 
 5. **Version Header:** Use `tally-version` header to ensure consistent behavior
+
+6. **Error handling**:
+   - `401 Unauthorized` → Raise `AuthenticationError` (Plain text `"Unauthorized"`).
+   - `400 Bad Request` → Raise `ValidationError` and parse the `errors` array from JSON if available.
+   - `429 Too Many Requests` → Raise `RateLimitError` and implement exponential backoff.
+   - For other 4xx/5xx codes, provide the status and `message` from the JSON body.
 
 ### Example Client Interface (Ruby)
 ```ruby

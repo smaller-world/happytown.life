@@ -46,11 +46,32 @@ class Tally
     sig { params(response: HTTP::Response).void }
     def initialize(response)
       @response = response
-      super("Tally API error (status #{response.code}): #{response.parse}")
+      @error_type = T.let(nil, T.nilable(String))
+      payload = response.parse
+      @message = T.let(
+        case payload
+        when Hash
+          @error_type = payload.fetch("errorType")
+          payload.fetch("message")
+        when String
+          payload
+        else
+          raise "Unexpected error data: #{payload.inspect}"
+        end,
+        String,
+      )
+      descriptor = @error_type || "status #{response.code}"
+      super("Tally API error (#{descriptor}): #{@message}")
     end
 
     sig { returns(HTTP::Response) }
     attr_reader :response
+
+    sig { returns(T.nilable(String)) }
+    attr_reader :error_type
+
+    sig { returns(String) }
+    attr_reader :message
   end
 
   class TooManyRequests < BadResponse; end

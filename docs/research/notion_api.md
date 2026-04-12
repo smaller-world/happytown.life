@@ -44,6 +44,55 @@ The integration must have **Insert Content** capabilities on the target parent d
 
 ---
 
+## Status Codes & Error Handling
+
+Notion uses standard HTTP status codes to indicate the success or failure of an API request.
+
+### Error Payload Format
+
+Error responses contain a JSON body with more detail about the error:
+
+```json
+{
+  "object": "error",
+  "status": 400,
+  "code": "validation_error",
+  "message": "body failed validation: body.properties should be defined, instead was undefined.",
+  "request_id": "...",
+  "additional_data": {}
+}
+```
+
+- **`object`**: Always `"error"`.
+- **`status`**: The HTTP status code.
+- **`code`**: A machine-readable error code (e.g., `"validation_error"`).
+- **`message`**: A human-readable error message.
+- **`request_id`**: A unique identifier for the request, useful for support.
+- **`additional_data`**: (Optional) Extra context, such as retry guidance.
+
+### HTTP Status Codes
+
+| Status Code | `"code"` | Description |
+| :--- | :--- | :--- |
+| **200** | N/A | Success. |
+| **400** | `invalid_json` | Request body could not be decoded as JSON. |
+| **400** | `invalid_request_url` | The request URL is not valid. |
+| **400** | `invalid_request` | This request is not supported. |
+| **400** | `validation_error` | Request body does not match the schema. |
+| **400** | `missing_version` | Missing required `Notion-Version` header. |
+| **401** | `unauthorized` | Bearer token is invalid or expired. |
+| **403** | `restricted_resource` | Client doesn't have permission for this operation. |
+| **404** | `object_not_found` | Resource doesn't exist or isn't shared with integration. |
+| **409** | `conflict_error` | Transaction could not be completed (e.g., data collision). |
+| **429** | `rate_limited` | Request limit exceeded. Check `Retry-After` header. |
+| **500** | `internal_server_error` | An unexpected error occurred on Notion's end. |
+| **502** | `bad_gateway` | Notion encountered an issue with an upstream server. |
+| **503** | `service_unavailable` | Notion is unavailable (e.g., request timeout > 60s). |
+| **503** | `database_connection_unavailable` | Notion's database is temporarily unavailable. |
+| **504** | `gateway_timeout` | Notion timed out while completing the request. |
+
+---
+
 ## Creating a Page (Database Entry)
 
 ### Endpoint
@@ -659,7 +708,8 @@ end.save
 6. **Error handling**:
    - `403` → Missing Insert Content capabilities
    - `400 validation_error` → Invalid property type, schema mismatch, or invalid template
-   - Include `code`, `message` from the error response body
+   - `429 rate_limited` → Use the `Retry-After` header for retry logic
+   - Always expose the `object`, `code`, `message`, and `request_id` from the [error payload](#error-payload-format).
 
 7. **ID format**: UUIDs can be sent with or without dashes. The library should normalize.
 
@@ -698,6 +748,7 @@ end.save
 
 ## Sources
 
+- https://developers.notion.com/reference/status-codes — Status codes
 - https://developers.notion.com/reference/post-page — Create a page
 - https://developers.notion.com/reference/database — Database object
 - https://developers.notion.com/reference/data-source — Data source object

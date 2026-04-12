@@ -14,5 +14,10 @@
       "httpUrl": "https://mcp.notion.com/mcp"
     }
   },
-  "$version": 3
+  "$version": 3,
+  "permissions": {
+    "allow": [
+      "Read(//tmp/**)"
+    ]
+  }
 }

@@ -32,11 +32,31 @@ class Notion
     sig { params(response: HTTP::Response).void }
     def initialize(response)
       @response = response
-      super("Notion API error (status #{response.code}): #{response.parse}")
+      payload = response.parse
+      @code = T.let(payload.fetch("code"), String)
+      @message = T.let(payload.fetch("message"), String)
+      @request_id = T.let(payload.fetch("request_id"), String)
+      @additional_data = T.let(
+        payload["additional_data"],
+        T.nilable(T::Hash[String, T.untyped]),
+      )
+      super("Notion API error [#{@code}]: #{@message}")
     end
 
     sig { returns(HTTP::Response) }
     attr_reader :response
+
+    sig { returns(String) }
+    attr_reader :code
+
+    sig { returns(String) }
+    attr_reader :message
+
+    sig { returns(String) }
+    attr_reader :request_id
+
+    sig { returns(T.nilable(T::Hash[String, T.untyped])) }
+    attr_reader :additional_data
   end
 
   class TooManyRequests < BadResponse; end

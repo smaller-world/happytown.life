@@ -4,7 +4,7 @@
       "httpUrl": "https://mcp.sentry.dev/mcp"
     },
     "happytown_supabase": {
-      "command": "npx",
+      "command": "bunx",
       "args": [
         "-y",
         "mcp-remote@latest",
