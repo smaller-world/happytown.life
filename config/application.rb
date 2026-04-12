@@ -55,6 +55,10 @@ module HappyTown
       host: "kaibook.itskai.me",
     }
 
+    # == Spring-a-ling
+    config.x.springaling.tally_form_id = "LZY1JG"
+    config.x.springaling.notion_data_source_id = "..."
+
     # == Rails Configuration ==
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
