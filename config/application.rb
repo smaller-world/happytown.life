@@ -57,7 +57,8 @@ module HappyTown
 
     # == Spring-a-ling
     config.x.springaling.tally_form_id = "LZY1JG"
-    config.x.springaling.notion_data_source_id = "..."
+    config.x.springaling.notion_data_source_id =
+      "33dd2193-c198-8045-9070-000bd552368a"
 
     # == Rails Configuration ==
 
@@ -100,7 +101,8 @@ module HappyTown
     sig { returns(Tally) }
     def tally
       @tally ||= begin
-        api_key = credentials.tally.api_key or raise "Missing Tally API key"
+        api_key = credentials.dig(:tally, :api_key) or
+          raise "Missing Tally API key"
         Tally.new(api_key:)
       end
     end
