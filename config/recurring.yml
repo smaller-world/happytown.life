@@ -29,6 +29,9 @@ shared: &shared
   reconcile_whatsapp_user_metadata:
     class: ReconcileWhatsappUserMetadataJob
     schedule: every day at 4:18am America/Toronto
+  import_tally_submissions:
+    class: Springaling::ImportTallySubmissionsJob
+    schedule: every hour at minute 17
 
 development:
   <<: *shared
