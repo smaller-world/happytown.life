@@ -7,25 +7,23 @@ class Tally
   # == Models ==
 
   class Question < T::Struct
-    const :key, String
-    const :label, String
+    const :id, String
+    const :title, T.nilable(String)
     const :type, String
   end
 
-  class Field < T::Struct
-    const :key, String
-    const :label, String
-    const :type, String
-    const :value, T.untyped # rubocop:disable Sorbet/ForbidUntypedStructProps
+  class Response < T::Struct
+    const :id, String
+    const :question_id, String
+    const :answer, T.untyped # rubocop:disable Sorbet/ForbidUntypedStructProps
   end
 
   class Submission < T::Struct
-    const :submission_id, String
-    const :response_id, String
+    const :id, String
     const :respondent_id, String
     const :form_id, String
-    const :created_at, ActiveSupport::TimeWithZone
-    const :fields, T::Array[Field]
+    const :submitted_at, ActiveSupport::TimeWithZone
+    const :responses, T::Array[Response]
   end
 
   class ListSubmissionsResponse < T::Struct
@@ -109,27 +107,25 @@ class Tally
     response = get!("/forms/#{form_id}/submissions", params:)
     questions = response.fetch("questions").map do |q|
       Question.new(
-        key: q.fetch("key"),
-        label: q.fetch("label"),
+        id: q.fetch("id"),
+        title: q.fetch("title"),
         type: q.fetch("type"),
       )
     end
     submissions = response.fetch("submissions").map do |s|
-      fields = s.fetch("fields").map do |f|
-        Field.new(
-          key: f.fetch("key"),
-          label: f.fetch("label"),
-          type: f.fetch("type"),
-          value: f.fetch("value"),
+      responses = s.fetch("responses").map do |r|
+        Response.new(
+          id: r.fetch("id"),
+          question_id: r.fetch("questionId"),
+          answer: r.fetch("answer"),
         )
       end
       Submission.new(
-        submission_id: s.fetch("submissionId"),
-        response_id: s.fetch("responseId"),
+        id: s.fetch("id"),
         respondent_id: s.fetch("respondentId"),
         form_id: s.fetch("formId"),
-        created_at: Time.zone.parse(s.fetch("createdAt")),
-        fields:,
+        submitted_at: Time.zone.parse(s.fetch("submittedAt")),
+        responses:,
       )
     end
     ListSubmissionsResponse.new(
