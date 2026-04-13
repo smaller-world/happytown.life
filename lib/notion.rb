@@ -1,11 +1,9 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rails"
-require "http"
-
 class Notion
   extend T::Sig
+  include TaggedLogging
 
   # == Models ==
 
@@ -67,7 +65,7 @@ class Notion
   def initialize(integration_secret:)
     @session = T.let(
       HTTP
-        .use(logging: { logger: Rails.logger.tagged(self.class.name) })
+        .use(logging: { logger: tagged_logger })
         .base_uri("https://api.notion.com")
         .auth("Bearer #{integration_secret}")
         .headers("Notion-Version" => "2026-03-11"),

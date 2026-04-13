@@ -2,7 +2,9 @@
 
 module Rails
   class << self
-    sig { returns(T.all(ActiveSupport::Logger, ActiveSupport::TaggedLogging)) }
+    sig do
+      returns(T.any(ActiveSupport::Logger, ActiveSupport::BroadcastLogger))
+    end
     def logger; end
   end
 
