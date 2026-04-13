@@ -9,6 +9,8 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   # == Action: `introduce_yourself' ==
 
   test "introduce_yourself calls required tools" do
+    skip "WhatsApp bot is temporarily disabled"
+
     group = whatsapp_groups(:hangout)
     response = retry_on(OpenAI::Errors::RateLimitError) do
       WhatsappGroupAgent.with(group:)
@@ -29,6 +31,8 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   # == Action: `reply' ==
 
   test "reply calls required tools" do
+    skip "WhatsApp bot is temporarily disabled"
+
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:hello_message)
     response = retry_on(OpenAI::Errors::RateLimitError) do
@@ -45,6 +49,8 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   end
 
   test "reply searches for messages" do # rubocop:disable Minitest/MultipleAssertions
+    skip "WhatsApp bot is temporarily disabled"
+
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:who_talked_about_fries_message)
 
@@ -76,6 +82,8 @@ class WhatsappGroupAgentTest < ActiveSupport::TestCase
   end
 
   test "reply with message history link when requested" do
+    skip "WhatsApp bot is temporarily disabled"
+
     group = whatsapp_groups(:hangout)
     message = whatsapp_messages(:message_history_request_message)
     response = retry_on(OpenAI::Errors::RateLimitError) do
