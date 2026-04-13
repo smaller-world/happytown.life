@@ -3,6 +3,7 @@
 
 class WaSenderApi
   extend T::Sig
+  include TaggedLogging
 
   # == Exceptions ==
 
@@ -33,7 +34,7 @@ class WaSenderApi
   def initialize(api_key:)
     @session = T.let(
       HTTP
-        .use(logging: { logger: Rails.logger.tagged(self.class.name) })
+        .use(logging: { logger: tagged_logger })
         .base_uri("https://www.wasenderapi.com/api")
         .auth("Bearer #{api_key}"),
       HTTP::Session,
@@ -207,19 +208,6 @@ class WaSenderApi
   def perform_deliveries?
     Rails.configuration.x.whatsapp.perform_deliveries
   end
-
-  sig { params(tags: String, block: T.proc.void).void }
-  def tag_logger(*tags, &block)
-    logger = Rails.logger
-    if logger.respond_to?(:tagged)
-      T.unsafe(logger).tagged(self.class.name, *tags, &block)
-    else
-      yield
-    end
-  end
-
-  sig { returns(T.any(ActiveSupport::Logger, ActiveSupport::BroadcastLogger)) }
-  def logger = Rails.logger
 
   sig { void }
   def wait_for_account_protection_period

@@ -3,6 +3,7 @@
 
 class Luma
   extend T::Sig
+  include TaggedLogging
 
   # == Models ==
 
@@ -61,7 +62,7 @@ class Luma
   def initialize(api_key:)
     @session = T.let(
       HTTP
-      .use(logging: { logger: Rails.logger.tagged(self.class.name) })
+      .use(logging: { logger: tagged_logger })
       .base_uri("https://public-api.luma.com")
       .headers("x-luma-api-key" => api_key),
       HTTP::Session,

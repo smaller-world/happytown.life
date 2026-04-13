@@ -3,6 +3,7 @@
 
 class Tally
   extend T::Sig
+  include TaggedLogging
 
   # == Models ==
 
@@ -80,7 +81,7 @@ class Tally
   def initialize(api_key:)
     @session = T.let(
       HTTP
-        .use(logging: { logger: Rails.logger.tagged(self.class.name) })
+        .use(logging: { logger: tagged_logger })
         .base_uri("https://api.tally.so")
         .auth("Bearer #{api_key}")
         .headers("tally-version" => "2025-02-01"),
