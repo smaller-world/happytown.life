@@ -80,39 +80,39 @@ module HappyTown
 
     # == Singletons ==
 
-    sig { returns(WaSenderApi) }
+    sig { returns(WaSenderApi::Client) }
     def wa_sender_api
       @wa_sender_api ||= begin
         api_key = credentials.wa_sender_api.api_key or
           raise "Missing WA Sender API key"
-        WaSenderApi.new(api_key:)
+        WaSenderApi::Client.new(api_key:)
       end
     end
 
-    sig { returns(Luma) }
+    sig { returns(Luma::Client) }
     def luma
       @luma ||= begin
         api_key = credentials.luma.api_key or
           raise "Missing Luma API key"
-        Luma.new(api_key:)
+        Luma::Client.new(api_key:)
       end
     end
 
-    sig { returns(Tally) }
+    sig { returns(Tally::Client) }
     def tally
       @tally ||= begin
         api_key = credentials.dig(:tally, :api_key) or
           raise "Missing Tally API key"
-        Tally.new(api_key:)
+        Tally::Client.new(api_key:)
       end
     end
 
-    sig { returns(Notion) }
+    sig { returns(Notion::Client) }
     def notion
       @notion ||= begin
         integration_secret = credentials.notion.integration_secret or
           raise "Missing Notion integration secret"
-        Notion.new(integration_secret:)
+        Notion::Client.new(integration_secret:)
       end
     end
   end
@@ -122,15 +122,15 @@ module HappyTown
     T.cast(Rails.application, HappyTown::Application)
   end
 
-  sig { returns(Luma) }
+  sig { returns(Luma::Client) }
   def self.luma = application.luma
 
-  sig { returns(WaSenderApi) }
+  sig { returns(WaSenderApi::Client) }
   def self.wa_sender_api = application.wa_sender_api
 
-  sig { returns(Tally) }
+  sig { returns(Tally::Client) }
   def self.tally = application.tally
 
-  sig { returns(Notion) }
+  sig { returns(Notion::Client) }
   def self.notion = application.notion
 end

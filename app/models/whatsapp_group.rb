@@ -126,8 +126,10 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def import_metadata
-    metadata = wa_sender_api.group_metadata(jid:)
-    profile_picture_url = wa_sender_api.group_profile_picture_url(jid:)
+    metadata = HappyTown.wa_sender_api.group_metadata(jid:)
+    profile_picture_url = HappyTown
+      .wa_sender_api
+      .group_profile_picture_url(jid:)
     update!(
       subject: metadata["subject"],
       description: metadata["desc"],
@@ -150,7 +152,7 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def import_memberships
-    participants = wa_sender_api.group_participants(jid:)
+    participants = HappyTown.wa_sender_api.group_participants(jid:)
     transaction do
       self.memberships = participants.map do |data|
         user = WhatsappUser.find_or_create_by(lid: data.fetch("id"))
@@ -173,7 +175,7 @@ class WhatsappGroup < ApplicationRecord
 
   sig { params(text: String, mentioned_jids: T.nilable(T::Array[String])).void }
   def send_message(text:, mentioned_jids: nil)
-    wa_sender_api.send_message(to: jid, text:, mentioned_jids:)
+    HappyTown.wa_sender_api.send_message(to: jid, text:, mentioned_jids:)
   end
 
   sig do
@@ -198,7 +200,7 @@ class WhatsappGroup < ApplicationRecord
       you can pin that message so new group members can see past messages.
       this video shows you how to do it.
     EOF
-    wa_sender_api.send_video_message(
+    HappyTown.wa_sender_api.send_video_message(
       to: jid,
       video_url: instructions_video_url,
       text: instructions,
@@ -207,7 +209,7 @@ class WhatsappGroup < ApplicationRecord
 
   sig { void }
   def send_typing_indicator
-    wa_sender_api.update_presence(jid:, type: "composing")
+    HappyTown.wa_sender_api.update_presence(jid:, type: "composing")
   end
 
   sig { returns(ActiveAgent::Generation) }
@@ -227,14 +229,5 @@ class WhatsappGroup < ApplicationRecord
   end
   def send_intro_later(**options)
     SendWhatsappGroupIntroJob.set(**options).perform_later(self)
-  end
-
-  private
-
-  # == Helpers ==
-
-  sig { returns(WaSenderApi) }
-  def wa_sender_api
-    HappyTown.application.wa_sender_api
   end
 end

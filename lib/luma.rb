@@ -1,9 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
-class Luma
+module Luma
   extend T::Sig
-  include TaggedLogging
 
   # == Models ==
 
@@ -55,101 +54,4 @@ class Luma
   end
 
   class TooManyRequests < BadResponse; end
-
-  # == Configuration ==
-
-  sig { params(api_key: String).void }
-  def initialize(api_key:)
-    @session = T.let(
-      HTTP
-      .use(logging: { logger: tagged_logger })
-      .base_uri("https://public-api.luma.com")
-      .headers("x-luma-api-key" => api_key),
-      HTTP::Session,
-    )
-  end
-
-  # == Methods ==
-
-  sig do
-    params(
-      after: T.nilable(ActiveSupport::TimeWithZone),
-      before: T.nilable(ActiveSupport::TimeWithZone),
-      pagination_cursor: T.nilable(String),
-      pagination_limit: T.nilable(Integer),
-      sort_column: T.nilable(String),
-      sort_direction: T.nilable(String),
-    ).returns(ListEventsResponse)
-  end
-  def list_events(
-    after: nil,
-    before: nil,
-    pagination_cursor: nil,
-    pagination_limit: nil,
-    sort_column: nil,
-    sort_direction: nil
-  )
-    params = {
-      after: after&.iso8601,
-      before: before&.iso8601,
-      pagination_cursor:,
-      pagination_limit:,
-      sort_column:,
-      sort_direction:,
-    }.compact
-    response = get!("/v1/calendar/list-events", params:)
-    entries = response.fetch("entries").map do |entry|
-      event = entry.fetch("event")
-      event = Event.new(
-        api_id: event.fetch("api_id"),
-        name: event.fetch("name"),
-        description: event.fetch("description"),
-        description_md: event.fetch("description_md"),
-        start_at: Time.zone.parse(event.fetch("start_at")),
-        end_at: Time.zone.parse(event.fetch("end_at")),
-        timezone: event.fetch("timezone"),
-        geo_address_json: event.fetch("geo_address_json"),
-        geo_latitude: event.fetch("geo_latitude"),
-        geo_longitude: event.fetch("geo_longitude"),
-        url: event.fetch("url"),
-      )
-      EventEntry.new(
-        event:,
-        tags: entry.fetch("tags").map do |tag|
-          Tag.new(
-            id: tag.fetch("id"),
-            name: tag.fetch("name"),
-          )
-        end,
-      )
-    end
-    ListEventsResponse.new(
-      entries:,
-      has_more: response.fetch("has_more"),
-      next_cursor: response["next_cursor"],
-    )
-  end
-
-  private
-
-  # == Helpers ==
-
-  sig { params(path: String, options: T.untyped).returns(T.untyped) }
-  def get!(path, **options)
-    response = @session.get(path, **options)
-    check_response!(response)
-    response.parse
-  end
-
-  sig { params(response: HTTP::Response).void }
-  def check_response!(response)
-    unless response.status.success?
-      case response.code
-      when 429
-        raise TooManyRequests, response
-      else
-        raise BadResponse, response
-      end
-    end
-  end
 end
