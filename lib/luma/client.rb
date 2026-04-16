@@ -48,41 +48,57 @@ module Luma
         sort_direction:,
       }.compact
       response = get!("/v1/calendar/list-events", params:)
-      entries = response.fetch("entries").map do |entry|
-        event = entry.fetch("event")
-        event = Event.new(
-          api_id: event.fetch("api_id"),
-          name: event.fetch("name"),
-          description: event.fetch("description"),
-          description_md: event.fetch("description_md"),
-          start_at: Time.zone.parse(event.fetch("start_at")),
-          end_at: Time.zone.parse(event.fetch("end_at")),
-          timezone: event.fetch("timezone"),
-          geo_address_json: event.fetch("geo_address_json"),
-          geo_latitude: event.fetch("geo_latitude"),
-          geo_longitude: event.fetch("geo_longitude"),
-          url: event.fetch("url"),
-        )
-        EventEntry.new(
-          event:,
-          tags: entry.fetch("tags").map do |tag|
-            Tag.new(
-              id: tag.fetch("id"),
-              name: tag.fetch("name"),
-            )
-          end,
-        )
+      events = response.fetch("entries").map do |entry|
+        event_data = entry.fetch("event")
+        tags_data = entry.fetch("tags")
+        parse_event(event_data, tags_data:)
       end
       ListEventsResponse.new(
-        entries:,
+        events:,
         has_more: response.fetch("has_more"),
         next_cursor: response["next_cursor"],
       )
     end
 
+    sig { params(id: String).returns(GetEventResponse) }
+    def get_event(id)
+      response = get!("/v1/event/get", params: { id: })
+      event_data = response.fetch("event")
+      tags_data = event_data.fetch("tags")
+      GetEventResponse.new(event: parse_event(event_data, tags_data:))
+    end
+
     private
 
     # == Helpers ==
+
+    sig do
+      params(
+        event_data: T::Hash[String, T.untyped],
+        tags_data: T::Array[T::Hash[String, T.untyped]],
+      ).returns(Event)
+    end
+    def parse_event(event_data, tags_data:)
+      Event.new(
+        api_id: event_data.fetch("api_id"),
+        name: event_data.fetch("name"),
+        description: event_data.fetch("description"),
+        description_md: event_data.fetch("description_md"),
+        start_at: Time.zone.parse(event_data.fetch("start_at")),
+        end_at: Time.zone.parse(event_data.fetch("end_at")),
+        timezone: event_data.fetch("timezone"),
+        geo_address_json: event_data.fetch("geo_address_json"),
+        geo_latitude: event_data.fetch("geo_latitude"),
+        geo_longitude: event_data.fetch("geo_longitude"),
+        url: event_data.fetch("url"),
+        tags: tags_data.map do |tag|
+          Tag.new(
+            id: tag.fetch("id"),
+            name: tag.fetch("name"),
+          )
+        end,
+      )
+    end
 
     sig { params(path: String, options: T.untyped).returns(T.untyped) }
     def get!(path, **options)

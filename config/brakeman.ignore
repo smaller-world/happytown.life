@@ -3,20 +3,20 @@
     {
       "warning_type": "Redirect",
       "warning_code": 18,
-      "fingerprint": "7cfbf54a5c4e7f40674f15e5fd1d9824650422cfd25879a10989bae9a51b15b0",
+      "fingerprint": "0403ae42c20273d81ace8e40ff49802117784408ae6118f9a1c5a799b24e8ccb",
       "check_name": "Redirect",
       "message": "Possible unprotected redirect",
-      "file": "app/controllers/events_controller.rb",
+      "file": "app/controllers/luma_events_controller.rb",
       "line": 20,
       "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
-      "code": "redirect_to(with_utm_source((Event.next_event_for_tag_id(params.expect(:tag_id), :only => ([:luma_url])).luma_url or Rails.configuration.x.luma_url)), :status => :found, :allow_other_host => true)",
+      "code": "redirect_to(with_utm_source((LumaEvent.next_event_for_tag_id(params.expect(:tag_id), :only => ([:url])).url or Rails.configuration.x.luma_url)), :status => :found, :allow_other_host => true)",
       "render_path": null,
       "location": {
         "type": "method",
-        "class": "EventsController",
-        "method": "luma_redirect"
+        "class": "LumaEventsController",
+        "method": "open"
       },
-      "user_input": "Event.next_event_for_tag_id(params.expect(:tag_id), :only => ([:luma_url])).luma_url",
+      "user_input": "LumaEvent.next_event_for_tag_id(params.expect(:tag_id), :only => ([:url])).url",
       "confidence": "Weak",
       "cwe_id": [
         601

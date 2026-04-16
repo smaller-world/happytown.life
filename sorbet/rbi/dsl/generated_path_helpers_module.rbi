@@ -31,9 +31,6 @@ module GeneratedPathHelpersModule
   def logs_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def luma_redirect_events_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def message_history_whatsapp_group_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -53,6 +50,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_session_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def open_luma_events_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def password_path(*args); end

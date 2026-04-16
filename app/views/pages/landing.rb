@@ -316,7 +316,7 @@ class Views::Pages::Landing < Views::Base
           end
           render_gathering_button(
             "mindful miles",
-            url: luma_redirect_events_path(
+            url: open_luma_events_path(
               tag_id: Rails.configuration.x.luma.mindful_miles_tag_id,
             ),
             class: "text-landing-primary",
@@ -342,7 +342,7 @@ class Views::Pages::Landing < Views::Base
           end
           render_gathering_button(
             "foodcourt fairgrounds",
-            url: luma_redirect_events_path(
+            url: open_luma_events_path(
               tag_id: Rails.configuration.x.luma.fairgrounds_tag_id,
             ),
             class: "text-landing-secondary",

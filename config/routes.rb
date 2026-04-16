@@ -41,10 +41,10 @@ Rails.application.routes.draw do
     resources :whatsapp_messages, path: "/messages", only: :index
   end
 
-  # == Events ==
-  resources :events, only: [] do
+  # == Luma Events ==
+  resources :luma_events, only: [] do
     collection do
-      get :luma_redirect
+      get :open
     end
   end
 

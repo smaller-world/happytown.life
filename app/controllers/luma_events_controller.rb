@@ -1,18 +1,18 @@
 # typed: true
 # frozen_string_literal: true
 
-class EventsController < ApplicationController
+class LumaEventsController < ApplicationController
   # == Filters ==
 
   allow_unauthenticated_access
 
   # == Actions ==
 
-  # GET /events/luma_redirect?tag_id=...
-  def luma_redirect
+  # GET /luma_events/open=...
+  def open
     tag_id = params.expect(:tag_id)
-    url = if (event = Event.next_event_for_tag_id(tag_id, only: [ :luma_url ]))
-      event.luma_url
+    url = if (event = LumaEvent.next_event_for_tag_id(tag_id, only: [ :url ]))
+      event.url
     else
       Rails.configuration.x.luma_url
     end

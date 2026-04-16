@@ -6,6 +6,11 @@ module Luma
 
   # == Models ==
 
+  class Tag < T::Struct
+    const :id, String
+    const :name, String
+  end
+
   class Event < T::Struct
     const :api_id, String
     const :name, String
@@ -18,22 +23,17 @@ module Luma
     const :geo_latitude, T.nilable(String)
     const :geo_longitude, T.nilable(String)
     const :url, String
-  end
-
-  class Tag < T::Struct
-    const :id, String
-    const :name, String
-  end
-
-  class EventEntry < T::Struct
-    const :event, Event
     const :tags, T::Array[Tag]
   end
 
   class ListEventsResponse < T::Struct
-    const :entries, T::Array[EventEntry]
+    const :events, T::Array[Event]
     const :has_more, T::Boolean
     const :next_cursor, T.nilable(String)
+  end
+
+  class GetEventResponse < T::Struct
+    const :event, Event
   end
 
   # == Exceptions ==

@@ -11,7 +11,6 @@ class ImportLumaEventsJob < ApplicationJob
 
   sig { void }
   def perform
-    events = Event.import_from_luma
-    logger.info("Imported #{events.size} upcoming events from Luma")
+    LumaEvent.import
   end
 end
