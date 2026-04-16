@@ -1,9 +1,9 @@
 {
   "mcpServers": {
-    "sentry": {
+    "happytown_sentry": {
       "httpUrl": "https://mcp.sentry.dev/mcp"
     },
-    "notion": {
+    "happytown_notion": {
       "httpUrl": "https://mcp.notion.com/mcp"
     },
     "happytown_supabase": {

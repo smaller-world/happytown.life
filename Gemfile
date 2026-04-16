@@ -108,6 +108,9 @@ gem "rails_autolink", "~> 1.1"
 gem "activerecord-postgis-adapter"
 gem "rgeo"
 
+# Query static YAML files with an ActiveRecord-like interface
+gem "frozen_record", "~> 0.27.4"
+
 group :development, :test do
   # Run tests with Minitest
   gem "minitest", "~> 6.0.1"

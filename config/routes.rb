@@ -42,9 +42,9 @@ Rails.application.routes.draw do
   end
 
   # == Luma Events ==
-  resources :luma_events, only: [] do
-    collection do
-      get :open
+  resources :luma_event_tags, only: [] do
+    member do
+      get :next_event
     end
   end
 

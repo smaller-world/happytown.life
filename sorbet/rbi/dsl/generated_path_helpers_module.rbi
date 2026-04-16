@@ -52,7 +52,7 @@ module GeneratedPathHelpersModule
   def new_session_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def open_luma_events_path(*args); end
+  def next_event_luma_event_tag_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def password_path(*args); end

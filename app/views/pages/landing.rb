@@ -32,7 +32,7 @@ class Views::Pages::Landing < Views::Base
   sig { returns(T.nilable(String)) }
   def site_title
     config = Rails.configuration.x
-    [ config.site_name, config.site_tagline ].compact.join(" | ").presence
+    [ config.site.name, config.site.tagline ].compact.join(" | ").presence
   end
 
   sig { void }
@@ -316,9 +316,7 @@ class Views::Pages::Landing < Views::Base
           end
           render_gathering_button(
             "mindful miles",
-            url: open_luma_events_path(
-              tag_id: Rails.configuration.x.luma.mindful_miles_tag_id,
-            ),
+            url: next_event_luma_event_tag_path(:mindful_miles),
             class: "text-landing-primary",
           )
         end
@@ -342,9 +340,7 @@ class Views::Pages::Landing < Views::Base
           end
           render_gathering_button(
             "foodcourt fairgrounds",
-            url: open_luma_events_path(
-              tag_id: Rails.configuration.x.luma.fairgrounds_tag_id,
-            ),
+            url: next_event_luma_event_tag_path(:fairgrounds),
             class: "text-landing-secondary",
           )
         end

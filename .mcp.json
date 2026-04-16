@@ -4,11 +4,11 @@
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=ysiwerjzufsrkyqjftal&read_only=true&features=docs%2Cdatabase"
     },
-    "sentry": {
+    "happytown_sentry": {
       "type": "http",
       "url": "https://mcp.sentry.dev/mcp"
     },
-    "notion": {
+    "happytown_notion": {
       "type": "http",
       "url": "https://mcp.notion.com/mcp"
     }

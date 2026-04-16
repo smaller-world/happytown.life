@@ -54,7 +54,7 @@ class Components::Layout < Components::Base
         meta(charset: "UTF-8")
         meta(name: "viewport", content: "width=device-width,initial-scale=1")
         meta(name: "apple-mobile-web-app-capable", content: "yes")
-        if (name = Rails.configuration.x.site_name)
+        if (name = Rails.configuration.x.site.name)
           meta(name: "application-name", content: name)
         end
         meta(name: "mobile-web-app-capable", content: "yes")
@@ -120,7 +120,7 @@ class Components::Layout < Components::Base
   sig { returns(T.nilable(String)) }
   def title_text
     @site_title ||
-      [ @page_title, Rails.configuration.x.site_name ]
+      [ @page_title, Rails.configuration.x.site.name ]
         .compact.join(" | ").presence
   end
 

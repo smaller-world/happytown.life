@@ -179,6 +179,8 @@ GEM
     ffi (1.17.3-x86_64-linux-gnu)
     friendly_id (5.6.0)
       activerecord (>= 4.0.0)
+    frozen_record (0.27.4)
+      activemodel
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -597,6 +599,7 @@ DEPENDENCIES
   dockerfile-rails
   enumerize (~> 2.8)
   friendly_id (~> 5.6)
+  frozen_record (~> 0.27.4)
   hotwire-spark (~> 0.1.13)
   http (~> 6.0)
   image_processing (~> 1.2)
@@ -711,6 +714,7 @@ CHECKSUMS
   ffi (1.17.3-arm64-darwin) sha256=0c690555d4cee17a7f07c04d59df39b2fba74ec440b19da1f685c6579bb0717f
   ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
   friendly_id (5.6.0) sha256=28e221cd53fbd21586321164c1c6fd0c9ba8dde13969cb2363679f44726bb0c3
+  frozen_record (0.27.4) sha256=c6f6a3b64d11046bc6143d174ebf53777b3194b0caff4e3ab653c947de1b8d57
   fugit (1.12.1) sha256=5898f478ede9b415f0804e42b8f3fd53f814bd85eebffceebdbc34e1107aaf68
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
   google-protobuf (4.33.5) sha256=1b64fb774c101b23ac3f6923eca24be04fd971635d235c4cd4cfe0d752620da0

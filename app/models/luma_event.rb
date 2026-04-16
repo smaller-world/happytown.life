@@ -63,6 +63,13 @@ class LumaEvent < ApplicationRecord
     updated_at < STALE_AFTER.ago
   end
 
+  # == Associations ==
+
+  sig { returns(T::Array[LumaEventTag]) }
+  def tags
+    LumaEventTag.where(luma_id: tag_ids).to_a
+  end
+
   # == Scopes ==
 
   scope :stale, -> { where(updated_at: ...STALE_AFTER.ago) }

@@ -41,10 +41,6 @@ module HappyTown
     config.x.socials.instagram_url = "https://instagram.com/happytown.to"
     config.x.socials.tiktok_url = "https://tiktok.com/@adamdriversbod"
 
-    # == Luma
-    config.x.luma.fairgrounds_tag_id = "tag-Tq68aDbM8T9R2Bj"
-    config.x.luma.mindful_miles_tag_id = "tag-XRCUFkgLqcr3E0l"
-
     # == WhatsApp
     config.x.whatsapp.user_lid = "189971403149563@lid"
     config.x.whatsapp.perform_deliveries = false

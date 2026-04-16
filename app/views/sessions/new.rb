@@ -17,7 +17,7 @@ class Views::Sessions::New < Views::Base
               )
             end
             card.title(class: "text-lg text-center") do
-              if (name = Rails.configuration.x.site_name)
+              if (name = Rails.configuration.x.site.name)
                 plain("sign in to ")
                 span(class: "font-bold") { name }
               else

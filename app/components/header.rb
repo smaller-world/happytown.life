@@ -6,7 +6,7 @@ class Components::Header < Components::Base
 
   sig { override.params(content: T.nilable(T.proc.void)).void }
   def view_template(&content)
-    site_name = Rails.configuration.x.site_name
+    site_name = Rails.configuration.x.site.name
     root_element(:header, class: "flex justify-center border-b border-border") do
       div(class: "w-full max-w-2xl py-2 px-4 flex justify-between items-center") do
         Components::Button(

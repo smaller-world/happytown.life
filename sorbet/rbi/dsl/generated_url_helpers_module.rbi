@@ -52,7 +52,7 @@ module GeneratedUrlHelpersModule
   def new_session_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def open_luma_events_url(*args); end
+  def next_event_luma_event_tag_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def password_url(*args); end

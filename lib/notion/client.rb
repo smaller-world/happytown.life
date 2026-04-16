@@ -70,6 +70,22 @@ module Notion
       )
     end
 
+    sig do
+      params(
+        page_id: String,
+        properties: T::Hash[String, T.untyped],
+      ).returns(Page)
+    end
+    def update_page(page_id:, properties:)
+      response = patch!("/v1/pages/#{page_id}", json: { properties: })
+      Page.new(
+        id: response.fetch("id"),
+        url: response.fetch("url"),
+        created_time: Time.zone.parse(response.fetch("created_time")),
+        properties: response.fetch("properties"),
+      )
+    end
+
     private
 
     # == Helpers ==
@@ -77,6 +93,13 @@ module Notion
     sig { params(path: String, options: T.untyped).returns(T.untyped) }
     def post!(path, **options)
       response = @session.post(path, **options)
+      check_response!(response)
+      response.parse
+    end
+
+    sig { params(path: String, options: T.untyped).returns(T.untyped) }
+    def patch!(path, **options)
+      response = @session.patch(path, **options)
       check_response!(response)
       response.parse
     end
