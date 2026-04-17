@@ -56,6 +56,10 @@ module HappyTown
     config.x.springaling.notion_data_source_id =
       "33dd2193-c198-8045-9070-000bd552368a"
 
+    # == Luma Events ==
+    config.x.luma_events.notion_data_source_id =
+      "317d2193-c198-8090-be97-000bbe41afed"
+
     # == Rails Configuration ==
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do

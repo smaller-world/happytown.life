@@ -30,6 +30,8 @@ class LumaEvent < ApplicationRecord
 
   STALE_AFTER = T.let(1.day, ActiveSupport::Duration)
 
+  after_save :sync_to_notion_later
+
   # == Attributes ==
 
   sig { returns(RGeo::Geographic::Factory) }
@@ -184,6 +186,34 @@ class LumaEvent < ApplicationRecord
     relation.first
   end
 
+  # == Notion ==
+
+  sig { returns(Notion::Page) }
+  def sync_to_notion
+    data_source_id = Rails.configuration.x.luma_events.notion_data_source_id
+    response = HappyTown.notion.query_data_source(
+      data_source_id:,
+      filter: { property: "luma id", rich_text: { equals: luma_id } },
+      page_size: 1,
+    )
+    if (page = response.results.first)
+      HappyTown.notion.update_page(
+        page_id: page.id,
+        properties: notion_page_properties,
+      )
+    else
+      HappyTown.notion.create_page(
+        parent: { type: "data_source_id", data_source_id: },
+        properties: notion_page_properties,
+      )
+    end
+  end
+
+  sig { void }
+  def sync_to_notion_later
+    SyncLumaEventToNotionJob.perform_later(self)
+  end
+
   private
 
   sig { params(tag_id: String).returns(T.nilable(ActiveSupport::TimeZone)) }
@@ -193,5 +223,26 @@ class LumaEvent < ApplicationRecord
       .order(Arel.sql("LOWER(duration) ASC"))
       .pick(:time_zone_name) or return
     ActiveSupport::TimeZone.new(name)
+  end
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  def notion_page_properties
+    {
+      "name" => {
+        "title" => [ { "text" => { "content" => name } } ],
+      },
+      "luma id" => {
+        "rich_text" => [ { "type" => "text", "text" => { "content" => luma_id } } ],
+      },
+      "luma link" => {
+        "url" => url,
+      },
+      "date" => {
+        "date" => { "start" => start_at.iso8601, "end" => end_at.iso8601 },
+      },
+      "tags" => {
+        "multi_select" => tags.map { |t| { "name" => t.name } },
+      },
+    }
   end
 end
