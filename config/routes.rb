@@ -19,21 +19,21 @@ Rails.application.routes.draw do
     root action: :landing
   end
 
-  # == Authentication ==
+  # == Authentication
   resource :session
   resources :passwords, param: :token
 
-  # == Home ==
+  # == Home
   scope path: "/home", controller: :home do
     get "/", action: :show
   end
 
-  # == WASenderAPI ==
+  # == WASenderAPI
   scope path: "/wasenderapi", controller: :wa_sender_api do
     post :webhook
   end
 
-  # == Whatsapp Groups ==
+  # == Whatsapp Groups
   resources :whatsapp_groups, path: "/groups", only: [] do
     member do
       get :message_history
@@ -41,14 +41,14 @@ Rails.application.routes.draw do
     resources :whatsapp_messages, path: "/messages", only: :index
   end
 
-  # == Luma Events ==
+  # == Luma Events
   resources :luma_event_tags, only: [] do
     member do
       get :next_event
     end
   end
 
-  # == Devtools ==
+  # == Devtools
   get "/fly" => redirect(
     "https://fly.io/apps/happytown",
     redirect: 307,
@@ -66,8 +66,13 @@ Rails.application.routes.draw do
     status: 307,
   )
 
-  # == Admin ==
+  # == Redirects
+  get "/donate" => redirect(
+    "https://www.zeffy.com/en-CA/donation-form/help-us-create-good-vibes-in-toronto-2",
+    status: 307,
+  )
 
+  # == Admin
   namespace :admin do
     scope controller: :dashboard, as: :dashboard do
       get "/", action: :show
