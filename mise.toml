@@ -13,8 +13,15 @@ overmind = "latest"
 setup = { run = "bin/setup" }
 dev = { run = "bin/dev" }
 restart = { run = "bin/overmind restart" }
+
+# Rails shortcuts
+rr = { run = "bin/rails restart" }
+rc = { run = "bin/rails console" }
+
 # Development tasks
 annotate = { run = "bin/annotaterb models" }
+"tapioca:dsl" = { run = "bin/tapioca dsl" }
+"tapioca:gems" = { run = "bin/tapioca gems" }
 
 # Connect to production server
 "fly:ssh" = { run = "fly ssh console" }
@@ -45,7 +52,7 @@ usage = '''
 flag "-a --all" help="Run on all files instead of just staged files"
 arg "[files]..." var=#true help="Run on specific files"
 '''
-run = "hk fix $@"
+run = "hk fix ${usage_all:+--all} $@"
 
 [tasks.check]
 description = "Check code with hk"
@@ -53,7 +60,7 @@ usage = '''
 flag "-a --all" help="Run on all files instead of just staged files"
 arg "[files]..." var=#true help="Run on specific files"
 '''
-run = "hk check $@"
+run = "hk check ${usage_all:+--all} $@"
 
 [tasks.attach]
 description = "Attach to a running Overmind process"

@@ -16,6 +16,9 @@ module GeneratedPathHelpersModule
   def admin_webhook_messages_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def donate_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_password_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

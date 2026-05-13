@@ -20,7 +20,7 @@
 
   // == Tailwind
   "tailwindCSS.includeLanguages": {
-    "ruby": "html"
+    "Ruby": "html"
   },
   "tailwindCSS.experimental.classRegex": [
     "class:\\s*['\"]([^'\"]*)['\"]",

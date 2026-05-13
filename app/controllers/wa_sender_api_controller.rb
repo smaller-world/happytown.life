@@ -10,10 +10,11 @@ class WaSenderApiController < ApplicationController
   # == Filters ==
 
   before_action :verify_webhook_signature!
-  after_action :forward_webhook_message_to_dev_server if Rails.env.production?
+  # after_action :forward_webhook_message_to_dev_server if Rails.env.production?
 
   # == Actions ==
 
+  # POST /wasenderapi/webhook
   sig { void }
   def webhook
     payload = JSON.parse(request.raw_post)

@@ -10,6 +10,8 @@ class Components::Layout < Components::Base
   include Phlex::Rails::Helpers::AssetPath
   include Phlex::Rails::Helpers::ActionCableMetaTag
 
+  # == Configuration ==
+
   sig do
     params(
       site_title: T.nilable(String),
@@ -161,10 +163,10 @@ class Components::Layout < Components::Base
       size: :sm,
       **mix(
         {
-          class: class_names(
-            "flash card",
-            { "flash-alert": flash.key?(:alert) },
-          ),
+          class: "flash",
+          data: {
+            variant: ("alert" if flash.key?(:alert)),
+          }.compact,
         },
         **attributes,
       ),

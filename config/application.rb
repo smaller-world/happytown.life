@@ -89,6 +89,18 @@ module HappyTown
       end
     end
 
+    sig { returns(Wsapi::Client) }
+    def wsapi
+      @wsapi ||= begin
+        wsapi = credentials.wsapi
+        api_key = wsapi.api_key or
+          raise "Missing WSAPI API key"
+        instance_id = wsapi.instance_id or
+          raise "Missing WSAPI instance ID"
+        Wsapi::Client.new(api_key:, instance_id:)
+      end
+    end
+
     sig { returns(Luma::Client) }
     def luma
       @luma ||= begin
@@ -127,6 +139,9 @@ module HappyTown
 
   sig { returns(WaSenderApi::Client) }
   def self.wa_sender_api = application.wa_sender_api
+
+  sig { returns(Wsapi::Client) }
+  def self.wsapi = application.wsapi
 
   sig { returns(Tally::Client) }
   def self.tally = application.tally

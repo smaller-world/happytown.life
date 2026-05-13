@@ -111,6 +111,9 @@ gem "rgeo"
 # Query static YAML files with an ActiveRecord-like interface
 gem "frozen_record", "~> 0.27.4"
 
+# Ruby accessors on steroids
+gem "smart_properties", "~> 1.17"
+
 group :development, :test do
   # Run tests with Minitest
   gem "minitest", "~> 6.0.1"

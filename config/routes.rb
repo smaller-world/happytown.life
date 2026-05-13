@@ -33,6 +33,11 @@ Rails.application.routes.draw do
     post :webhook
   end
 
+  # == WSAPI
+  scope path: "/wsapi", controller: :wsapi do
+    post :webhook
+  end
+
   # == Whatsapp Groups
   resources :whatsapp_groups, path: "/groups", only: [] do
     member do

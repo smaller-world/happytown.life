@@ -3,7 +3,7 @@
     @apply w-full max-w-md;
     @apply bg-accent/5 ring-accent dark:bg-accent/10 dark:ring-accent/30;
 
-    &.flash-alert {
+    &[data-variant="alert"] {
       @apply bg-destructive/5 ring-destructive dark:bg-destructive/10 dark:ring-destructive/60;
     }
   }
@@ -19,4 +19,9 @@
       @apply hover:opacity-80;
     }
   }
+}
+
+.turbo-progress-bar {
+  @apply h-0.5;
+  @apply bg-transparent bg-linear-to-r from-transparent to-primary;
 }
