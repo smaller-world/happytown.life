@@ -49,19 +49,6 @@ class WsapiController < ApplicationController
       logger.info("Message from #{message.sender.id} failed screening: #{message.text}")
     end
 
-    # if (community_id = wsapi.community_id(group_id: message.chat_id))
-    #   is_admin = wsapi.community_admin?(community_id:, participant_id: message.sender.id)
-    #   if is_admin
-    #     wsapi.send_message(to: message.chat_id, text: "👀")
-    #   else
-    #     delete_message(message)
-    #     # TODO: Reinstate when API is fixed!
-    #     wsapi.remove_community_participants(
-    #       community_id:,
-    #       participant_ids: [ message.sender.id ],
-    #     )
-    #   end
-    # else
     is_admin = wsapi.group_admin?(
       group_id: message.chat_id,
       participant_id: message.sender.id,
@@ -74,8 +61,21 @@ class WsapiController < ApplicationController
         group_id: message.chat_id,
         participant_ids: [ message.sender.id ],
       )
+
+      if (community_id = wsapi.community_id(group_id: message.chat_id))
+        is_admin = wsapi.community_admin?(
+          community_id:,
+          participant_id: message.sender.id,
+        )
+        unless is_admin
+          wsapi.remove_community_participants(
+            community_id:,
+            participant_ids: [ message.sender.id ],
+          )
+        end
+      end
+
     end
-    # end
   end
 
   sig { params(message: WsapiMessage).returns(T::Boolean) }

@@ -52,11 +52,19 @@ module Wsapi
         return
       end
 
+      groups = get!("/communities/#{community_id}/groups")
+      announcement_group = groups.find { |group| group["isAnnouncementGroup"] }
+      unless announcement_group
+        raise Error, "Failed to find announcement group for community #{community_id}"
+      end
+
+      announcement_group_id = announcement_group.fetch("groupId")
+
       payload = { participants: participant_ids, action: "remove" }
       tag_logger do
         logger.info("Removing participants from community #{community_id}: #{payload}")
       end
-      put!("/communities/#{community_id}/participants", json: payload)
+      put!("/groups/#{announcement_group_id}/participants", json: payload)
     end
 
     sig { params(group_id: String, participant_ids: T::Array[String]).void }
