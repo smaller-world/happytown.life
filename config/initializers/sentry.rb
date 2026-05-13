@@ -40,6 +40,13 @@ Sentry.init do |config|
           error_type: exception.error_type,
         }
         event.set_context("tally_api_error", context.compact)
+      when Wsapi::BadResponse
+        suppress(HTTP::Error) do |; context| # rubocop:disable Layout/SpaceAroundBlockParameters
+          context = {
+            response_body: exception.response.parse,
+          }
+          event.set_context("tally_api_error", context.compact_blank)
+        end
       end
     end
   end

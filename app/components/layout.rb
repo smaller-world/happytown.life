@@ -91,6 +91,11 @@ class Components::Layout < Components::Base
         render_og_tags
         render_twitter_tags
 
+        # == Sentry
+        if (dsn = Rails.application.credentials.sentry&.dsn)
+          meta(name: "sentry-dsn", content: dsn)
+        end
+
         # == Head
         @head&.call
       end
