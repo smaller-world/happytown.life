@@ -24,7 +24,10 @@ class WsapiController < ApplicationController
     case event_type
     when "message"
       message = WsapiMessage.from_event_data(event_data)
-      screen_message(message)
+      Rails.cache.fetch("wsapi/webhook/message/#{message.id}", expires_in: 1.minute) do
+        screen_message(message)
+        true
+      end
     end
     head(:ok)
   end
