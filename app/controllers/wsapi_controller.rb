@@ -49,38 +49,55 @@ class WsapiController < ApplicationController
       if is_admin
         wsapi.send_message(to: message.chat_id, text: "👀")
       else
-        begin
-          wsapi.delete_message(
-            message_id: message.id,
-            chat_id: message.chat_id,
-            sender_id: message.sender.id,
-          )
-        rescue Wsapi::BadResponse => error
-          data = error.response.parse
-          if (detail = data["detail"]) && detail.include?("403") # rubocop:disable Metrics/BlockNesting
-            logger.warn("Couldn't delete message (bad permissions): #{detail}")
-            wsapi.send_message(
-              to: message.chat_id,
-              text: "Couldn't delete message from #{message.sender.phone} " \
-                "(not group admin)",
-            )
-            return
-          end
-        end
+        delete_message(message)
         wsapi.remove_community_participants(
           community_id:,
           participant_ids: [ message.sender.id ],
         )
       end
-    elsif message.is_group
-      wsapi.send_message(to: message.chat_id, text: "👎")
+    else
+      is_admin = wsapi.group_admin?(
+        group_id: message.chat_id,
+        participant_id: message.sender.id,
+      )
+      if is_admin
+        wsapi.send_message(to: message.chat_id, text: "👀")
+      else
+        delete_message(message)
+        wsapi.remove_group_participants(
+          group_id: message.chat_id,
+          participant_ids: [ message.sender.id ],
+        )
+      end
     end
   end
 
   sig { params(message: WsapiMessage).returns(T::Boolean) }
   def scam_message?(message)
+    return false unless message.is_group
+
     text = message.text.downcase
     text.include?("investment") && message.text.include?("https://chat.whatsapp.com")
+  end
+
+  sig { params(message: WsapiMessage).void }
+  def delete_message(message)
+    wsapi.delete_message(
+      message_id: message.id,
+      chat_id: message.chat_id,
+      sender_id: message.sender.id,
+    )
+  rescue Wsapi::BadResponse => error
+    data = error.response.parse
+    if (detail = data["detail"]) && detail.include?("403")
+      logger.warn("Couldn't delete message (bad permissions): #{detail}")
+      wsapi.send_message(
+        to: message.chat_id,
+        text: "Couldn't delete message from #{message.sender.phone} " \
+          "(not group admin)",
+      )
+      nil
+    end
   end
 
   sig { returns(String) }

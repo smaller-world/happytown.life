@@ -59,6 +59,25 @@ module Wsapi
       put!("/communities/#{community_id}/participants", json: payload)
     end
 
+    sig { params(group_id: String, participant_ids: T::Array[String]).void }
+    def remove_group_participants(group_id:, participant_ids:)
+      unless perform_deliveries?
+        tag_logger do
+          logger.info(
+            "Skipping removing participants from group " \
+              "#{group_id}: #{participant_ids}",
+          )
+        end
+        return
+      end
+
+      payload = { participants: participant_ids, action: "remove" }
+      tag_logger do
+        logger.debug("Removing participants from group #{group_id}: #{payload}")
+      end
+      put!("/groups/#{group_id}/participants", json: payload)
+    end
+
     sig { params(message_id: String, chat_id: String, sender_id: String).void }
     def delete_message(message_id:, chat_id:, sender_id:)
       unless perform_deliveries?
@@ -88,6 +107,20 @@ module Wsapi
     sig { params(community_id: String, participant_id: String).returns(T::Boolean) }
     def community_admin?(community_id:, participant_id:)
       data = get!("/communities/#{community_id}")
+      participants = T.let(
+        data.fetch("participants"),
+        T::Array[T::Hash[String, T.untyped]],
+      )
+      if (participant = participants.find { |p| p["id"] == participant_id })
+        !!participant["isAdmin"]
+      else
+        false
+      end
+    end
+
+    sig { params(group_id: String, participant_id: String).returns(T::Boolean) }
+    def group_admin?(group_id:, participant_id:)
+      data = get!("/groups/#{group_id}")
       participants = T.let(
         data.fetch("participants"),
         T::Array[T::Hash[String, T.untyped]],
