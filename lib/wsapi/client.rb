@@ -40,19 +40,19 @@ module Wsapi
       post!("/messages/text", json: payload)
     end
 
-    sig { params(community_id: String, participants: T::Array[String]).void }
-    def remove_community_participants(community_id:, participants:)
+    sig { params(community_id: String, participant_ids: T::Array[String]).void }
+    def remove_community_participants(community_id:, participant_ids:)
       unless perform_deliveries?
         tag_logger do
           logger.info(
             "Skipping removing participants from community " \
-              "#{community_id}: #{participants}",
+              "#{community_id}: #{participant_ids}",
           )
         end
         return
       end
 
-      payload = { participants:, action: "remove" }
+      payload = { participant_ids:, action: "remove" }
       tag_logger do
         logger.debug("Removing participants from community #{community_id}: #{payload}")
       end
@@ -85,11 +85,18 @@ module Wsapi
       data["communityId"]
     end
 
-    sig { params(community_id: String, participant: String).returns(T::Boolean) }
-    def community_admin?(community_id:, participant:)
+    sig { params(community_id: String, participant_id: String).returns(T::Boolean) }
+    def community_admin?(community_id:, participant_id:)
       data = get!("/communities/#{community_id}")
-      participants = T.let(data.fetch("participants"), T::Array[String])
-      participants.any? { |participant| participant["isAdmin"] }
+      participants = T.let(
+        data.fetch("participants"),
+        T::Array[T::Hash[String, T.untyped]],
+      )
+      if (participant = participants.find { |p| p["id"] == participant_id })
+        !!participant["isAdmin"]
+      else
+        false
+      end
     end
 
     private
