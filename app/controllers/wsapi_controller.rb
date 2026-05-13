@@ -4,6 +4,11 @@
 class WsapiController < ApplicationController
   # == Configuration ==
 
+  WORDLIST = T.let(
+    Set["investors", "investor", "investment", "investments", "stock", "stocks"],
+    T::Set[String],
+  )
+
   allow_unauthenticated_access
   skip_forgery_protection
 
@@ -77,7 +82,8 @@ class WsapiController < ApplicationController
     return false unless message.is_group
 
     text = message.text.downcase
-    text.include?("investment") && message.text.include?("https://chat.whatsapp.com")
+    words = T.cast(text.scan(/\w+/).to_set, T::Set[String])
+    words.intersect?(WORDLIST) && text.include?("https://chat.whatsapp.com")
   end
 
   sig { params(message: WsapiMessage).void }
