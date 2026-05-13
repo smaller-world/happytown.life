@@ -35,7 +35,7 @@ module Wsapi
 
       payload = { to:, text: }.compact_blank
       tag_logger do
-        logger.debug("Sending message: #{payload}")
+        logger.info("Sending message: #{payload}")
       end
       post!("/messages/text", json: payload)
     end
@@ -54,7 +54,7 @@ module Wsapi
 
       payload = { participants: participant_ids, action: "remove" }
       tag_logger do
-        logger.debug("Removing participants from community #{community_id}: #{payload}")
+        logger.info("Removing participants from community #{community_id}: #{payload}")
       end
       put!("/communities/#{community_id}/participants", json: payload)
     end
@@ -73,7 +73,7 @@ module Wsapi
 
       payload = { participants: participant_ids, action: "remove" }
       tag_logger do
-        logger.debug("Removing participants from group #{group_id}: #{payload}")
+        logger.info("Removing participants from group #{group_id}: #{payload}")
       end
       put!("/groups/#{group_id}/participants", json: payload)
     end
@@ -88,7 +88,7 @@ module Wsapi
       end
 
       tag_logger do
-        logger.debug("Deleting message #{message_id} (#{{ chat_id:, sender_id: }})")
+        logger.info("Deleting message #{message_id} (#{{ chat_id:, sender_id: }})")
       end
       suppress(HTTP::ParseError) do
         post!("/messages/#{message_id}/delete", json: {

@@ -34,19 +34,12 @@ Sentry.init do |config|
           request_id: exception.request_id,
           additional_data: exception.additional_data,
         }
-        event.set_context("notion_api_error", context.compact)
+        event["extra"]["notion_api_error"] = context.compact
       when Tally::BadResponse
         context = {
           error_type: exception.error_type,
         }
-        event.set_context("tally_api_error", context.compact)
-      when Wsapi::BadResponse
-        suppress(HTTP::Error) do |; context| # rubocop:disable Layout/SpaceAroundBlockParameters
-          context = {
-            response_body: exception.response.parse,
-          }
-          event.set_context("tally_api_error", context.compact_blank)
-        end
+        event["extra"]["tally_api_error"] = context.compact
       end
     end
   end
