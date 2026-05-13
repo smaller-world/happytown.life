@@ -78,6 +78,9 @@ module HappyTown
     # Disable HTTP basic auth for the jobs dashboard
     config.mission_control.jobs.http_basic_auth_enabled = false
 
+    # Set a PID file
+    config.solid_queue.supervisor_pidfile = Rails.root.join("tmp/pids/jobs.pid")
+
     # == Singletons ==
 
     sig { returns(WaSenderApi::Client) }
