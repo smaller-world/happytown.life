@@ -52,11 +52,11 @@ module Wsapi
         return
       end
 
-      payload = { participant_ids:, action: "remove" }
+      payload = { participants: participant_ids, action: "remove" }
       tag_logger do
         logger.debug("Removing participants from community #{community_id}: #{payload}")
       end
-      post!("/communities/#{community_id}/participants/remove", json: payload)
+      put!("/communities/#{community_id}/participants", json: payload)
     end
 
     sig { params(message_id: String, chat_id: String, sender_id: String).void }
@@ -111,6 +111,13 @@ module Wsapi
     sig { params(path: String, options: T.untyped).returns(T.untyped) }
     def get!(path, **options)
       response = @session.get(path, **options)
+      check_response!(response)
+      response.parse
+    end
+
+    sig { params(path: String, options: T.untyped).returns(T.untyped) }
+    def put!(path, **options)
+      response = @session.put(path, **options)
       check_response!(response)
       response.parse
     end
