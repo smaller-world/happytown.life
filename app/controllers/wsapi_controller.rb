@@ -38,9 +38,7 @@ class WsapiController < ApplicationController
 
   sig { params(message: WsapiMessage).returns(T.untyped) }
   def screen_message(message)
-    if message.text.exclude?("https://chat.whatsapp.com/CXOuhaLnWaF2cxZkuXH6Pb")
-      return
-    end
+    return unless scam_message?(message)
 
     tag_logger do
       logger.info("Message from #{message.sender.id} failed screening: #{message.text}")
@@ -64,6 +62,12 @@ class WsapiController < ApplicationController
     elsif message.is_group
       wsapi.send_message(to: message.chat_id, text: "👎")
     end
+  end
+
+  sig { params(message: WsapiMessage).returns(T::Boolean) }
+  def scam_message?(message)
+    text = message.text.downcase
+    text.include?("investment") && message.text.include?("https://chat.whatsapp.com")
   end
 
   sig { returns(String) }
