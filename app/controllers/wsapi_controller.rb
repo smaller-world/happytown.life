@@ -48,6 +48,12 @@ class WsapiController < ApplicationController
       if is_admin
         wsapi.send_message(to: message.chat_id, text: "👀")
       else
+        wsapi.send_message(to: message.chat_id, text: "nope")
+        wsapi.delete_message(
+          message_id: message.id,
+          chat_id: message.chat_id,
+          sender_id: message.sender.id,
+        )
         wsapi.remove_community_participants(
           community_id:,
           participants: [ message.sender.id ],

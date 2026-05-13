@@ -59,6 +59,26 @@ module Wsapi
       post!("/communities/#{community_id}/participants/remove", json: payload)
     end
 
+    sig { params(message_id: String, chat_id: String, sender_id: String).void }
+    def delete_message(message_id:, chat_id:, sender_id:)
+      unless perform_deliveries?
+        tag_logger do
+          logger.info("Skipping deleting message #{message_id}")
+        end
+        return
+      end
+
+      tag_logger do
+        logger.debug("Deleting message #{message_id} (#{{ chat_id:, sender_id: }})")
+      end
+      suppress(HTTP::ParseError) do
+        post!("/messages/#{message_id}/delete", json: {
+          "chatId" => chat_id,
+          "senderId" => sender_id,
+        })
+      end
+    end
+
     sig { params(group_id: String).returns(T.nilable(String)) }
     def community_id(group_id:)
       data = get!("/groups/#{group_id}")

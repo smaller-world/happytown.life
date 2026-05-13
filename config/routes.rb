@@ -34,7 +34,7 @@ Rails.application.routes.draw do
   end
 
   # == WSAPI
-  scope path: "/wsapi", controller: :wsapi do
+  scope path: "/wsapi", controller: :wsapi, as: :wsapi do
     post :webhook
   end
 
