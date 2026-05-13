@@ -42,7 +42,9 @@ class WsapiMessage
     end
     if (sender = attributes["sender"]) && sender.is_a?(Hash)
       sender_attributes = sender.transform_keys(&:underscore)
-      attributes["sender"] = WsapiMessageSender.new(**sender_attributes)
+      attributes["sender"] = WsapiMessageSender.new(
+        **sender_attributes.symbolize_keys.slice(*WsapiMessageSender.properties.keys),
+      )
     end
     new(**attributes.symbolize_keys.slice(*properties.keys))
   end
