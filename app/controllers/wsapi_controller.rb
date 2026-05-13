@@ -49,11 +49,24 @@ class WsapiController < ApplicationController
       if is_admin
         wsapi.send_message(to: message.chat_id, text: "👀")
       else
-        wsapi.delete_message(
-          message_id: message.id,
-          chat_id: message.chat_id,
-          sender_id: message.sender.id,
-        )
+        begin
+          wsapi.delete_message(
+            message_id: message.id,
+            chat_id: message.chat_id,
+            sender_id: message.sender.id,
+          )
+        rescue Wsapi::BadResponse => error
+          data = error.response.parse
+          if (detail = data["detail"]) && detail.include?("403") # rubocop:disable Metrics/BlockNesting
+            logger.warn("Couldn't delete message (bad permissions): #{detail}")
+            wsapi.send_message(
+              to: message.chat_id,
+              text: "Couldn't delete message from #{message.sender.phone} " \
+                "(not group admin)",
+            )
+            return
+          end
+        end
         wsapi.remove_community_participants(
           community_id:,
           participant_ids: [ message.sender.id ],
