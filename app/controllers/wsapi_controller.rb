@@ -54,6 +54,9 @@ class WsapiController < ApplicationController
       participant_id: message.sender.id,
     )
     if is_admin
+      tag_logger do
+        logger.info("Skipping removing group admin: #{message.sender.id}")
+      end
       wsapi.send_message(to: message.chat_id, text: "👀")
     else
       delete_message(message)
@@ -67,14 +70,21 @@ class WsapiController < ApplicationController
           community_id:,
           participant_id: message.sender.id,
         )
-        unless is_admin
+        if is_admin
+          tag_logger do
+            logger.info("Skipping removing community admin: #{message.sender.id}")
+          end
+        else
           wsapi.remove_community_participants(
             community_id:,
             participant_ids: [ message.sender.id ],
           )
         end
+      else
+        tag_logger do
+          logger.info("No community found for group: #{message.chat_id}")
+        end
       end
-
     end
   end
 
