@@ -294,7 +294,31 @@ class Views::Pages::Landing < Views::Base
   sig { void }
   def render_gatherings
     section(id: "gatherings", class: "space-y-6 lg:space-y-8") do
-      h2(class: "text-3xl font-bold text-center") { "upcoming gatherings" }
+      h2(class: "text-3xl font-bold text-center") do
+        "upcoming gatherings"
+      end
+
+      div(class: "mx-auto max-w-lg leading-[2]") do
+        plain("to subscribe to future events: go to ")
+        link_to(
+          "https://luma.com/happytown",
+          target: "_blank",
+          rel: "noopener",
+          class: "underline text-primary font-bold"
+        ) do
+          "our events calendar"
+        end
+        plain(" and click the ")
+        link_to(
+          "https://luma.com/happytown",
+          target: "_blank",
+          rel: "noopener",
+          class: "inline-block px-3 py-2 bg-[#388D2E] text-white rounded-md font-bold leading-tight",
+        ) do
+          "Follow"
+        end
+        plain(" button.")
+      end
 
       iframe(
         src: "https://luma.com/embed/calendar/cal-r7n2QUhNMWl9MoH/events",

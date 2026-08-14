@@ -51,6 +51,51 @@ module RubyLLM
   end
 end
 
+# pkg:gem/ruby_llm#lib/ruby_llm/active_record/payload_helpers.rb:7
+module RubyLLM::ActiveRecord; end
+
+# Adds chat and message persistence capabilities to ActiveRecord models.
+#
+# pkg:gem/ruby_llm#lib/ruby_llm/active_record/acts_as.rb:9
+module RubyLLM::ActiveRecord::ActsAs
+  extend ::ActiveSupport::Concern
+
+  mixes_in_class_methods ::RubyLLM::ActiveRecord::ActsAs::ClassMethods
+
+  class << self
+    # pkg:gem/ruby_llm#lib/ruby_llm/active_record/acts_as.rb:12
+    def included(base); end
+  end
+end
+
+# pkg:gem/ruby_llm#lib/ruby_llm/active_record/acts_as.rb:17
+module RubyLLM::ActiveRecord::ActsAs::ClassMethods
+  # pkg:gem/ruby_llm#lib/ruby_llm/active_record/acts_as.rb:18
+  def acts_as_chat(messages: T.unsafe(nil), message_class: T.unsafe(nil), messages_foreign_key: T.unsafe(nil), model: T.unsafe(nil), model_class: T.unsafe(nil), model_foreign_key: T.unsafe(nil)); end
+
+  # pkg:gem/ruby_llm#lib/ruby_llm/active_record/acts_as.rb:72
+  def acts_as_message(chat: T.unsafe(nil), chat_class: T.unsafe(nil), chat_foreign_key: T.unsafe(nil), touch_chat: T.unsafe(nil), tool_calls: T.unsafe(nil), tool_call_class: T.unsafe(nil), tool_calls_foreign_key: T.unsafe(nil), model: T.unsafe(nil), model_class: T.unsafe(nil), model_foreign_key: T.unsafe(nil)); end
+
+  # pkg:gem/ruby_llm#lib/ruby_llm/active_record/acts_as.rb:53
+  def acts_as_model(chats: T.unsafe(nil), chat_class: T.unsafe(nil), chats_foreign_key: T.unsafe(nil)); end
+
+  # pkg:gem/ruby_llm#lib/ruby_llm/active_record/acts_as.rb:127
+  def acts_as_tool_call(message: T.unsafe(nil), message_class: T.unsafe(nil), message_foreign_key: T.unsafe(nil), result: T.unsafe(nil), result_class: T.unsafe(nil), result_foreign_key: T.unsafe(nil)); end
+end
+
+# Shared helpers for parsing serialized payloads on ActiveRecord-backed models.
+#
+# pkg:gem/ruby_llm#lib/ruby_llm/active_record/payload_helpers.rb:9
+module RubyLLM::ActiveRecord::PayloadHelpers
+  private
+
+  # pkg:gem/ruby_llm#lib/ruby_llm/active_record/payload_helpers.rb:19
+  def parse_payload(value); end
+
+  # pkg:gem/ruby_llm#lib/ruby_llm/active_record/payload_helpers.rb:12
+  def payload_error_message(value); end
+end
+
 # Base class for simple, class-configured agents.
 #
 # pkg:gem/ruby_llm#lib/ruby_llm/agent.rb:10

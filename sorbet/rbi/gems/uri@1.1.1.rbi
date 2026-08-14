@@ -2322,7 +2322,7 @@ URI::Schemes::LDAPS = URI::LDAPS
 URI::Schemes::MAILTO = URI::MailTo
 
 # source://uri//lib/uri/common.rb#123
-URI::Schemes::SOURCE = Tapioca::SourceURI
+# URI::Schemes::SOURCE = Tapioca::SourceURI
 
 # source://uri//lib/uri/common.rb#123
 URI::Schemes::WS = URI::WS
