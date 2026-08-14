@@ -14,11 +14,10 @@ release_command = "./bin/prepare-deployment"
 
 [env]
 CANONICAL_HOST = "happytown.life"
-HTTP_PORT = "8080"
-HTTPS_PORT = "8443"
+THRUSTER_HTTP_PORT = "8080"
 
 [processes]
-app = "./bin/thrust ./bin/rails server"
+app = "./bin/thrust ./bin/rails server -b 0.0.0.0"
 jobs = "./bin/jobs"
 
 [http_service]
