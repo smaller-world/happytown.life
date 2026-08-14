@@ -294,57 +294,70 @@ class Views::Pages::Landing < Views::Base
   sig { void }
   def render_gatherings
     section(id: "gatherings", class: "space-y-6 lg:space-y-8") do
-      h2(class: "text-3xl font-bold text-center") { "featured gatherings" }
+      h2(class: "text-3xl font-bold text-center") { "upcoming gatherings" }
 
-      div(class: "grid md:grid-cols-2 gap-6 lg:gap-8") do
-        div(class: "landing_gathering_card") do
-          div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
-            image_tag(
-              "landing/mindful-miles-profile.jpg",
-              alt: "mindful miles profile",
-              class: "size-40 rounded-2xl object-cover",
-            )
-            div(
-              class: "landing_gathering_badge",
-              data: { variant: "primary" },
-            ) { "walk with us" }
-          end
-          h3(class: "text-2xl font-bold mb-2") { "mindful miles" }
-          p(class: "text-gray-500 mb-4 font-medium") do
-            "a winter PATH walk for wandering conversations. 10k-ish steps " \
-              "at 8am every saturday."
-          end
-          render_gathering_button(
-            "mindful miles",
-            url: next_event_luma_event_tag_path(:mindful_miles),
-            class: "text-landing-primary",
-          )
-        end
+      iframe(
+        src: "https://luma.com/embed/calendar/cal-r7n2QUhNMWl9MoH/events",
+        width: 600,
+        height: 600,
+        frameborder: 0,
+        allowfullscreen: true,
+        aria: {
+          hidden: false,
+        },
+        tabindex: 0,
+        class: "border rounded-2xl mx-auto",
+      )
 
-        div(class: "landing_gathering_card") do
-          div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
-            image_tag(
-              "landing/foodcourt-fairgrounds-profile.png",
-              alt: "foodcourt fairgrounds profile",
-              class: "size-40 rounded-2xl object-cover",
-            )
-            div(
-              class: "landing_gathering_badge",
-              data: { variant: "secondary" },
-            ) { "create with us" }
-          end
-          h3(class: "text-2xl font-bold mb-2") { "foodcourt fairgrounds" }
-          p(class: "text-gray-500 mb-4 font-medium") do
-            "a cozy post-walk third-space hang: low-key activities in the " \
-              "aura concourse basement food court."
-          end
-          render_gathering_button(
-            "foodcourt fairgrounds",
-            url: next_event_luma_event_tag_path(:fairgrounds),
-            class: "text-landing-secondary",
-          )
-        end
-      end
+      # div(class: "grid md:grid-cols-2 gap-6 lg:gap-8") do
+      #   div(class: "landing_gathering_card") do
+      #     div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
+      #       image_tag(
+      #         "landing/mindful-miles-profile.jpg",
+      #         alt: "mindful miles profile",
+      #         class: "size-40 rounded-2xl object-cover",
+      #       )
+      #       div(
+      #         class: "landing_gathering_badge",
+      #         data: { variant: "primary" },
+      #       ) { "walk with us" }
+      #     end
+      #     h3(class: "text-2xl font-bold mb-2") { "mindful miles" }
+      #     p(class: "text-gray-500 mb-4 font-medium") do
+      #       "a winter PATH walk for wandering conversations. 10k-ish steps " \
+      #         "at 8am every saturday."
+      #     end
+      #     render_gathering_button(
+      #       "mindful miles",
+      #       url: next_event_luma_event_tag_path(:mindful_miles),
+      #       class: "text-landing-primary",
+      #     )
+      #   end
+
+      #   div(class: "landing_gathering_card") do
+      #     div(class: "w-full flex flex-col items-center gap-y-4 mb-4") do
+      #       image_tag(
+      #         "landing/foodcourt-fairgrounds-profile.png",
+      #         alt: "foodcourt fairgrounds profile",
+      #         class: "size-40 rounded-2xl object-cover",
+      #       )
+      #       div(
+      #         class: "landing_gathering_badge",
+      #         data: { variant: "secondary" },
+      #       ) { "create with us" }
+      #     end
+      #     h3(class: "text-2xl font-bold mb-2") { "foodcourt fairgrounds" }
+      #     p(class: "text-gray-500 mb-4 font-medium") do
+      #       "a cozy post-walk third-space hang: low-key activities in the " \
+      #         "aura concourse basement food court."
+      #     end
+      #     render_gathering_button(
+      #       "foodcourt fairgrounds",
+      #       url: next_event_luma_event_tag_path(:fairgrounds),
+      #       class: "text-landing-secondary",
+      #     )
+      #   end
+      # end
 
       p(class: "text-center text-gray-500 italic") do
         "...and more gatherings coming soon!"
